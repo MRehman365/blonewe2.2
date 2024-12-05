@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial;
+    transition: background-color 0.8s ease, color 0.8s ease;
+ overflow-x: hidden;
+  
+}
+
+.bg-about{
+  background-image: url("./assets/about-image-1.jpg");
+}
+
+/* Custom toast container styles */
+.Toastify__toast-container {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Toast appearance animation */
+.toast-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: toastFadeIn 0.5s forwards;
+}
+
+/* Toast disappearance animation */
+.toast-exit {
+  opacity: 1;
+  transform: translateY(0);
+  animation: toastFadeOut 0.5s forwards;
+}
+
+@keyframes toastFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toastFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
