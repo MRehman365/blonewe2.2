@@ -16,6 +16,7 @@ import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";
 import Buttons from "@/app/ui/buttons/page";
 import { useState } from "react";
 import Image from "next/image";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 const FormElements = () => {
   const [textAreas, setTextAreas] = useState([0]);
@@ -36,15 +37,18 @@ const FormElements = () => {
     setDetailImages(imageUrls);
   };
 
-  const handleAddMore = () => {
+  const handleUpdateMore = () => {
     setTextAreas([...textAreas, textAreas.length]);
   }
   
   const handlepoint = () => {
     setPoints([...points, points.length]);
   }
+  const hanldesubmit = () => {
+    console.log(textAreas, points, mainImage, detailImages);
+  }
   return (
-    <>
+    <DefaultLayout>
       <Breadcrumb pageName="FormElements" />
 
       <form className="grid grid-cols-1 gap-9 sm:grid-cols-2">
@@ -53,7 +57,7 @@ const FormElements = () => {
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Add Product
+                Add Blog
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
@@ -64,7 +68,7 @@ const FormElements = () => {
                 <input
                   type="text"
                   required
-                  placeholder="Default Input"
+                  placeholder="Blog Title"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -75,7 +79,7 @@ const FormElements = () => {
                 <input
                   type="text"
                   required
-                  placeholder="Add Store name"
+                  placeholder="Update Store name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -89,51 +93,6 @@ const FormElements = () => {
                   required
                   placeholder="Categories"
                   className="w-full rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Price
-                </label>
-                <input
-                  type="number"
-                  required
-                  placeholder="Price"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
-                />
-              </div>
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Discount on Products
-                </label>
-                <input
-                  type="number"
-                  required
-                  placeholder="Add discount on product"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
-                />
-              </div>
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Tags
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Tags"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
-                />
-              </div>
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  SKU
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="SKU"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
                 />
               </div>
             </div>
@@ -231,7 +190,7 @@ const FormElements = () => {
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Product Discription
+                Blog Discription
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
@@ -244,33 +203,15 @@ const FormElements = () => {
                     key={index}
                     required
                     rows={6}
-                    placeholder={`Add ${index + 1} Para description`}
+                    placeholder={`Update ${index + 1} Para description`}
                     className="mb-2 w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   ></textarea>
                 ))}
                 <button
-                  onClick={handleAddMore}
-                  className="mt-2 rounded-md bg-primary px-4 py-2 text-white"
+                  onClick={handleUpdateMore}
                   type="button"
+                  className="mt-2 rounded-md bg-primary px-4 py-2 text-white"
                 >
-                  Add More
-                </button>
-              </div>
-
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Add Shiping and Product detail in one Line
-                </label>
-                {points.map((_, index) => (
-                <input
-                key={index}
-                required
-                  type="text"
-                  placeholder="Add shiping detail or ploicies"
-                  className="w-full rounded-lg border-[1.5px] mb-2 border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                />
-              ))}
-                <button onClick={handlepoint} type="button" className="mt-2 rounded-md bg-primary px-4 py-2 text-white">
                   Add More
                 </button>
               </div>
@@ -320,12 +261,12 @@ const FormElements = () => {
           </div> */}
           
           <div className="flex justify-between mt-4">
-          <input type="reset" placeholder="Reset form" className="rounded-md bg-primary px-4 py-2 text-white" />
-                <input type="submit" placeholder="Upload" className="rounded-md bg-primary px-4 py-2 text-white" />
+          <button className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
+                <button onSubmit={hanldesubmit} className="rounded-md bg-primary px-4 py-2 text-white">Upload</button>
               </div>
         </div>
       </form>
-    </>
+      </DefaultLayout>
   );
 };
 

@@ -16,6 +16,7 @@ import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";
 import Buttons from "@/app/ui/buttons/page";
 import { useState } from "react";
 import Image from "next/image";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 const FormElements = () => {
   const [textAreas, setTextAreas] = useState([0]);
@@ -36,7 +37,7 @@ const FormElements = () => {
     setDetailImages(imageUrls);
   };
 
-  const handleAddMore = () => {
+  const handleUpdateMore = () => {
     setTextAreas([...textAreas, textAreas.length]);
   }
   
@@ -44,7 +45,7 @@ const FormElements = () => {
     setPoints([...points, points.length]);
   }
   return (
-    <>
+    <DefaultLayout>
       <Breadcrumb pageName="FormElements" />
 
       <form className="grid grid-cols-1 gap-9 sm:grid-cols-2">
@@ -53,7 +54,7 @@ const FormElements = () => {
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Add Product
+                Update Product
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
@@ -75,7 +76,7 @@ const FormElements = () => {
                 <input
                   type="text"
                   required
-                  placeholder="Add Store name"
+                  placeholder="Update Store name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -110,7 +111,7 @@ const FormElements = () => {
                 <input
                   type="number"
                   required
-                  placeholder="Add discount on product"
+                  placeholder="Update discount on product"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
                 />
               </div>
@@ -244,34 +245,33 @@ const FormElements = () => {
                     key={index}
                     required
                     rows={6}
-                    placeholder={`Add ${index + 1} Para description`}
+                    placeholder={`Update ${index + 1} Para description`}
                     className="mb-2 w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   ></textarea>
                 ))}
                 <button
-                  onClick={handleAddMore}
+                  onClick={handleUpdateMore}
                   className="mt-2 rounded-md bg-primary px-4 py-2 text-white"
-                  type="button"
                 >
-                  Add More
+                  Update More
                 </button>
               </div>
 
               <div>
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Add Shiping and Product detail in one Line
+                  Update Shiping and Product detail in one Line
                 </label>
                 {points.map((_, index) => (
                 <input
                 key={index}
                 required
                   type="text"
-                  placeholder="Add shiping detail or ploicies"
+                  placeholder="Update shiping detail or ploicies"
                   className="w-full rounded-lg border-[1.5px] mb-2 border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               ))}
-                <button onClick={handlepoint} type="button" className="mt-2 rounded-md bg-primary px-4 py-2 text-white">
-                  Add More
+                <button onClick={handlepoint} className="mt-2 rounded-md bg-primary px-4 py-2 text-white">
+                  Update More
                 </button>
               </div>
 
@@ -320,12 +320,12 @@ const FormElements = () => {
           </div> */}
           
           <div className="flex justify-between mt-4">
-          <input type="reset" placeholder="Reset form" className="rounded-md bg-primary px-4 py-2 text-white" />
-                <input type="submit" placeholder="Upload" className="rounded-md bg-primary px-4 py-2 text-white" />
+          <button className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
+                <button className="rounded-md bg-primary px-4 py-2 text-white">Upload</button>
               </div>
         </div>
       </form>
-    </>
+      </DefaultLayout>
   );
 };
 

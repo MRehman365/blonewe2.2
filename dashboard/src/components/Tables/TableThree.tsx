@@ -2,28 +2,28 @@ import { Package } from "@/types/package";
 
 const packageData: Package[] = [
   {
-    name: "Free package",
+    name: "Suraj sir",
     price: 0.0,
     invoiceDate: `Jan 13,2023`,
-    status: "Paid",
+    status: "Suj@gmail.com",
   },
   {
-    name: "Standard Package",
+    name: "Jitendar Sir",
     price: 59.0,
     invoiceDate: `Jan 13,2023`,
-    status: "Paid",
+    status: "Jit@gmail.ocm",
   },
   {
-    name: "Business Package",
+    name: "Rehman",
     price: 99.0,
     invoiceDate: `Jan 13,2023`,
-    status: "Unpaid",
+    status: "man@gmail.com",
   },
   {
-    name: "Standard Package",
+    name: "Nushad Sir",
     price: 59.0,
     invoiceDate: `Jan 13,2023`,
-    status: "Pending",
+    status: "nushd@gmail.com",
   },
 ];
 
@@ -35,13 +35,13 @@ const TableThree = () => {
           <thead>
             <tr className="bg-gray-2 text-left dark:bg-meta-4">
               <th className="min-w-[220px] px-4 py-4 font-medium text-black dark:text-white xl:pl-11">
-                Package
+                Users
               </th>
               <th className="min-w-[150px] px-4 py-4 font-medium text-black dark:text-white">
                 Invoice date
               </th>
               <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
-                Status
+                email
               </th>
               <th className="px-4 py-4 font-medium text-black dark:text-white">
                 Actions
@@ -55,7 +55,7 @@ const TableThree = () => {
                   <h5 className="font-medium text-black dark:text-white">
                     {packageItem.name}
                   </h5>
-                  <p className="text-sm">${packageItem.price}</p>
+                  <p className="text-sm">Total Spent: ${packageItem.price}</p>
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <p className="text-black dark:text-white">
@@ -64,13 +64,7 @@ const TableThree = () => {
                 </td>
                 <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                   <p
-                    className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium ${
-                      packageItem.status === "Paid"
-                        ? "bg-success text-success"
-                        : packageItem.status === "Unpaid"
-                          ? "bg-danger text-danger"
-                          : "bg-warning text-warning"
-                    }`}
+                    className="inline-flex rounded-full bg-opacity-10 px-3 py-1 text-sm font-medium "
                   >
                     {packageItem.status}
                   </p>
