@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { FaCross, FaRegHeart, FaStar } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
@@ -140,7 +140,6 @@ const categories = [
 
 export default function ProductListing() {
   const [selectedCategories, setSelectedCategories] = useState(["Fashion"]);
-  const [priceRange, setPriceRange] = useState([20, 80]);
   const [wishlist, setWishlist] = useState([]);
   const [showInStock, setShowInStock] = useState(false);
   const [showOnSale, setShowOnSale] = useState(false);
@@ -151,6 +150,12 @@ export default function ProductListing() {
   const [showValue, setShowValue] = useState("20 items");
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
+
+  // price Slider
+  const [priceRange, setPriceRange] = useState([0, 1000])
+  const [isDragging, setIsDragging] = useState(false)
+  const [activeDot, setActiveDot] = useState(null)
+  const sliderRef = useRef(null)
 
   const handleOpenPopup = () => setIsPopupVisible(true);
   const handleClosePopup = () => setIsPopupVisible(false);
@@ -190,15 +195,61 @@ export default function ProductListing() {
     );
   };
 
-  const calculateSliderPosition = (value) => ((value - 20) / (80 - 20)) * 100;
+  // price SLider
+  const handleStart = (event, type) => {
+    event.preventDefault()
+    setIsDragging(true)
+    setActiveDot(type)
+  }
 
-  const filteredProducts = products.filter((product) => {
-    if (showInStock && !product.inStock) return false;
-    if (showOnSale && product.discount === 0) return false;
-    if (selectedCategories.length && !selectedCategories.includes("Fashion"))
-      return false;
-    return product.price >= priceRange[0] && product.price <= priceRange[1];
-  });
+  const handleEnd = () => {
+    setIsDragging(false)
+    setActiveDot(null)
+  }
+
+  const handleMove = (event) => {
+    if (!isDragging || !sliderRef.current) return
+
+    const slider = sliderRef.current
+    const rect = slider.getBoundingClientRect()
+    const clientX = event.type.includes('mouse') 
+      ? event.clientX 
+      : event.touches[0].clientX
+    const position = (clientX - rect.left) / rect.width
+    const value = Math.round(position * (1000 - 0) + 0)
+    const clampedValue = Math.min(Math.max(value, 0), 1000)
+
+    if (activeDot === 'min') {
+      if (clampedValue < priceRange[1]) {
+        setPriceRange([clampedValue, priceRange[1]])
+        console.log('Price range:', clampedValue, '-', priceRange[1])
+      }
+    } else if (activeDot === 'max') {
+      if (clampedValue > priceRange[0]) {
+        setPriceRange([priceRange[0], clampedValue])
+        console.log('Price range:', priceRange[0], '-', clampedValue)
+      }
+    }
+  }
+
+  useEffect(() => {
+    const handleEndGlobal = () => {
+      setIsDragging(false)
+      setActiveDot(null)
+    }
+
+    window.addEventListener('mouseup', handleEndGlobal)
+    window.addEventListener('touchend', handleEndGlobal)
+    return () => {
+      window.removeEventListener('mouseup', handleEndGlobal)
+      window.removeEventListener('touchend', handleEndGlobal)
+    }
+  }, [])
+
+  const getLeftPosition = (value) => {
+    return ((value - 55) / (1000 - 55)) * 100
+  }
+
 
   return (
     <div className="max-w-7xl mx-auto mt-4">
@@ -319,7 +370,7 @@ export default function ProductListing() {
       <div className=" py-4 flex flex-col md:flex-row gap-8 ">
         {/* Sidebar */}
         <div
-          className={`w-64 fixed md:sticky min-h-[100vh] top-0 ${
+          className={`w-64 fixed md:sticky min-h-[100vh] z-[99] top-0 ${
             isSidebarVisible ? "left-0" : "-left-[100%]"
           } bg-white md:bg-[#ffffff04]  z-50 p-2 transition-all duration-300`}
         >
@@ -356,56 +407,42 @@ export default function ProductListing() {
             {/* Price Filter */}
             <div>
               <h2 className="text-lg font-semibold mb-4">Filter by Price</h2>
-              <div className="space-y-4">
-                <div className="flex gap-4">
-                  <input
-                    type="number"
-                    value={priceRange[0]}
-                    onChange={(e) =>
-                      setPriceRange([+e.target.value, priceRange[1]])
-                    }
-                    className="w-20 p-2 border rounded bg-[#ffffff0c]"
-                  />
-                  <span>-</span>
-                  <input
-                    type="number"
-                    value={priceRange[1]}
-                    onChange={(e) =>
-                      setPriceRange([priceRange[0], +e.target.value])
-                    }
-                    className="w-20 p-2 border rounded bg-[#ffffff0c]"
-                  />
-                </div>
-                <div className="relative w-full h-2  rounded-full">
-                  <div
-                    className="absolute h-full bg-[#004798] rounded-full"
-                    style={{
-                      left: `${calculateSliderPosition(priceRange[0])}%`,
-                      right: `${100 - calculateSliderPosition(priceRange[1])}%`,
-                    }}
-                  ></div>
-                  <input
-                    type="range"
-                    min={20}
-                    max={80}
-                    value={priceRange[0]}
-                    onChange={(e) =>
-                      setPriceRange([+e.target.value, priceRange[1]])
-                    }
-                    className="absolute w-full h-2 appearance-none bg-transparent pointer-events-auto cursor-pointer"
-                  />
-                  <input
-                    type="range"
-                    min={20}
-                    max={80}
-                    value={priceRange[1]}
-                    onChange={(e) =>
-                      setPriceRange([priceRange[0], +e.target.value])
-                    }
-                    className="absolute w-full h-2 appearance-none bg-transparent pointer-events-auto cursor-pointer"
-                  />
-                </div>
-              </div>
+              <div 
+        className="relative h-1 bg-gray-200 rounded-full mt-8 mb-4"
+        ref={sliderRef}
+        onMouseMove={handleMove}
+        onTouchMove={handleMove}
+      >
+        {/* Progress bar */}
+        <div 
+          className="absolute h-full bg-primary rounded-full"
+          style={{
+            left: `${getLeftPosition(priceRange[0])}%`,
+            right: `${100 - getLeftPosition(priceRange[1])}%`
+          }}
+        />
+        
+        {/* Min handle */}
+        <div
+          className="absolute w-6 h-6 bg-white border-2 border-primary rounded-full -mt-2.5 cursor-pointer transform -translate-x-1/2 hover:scale-110 transition-transform"
+          style={{ left: `${getLeftPosition(priceRange[0])}%` }}
+          onMouseDown={(e) => handleStart(e, 'min')}
+          onTouchStart={(e) => handleStart(e, 'min')}
+        />
+        
+        {/* Max handle */}
+        <div
+          className="absolute w-6 h-6 bg-white border-2 border-primary rounded-full -mt-2.5 cursor-pointer transform -translate-x-1/2 hover:scale-110 transition-transform"
+          style={{ left: `${getLeftPosition(priceRange[1])}%` }}
+          onMouseDown={(e) => handleStart(e, 'max')}
+          onTouchStart={(e) => handleStart(e, 'max')}
+        />
+      </div>
+      
+      <div className="flex justify-between mt-2">
+        <span className="text-sm text-gray-600">{priceRange[0]} $</span>
+        <span className="text-sm text-gray-600">{priceRange[1]} $</span>
+      </div>
             </div>
 
             {/* Additional Filters */}
