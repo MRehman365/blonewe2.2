@@ -3,12 +3,12 @@ const cartModal = require("../../modals/cartModal");
 class cartController {
     addToCart = async (req, res) => {
         try {
-            const { userId, menuId, quantity } = req.body;
-            const menu = await cartModal.findOne({
+            const { userId, productId, quantity } = req.body;
+            const product = await cartModal.findOne({
                 $and: [
                     {
-                      menuId: {
-                        $eq: menuId,
+                      productId: {
+                        $eq: productId,
                       },
                     },
                     {
@@ -18,11 +18,11 @@ class cartController {
                     },
                   ],
             });
-            if (menu) {
-                return res.status(400).json({ message: "Menu already in cart" });
+            if (product) {
+                return res.status(400).json({ message: "product already in cart" });
             }
             else {
-                const cart = await cartModal.create({ userId, menuId, quantity });
+                const cart = await cartModal.create({ userId, productId, quantity });
                 return res.status(200).json({ message: "Cart added successfully", cart });
             }
         } catch (error) {
@@ -41,7 +41,7 @@ class cartController {
 
     getCart = async (req, res) => {
         try {
-            const { userId } = req.body;
+            const { userId } = req.params;
             if (!userId) {
                 return res.status(400).json({ message: "User ID is required" });
             }

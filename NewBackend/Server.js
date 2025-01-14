@@ -13,8 +13,7 @@ app.use(cookieParser());
 app.use("/api", require("./routes/authRoute"));
 app.use("/api", require("./routes/productRoute"));
 app.use("/api", require("./routes/orderRoute"));
-app.use("/api", require("./routes/tableRoute"));
-app.use("/api", require("./routes/booktableRoute"));
+app.use("/api", require("./routes/wishlistRouter"));
 app.use("/api", require("./routes/cartRoute"));
 app.use("/api", require("./routes/categoryRoute"));
 
