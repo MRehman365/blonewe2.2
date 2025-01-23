@@ -31,12 +31,14 @@ import AllStore from "./components/All-Store";
 import FeauredProduct from "./components/Feaured-Product";
 import ModernFerniture from "./components/Modern-Ferniture";
 import NewLatter from "./components/NewLatter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductDetail from "./components/ProductDetail";
 import LatestProduct from "./components/LatestProduct";
 import SubNewsLatter from "./components/SubNewsLatter";
 import Features from "./components/Features";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategories } from "@/store/reducer/categoryReducer";
 
 const services = [
   {
@@ -72,10 +74,22 @@ const sliderCat = [
 ];
 
 export default function Home() {
+  const { categories} = useSelector((state) => state.category)
+
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   const handleOpenPopup = () => setIsPopupVisible(true);
   const handleClosePopup = () => setIsPopupVisible(false);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCategories()) 
+  },[dispatch])
+
+  const category = Array.isArray(categories) ? categories : categories.category || [];
+
+  console.log(category)
 
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
@@ -192,19 +206,21 @@ export default function Home() {
       </div>
       <div className="p-2 max-w-7xl mx-auto rounded-lg overflow-hidden">
       <Slider {...settings} className="grid grid-cols-6">
-        {sliderCat.map((image, index) => (
+        {category?.map((item, index) => (
           <Link 
           href='/shop'
             key={index}
             className="flex justify-center overflow-hidden group"
           >
             <Image
-              src={image.img}
+              src={item?.image}
               alt={`Slide ${index + 1}`}
+              width={100}
+              height={100}
               className="object-contain rounded-md h-[100px] w-[100px] transition-all md:h-[150px] md:w-[150px] bg-[#eceef0] mx-auto"
             />
             <p className="text-center p-2 font-[500] text-gray-500 transition-all group-hover:text-primary">
-              {image.name}
+              {item?.name}
             </p>
           </Link>
         ))}

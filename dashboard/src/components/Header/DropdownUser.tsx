@@ -1,10 +1,39 @@
-import { useState } from "react";
+'use client'
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ClickOutside from "@/components/ClickOutside";
+import { toast } from "react-toast";
+import api from "@/store/api";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { get_admin } from "@/store/reducers/adminReducer";
 
 const DropdownUser = () => {
+
+  const { adminDetail } = useSelector((state: RootState) => state.admin)
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const dispatch = useDispatch<AppDispatch>()
+
+  useEffect(() => {
+dispatch(get_admin())
+  }, [dispatch])
+
+  console.log('admin', adminDetail)
+
+  const handleLogout = async () => {
+    try {
+      const { data } = await api.get("/adminlogout");
+      localStorage.removeItem("accessToken");
+      toast.success(data.message);
+      window.location.href = "/auth/signin";
+
+    } catch (error) {
+      console.log("failed to log out", error);
+    }
+  };
+  
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -128,7 +157,7 @@ const DropdownUser = () => {
               </Link>
             </li>
           </ul>
-          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button onClick={handleLogout} className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
             <svg
               className="fill-current"
               width="22"

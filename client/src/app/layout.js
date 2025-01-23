@@ -7,6 +7,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import MobileFooter from "./components/MobileFooter";
 import { ToastContainer, toast } from 'react-toast'
+import { Provider } from "react-redux";
+import store from "@/store/store";
 
 const ThemeContext = createContext();
 
@@ -51,11 +53,13 @@ export default function RootLayout({ children }) {
             color: theme === "light" ? "#000" : "#fff", 
           }}
         >
+        <Provider store={store}>
           <Navbar />
           <main className="sm:mt-[50px] md:mt-0">{children}</main>
           <Footer />
           <MobileFooter />
           <ToastContainer position="bottom-right" delay={5000} />
+          </Provider>
         </body>
       </ThemeContext.Provider>
     </html>

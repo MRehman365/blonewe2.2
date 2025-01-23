@@ -17,41 +17,59 @@ import Buttons from "@/app/ui/buttons/page";
 import { useState } from "react";
 import Image from "next/image";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { addBlog } from "@/store/reducers/blogReducer";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { toast } from "react-toast";
 
 const FormElements = () => {
-  const [textAreas, setTextAreas] = useState([0]);
-  const [points, setPoints] = useState([0]);
-  const [mainImage, setMainImage] = useState(null);
-  const [detailImages, setDetailImages] = useState([]); 
+const [formData, setFormData] = useState({
+  title: "",
+  store: "",
+  category: "",
+  content: [" "],
+})
 
-  const handleMainImageChange = (e) => {
-    const file = e.target.files[0]; 
-    if (file) {
-      setMainImage(URL.createObjectURL(file)); 
-    }
-  };
+const dispatch = useDispatch<AppDispatch>();
 
-  const handleDetailImagesChange = (e) => {
-    const files = Array.from(e.target.files); 
-    const imageUrls = files.map((file) => URL.createObjectURL(file)); 
-    setDetailImages(imageUrls);
-  };
+
+const handleDetailImagesChange = (e) => {
+  const files = Array.from(e.target.files);
+  const imageUrls = files.map((file) => URL.createObjectURL(file));
+  setFormData((prevData) => ({
+    ...prevData,
+    images: imageUrls,
+  }));
+};
+
+const handleContentChange = (index, value) => {
+  const newContent = [...formData.content];
+  newContent[index] = value; // Update specific point
+  setFormData({ ...formData, content: newContent });
+};
 
   const handleUpdateMore = () => {
-    setTextAreas([...textAreas, textAreas.length]);
+    setFormData((prevData) => ({
+      ...prevData,
+      content: [...prevData.content, ""], 
+    }));
   }
-  
-  const handlepoint = () => {
-    setPoints([...points, points.length]);
-  }
-  const hanldesubmit = () => {
-    console.log(textAreas, points, mainImage, detailImages);
+
+  const hanldesubmit = (e) => {
+    e.preventDefault();
+    dispatch(addBlog(formData)).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast(res.payload.message);
+      }
+    });
   }
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="FormElements" />
+      <Breadcrumb pageName="Blogs" />
 
-      <form className="grid grid-cols-1 gap-9 sm:grid-cols-2">
+      <form className="grid grid-cols-1 gap-9 sm:grid-cols-2"  onSubmit={hanldesubmit}>
         <div className="flex flex-col gap-9">
           {/* <!-- Input Fields --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -67,6 +85,10 @@ const FormElements = () => {
                 </label>
                 <input
                   type="text"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   required
                   placeholder="Blog Title"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -78,6 +100,10 @@ const FormElements = () => {
                 </label>
                 <input
                   type="text"
+                  value={formData.store}
+                  onChange={(e) =>
+                    setFormData({ ...formData, store: e.target.value })
+                  }
                   required
                   placeholder="Update Store name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -90,6 +116,10 @@ const FormElements = () => {
                 </label>
                 <input
                   type="text"
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
                   required
                   placeholder="Categories"
                   className="w-full rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
@@ -98,33 +128,7 @@ const FormElements = () => {
             </div>
           </div>
 
-          {/* <!-- Toggle switch input --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Toggle switch input
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <SwitcherOne />
-              <SwitcherTwo />
-              <SwitcherThree />
-              <SwitcherFour />
-            </div>
-          </div> */}
-
-          {/* <!-- Time and date --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Time and date
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <DatePickerOne />
-              <DatePickerTwo />
-            </div>
-          </div> */}
+        
 
           {/* <!-- File upload --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -132,29 +136,6 @@ const FormElements = () => {
         <h3 className="font-medium text-black dark:text-white">Upload Image</h3>
       </div>
       <div className="flex flex-col gap-5.5 p-6.5">
-        <div>
-          <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-            Upload Main Image
-          </label>
-          <input
-            type="file"
-            required
-            accept="image/*"
-            onChange={handleMainImageChange}
-            className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
-          />
-          {mainImage && (
-            <div className="mt-3">
-              <Image
-                width={300}
-                height={300}
-                src={mainImage}
-                alt="Main Preview"
-                className="w-32 h-32 object-cover rounded-md"
-              />
-            </div>
-          )}
-        </div>
 
         <div>
           <label className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -168,18 +149,6 @@ const FormElements = () => {
             onChange={handleDetailImagesChange}
             className="w-full rounded-md border border-stroke p-3 outline-none transition file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-[#EEEEEE] file:px-2.5 file:py-1 file:text-sm focus:border-primary file:focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-strokedark dark:file:bg-white/30 dark:file:text-white"
           />
-          <div className="mt-3 grid grid-cols-3 gap-3">
-            {detailImages.map((image, index) => (
-              <Image
-                key={index}
-                src={image}
-                width={300}
-                height={300}
-                alt={`Detail Preview ${index + 1}`}
-                className="w-32 h-32 object-cover rounded-md"
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
@@ -198,11 +167,12 @@ const FormElements = () => {
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Discription
                 </label>
-                {textAreas.map((_, index) => (
+                {formData.content.map((_, index) => (
                   <textarea
                     key={index}
                     required
                     rows={6}
+                    onChange={(e) => handleContentChange(index, e.target.value)}
                     placeholder={`Update ${index + 1} Para description`}
                     className="mb-2 w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   ></textarea>
@@ -216,53 +186,12 @@ const FormElements = () => {
                 </button>
               </div>
 
-              {/* 
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Disabled textarea
-                </label>
-                <textarea
-                  rows={6}
-                  disabled
-                  placeholder="Disabled textarea"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
-                ></textarea>
-              </div> */}
             </div>
           </div>
-
-          {/* <!-- Checkbox and radio --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Checkbox and radio
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <CheckboxOne />
-              <CheckboxTwo />
-              <CheckboxThree />
-              <CheckboxFour />
-              <CheckboxFive />
-            </div>
-          </div> */}
-
-          {/* <!-- Select input --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Select input
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <SelectGroupTwo />
-              <MultiSelect id="multiSelect" />
-            </div>
-          </div> */}
           
           <div className="flex justify-between mt-4">
-          <button className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
-                <button onSubmit={hanldesubmit} className="rounded-md bg-primary px-4 py-2 text-white">Upload</button>
+          <button type="reset" className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
+                <input type="submit" className="rounded-md bg-primary px-4 py-2 text-white"  placeholder="Upload" />
               </div>
         </div>
       </form>

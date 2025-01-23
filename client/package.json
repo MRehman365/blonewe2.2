@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.5.0",
+    "axios": "^1.7.9",
     "embla-carousel": "^8.5.1",
     "embla-carousel-react": "^8.5.1",
     "keen-slider": "^6.8.6",
@@ -21,6 +23,7 @@
     "react-lens": "^1.0.0-alpha.1",
     "react-magnifier": "^3.0.4",
     "react-medium-image-zoom": "^5.2.11",
+    "react-redux": "^9.2.0",
     "react-slick": "^0.30.2",
     "react-toast": "^1.0.3",
     "slick-carousel": "^1.8.1",

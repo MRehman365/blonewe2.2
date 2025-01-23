@@ -7,6 +7,7 @@ router.post("/register", userAuthController.register)
 router.post("/login", userAuthController.login)
 router.get("/logout", userAuthController.logout)
 router.get("/getuserbyid", userAuthController.getUserById)
+router.get("/getallusers", userAuthController.getAllUsers)
 
 // admin apis
 

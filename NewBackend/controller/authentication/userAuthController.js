@@ -30,6 +30,7 @@ class UserAuthController {
             return res.status(201).json({
                 message: "Registration successful",
                 token,
+                success: true,
                 user: { id: user.id, name: user.name, phone: user.phone, email: user.email }
             });
 
@@ -52,7 +53,7 @@ class UserAuthController {
             }
 
             const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'rehmanarshad', { expiresIn: '7d' });
-            return res.status(200).json({ message: "Login successful", token, user: { id: user.id, name: user.name, phone: user.phone, email: user.email } });
+            return res.status(200).json({ message: "Login successful", success: true, token, user: { id: user.id, name: user.name, phone: user.phone, email: user.email } });
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
@@ -68,6 +69,16 @@ class UserAuthController {
             const { id } = req.body;
             const user = await UserModel.findById(id);
             return res.status(200).json({ message: "User get successfully", user });
+        } catch (error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
+
+    getAllUsers = async (req, res) => {
+        try {
+            const users = await UserModel.find();
+            return res.status(200).json({ message: "Users fetched successfully", users });
+
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }

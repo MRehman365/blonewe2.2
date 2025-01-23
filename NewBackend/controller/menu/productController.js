@@ -6,7 +6,7 @@ class ProductController {
     try {
         const { name, price, discount, description, category, image, isAvailable, store, tags, sku, points  } = req.body;
         const menu = await productModal.create({ name, price, discount, description, category, image, isAvailable, store, tags, sku, points });
-        return res.status(201).json({ message: "Menu added successfully", menu });
+        return res.status(201).json({ message: "Product added successfully", success: true, menu });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -15,7 +15,7 @@ class ProductController {
  getProduct = async(req, res) => {
     try {
         const menu = await productModal.find();
-        return res.status(200).json({ message: "Menu fetched successfully", menu });
+        return res.status(200).json({ message: "Product fetched successfully", menu });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -25,7 +25,7 @@ class ProductController {
     try {
         const { id } = req.params;
         const menu = await productModal.findById(id);
-        return res.status(200).json({ message: "Menu fetched successfully", menu });
+        return res.status(200).json({ message: "product fetched successfully", menu });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -46,7 +46,7 @@ class ProductController {
     try {
         const { id } = req.params;
         await productModal.findByIdAndDelete(id);
-        return res.status(200).json({ message: "Menu deleted successfully" });
+        return res.status(200).json({ message: "Menu deleted successfully", success: true });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }

@@ -14,39 +14,119 @@ import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
 import MultiSelect from "@/components/FormElements/MultiSelect";
 import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";
 import Buttons from "@/app/ui/buttons/page";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { useParams, useSearchParams } from "next/navigation";
+import { getProducts, updateProduct } from "@/store/reducers/productReducer";
+import { fetchCategories } from "@/store/reducers/categoriesReducer";
 
 const FormElements = () => {
-  const [textAreas, setTextAreas] = useState([0]);
-  const [points, setPoints] = useState([0]);
-  const [mainImage, setMainImage] = useState(null);
-  const [detailImages, setDetailImages] = useState([]); 
 
-  const handleMainImageChange = (e) => {
-    const file = e.target.files[0]; 
-    if (file) {
-      setMainImage(URL.createObjectURL(file)); 
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+  console.log('ID:', id);
+const { products } = useSelector((state: RootState) => state.products)
+const { categories } = useSelector((state: RootState) => state.category);
+  const [formData, setFormData] = useState({
+    name: "",
+    store: "",
+    category: "",
+    price: "",
+    discount: "",
+    tags: "",
+    sku: "",
+    description: "",
+    points: [""],
+    image: [],
+  });
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(getProducts())
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  const data = Array.isArray(categories)
+    ? categories
+    : categories?.category || [];
+
+  // Ensure products is an array
+const menu = Array.isArray(products) ? products : (products?.menu || []); 
+useEffect(() => {
+    const product = menu.find((item) => item._id === id);
+    if (product) {
+      setFormData({
+        name: product.name || "",
+        store: product.store || "",
+        category: product.category || "",
+        price: product.price || "",
+        discount: product.discount || "",
+        tags: product.tags || "",
+        sku: product.sku || "",
+        description: product.description || "",
+        points: product.points || [""],
+        image: product.image || [],
+      });
     }
-  };
-
-  const handleDetailImagesChange = (e) => {
-    const files = Array.from(e.target.files); 
-    const imageUrls = files.map((file) => URL.createObjectURL(file)); 
-    setDetailImages(imageUrls);
-  };
-
-  const handleUpdateMore = () => {
-    setTextAreas([...textAreas, textAreas.length]);
-  }
   
-  const handlepoint = () => {
-    setPoints([...points, points.length]);
-  }
+}, [products, id]);
+
+// console.log(formData, 'product');
+
+const handleDetailImagesChange = (e) => {
+  const files = Array.from(e.target.files);
+
+  // Convert files to URLs
+  const newImageUrls = files.map((file) => URL.createObjectURL(file));
+
+  setFormData((prevData) => {
+    const updatedImages = [...prevData.image, ...newImageUrls];
+
+    // Remove duplicates (if any)
+    const uniqueImages = Array.from(new Set(updatedImages));
+
+    return {
+      ...prevData,
+      image: uniqueImages, // Update with unique images
+    };
+  });
+};
+
+
+
+
+  const handleAddMore = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      points: [...prevData.points, ""], // Add new empty string to points array
+    }));
+  };
+  const handlePointChange = (index, value) => {
+    const newPoints = [...formData.points];
+    newPoints[index] = value; 
+    setFormData({ ...formData, points: newPoints });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!id || !formData) {
+      console.error('ID or formData is missing');
+      return;
+    }
+
+    dispatch(updateProduct({ id, formData }));
+  };
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="FormElements" />
+      <Breadcrumb pageName="Update Product" />
 
       <form className="grid grid-cols-1 gap-9 sm:grid-cols-2">
         <div className="flex flex-col gap-9">
@@ -64,6 +144,10 @@ const FormElements = () => {
                 </label>
                 <input
                   type="text"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   required
                   placeholder="Default Input"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -75,22 +159,38 @@ const FormElements = () => {
                 </label>
                 <input
                   type="text"
+                  value={formData.store}
+                  onChange={(e) =>
+                    setFormData({ ...formData, store: e.target.value })
+                  }
                   required
-                  placeholder="Update Store name"
+                  placeholder="Add Store name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
 
+         
               <div>
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Categories
                 </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Categories"
-                  className="w-full rounded-lg border-[1.5px] border-primary bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:bg-form-input dark:text-white"
-                />
+                <select
+                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  value={formData.category} // Bind the value to formData.category
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  } // Handle changes here
+                >
+                  <option value="">Select Category</option>
+                  {data.map((item) => (
+                    <option
+                      key={item._id}
+                      value={item.name}
+                    >
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -99,6 +199,10 @@ const FormElements = () => {
                 </label>
                 <input
                   type="number"
+                  value={formData.price}
+                  onChange={(e) =>
+                    setFormData({ ...formData, price: e.target.value })
+                  }
                   required
                   placeholder="Price"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
@@ -110,8 +214,12 @@ const FormElements = () => {
                 </label>
                 <input
                   type="number"
+                  value={formData.discount}
+                  onChange={(e) =>
+                    setFormData({ ...formData, discount: e.target.value })
+                  }
                   required
-                  placeholder="Update discount on product"
+                  placeholder="Add discount on product"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
                 />
               </div>
@@ -121,6 +229,10 @@ const FormElements = () => {
                 </label>
                 <input
                   type="text"
+                  value={formData.tags}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tags: e.target.value })
+                  }
                   required
                   placeholder="Tags"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
@@ -132,6 +244,10 @@ const FormElements = () => {
                 </label>
                 <input
                   type="text"
+                  value={formData.sku}
+                  onChange={(e) =>
+                    setFormData({ ...formData, sku: e.target.value })
+                  }
                   required
                   placeholder="SKU"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
@@ -140,91 +256,28 @@ const FormElements = () => {
             </div>
           </div>
 
-          {/* <!-- Toggle switch input --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Toggle switch input
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <SwitcherOne />
-              <SwitcherTwo />
-              <SwitcherThree />
-              <SwitcherFour />
-            </div>
-          </div> */}
-
-          {/* <!-- Time and date --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Time and date
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <DatePickerOne />
-              <DatePickerTwo />
-            </div>
-          </div> */}
-
-          {/* <!-- File upload --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-        <h3 className="font-medium text-black dark:text-white">Upload Image</h3>
-      </div>
-      <div className="flex flex-col gap-5.5 p-6.5">
-        <div>
-          <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-            Upload Main Image
-          </label>
-          <input
-            type="file"
-            required
-            accept="image/*"
-            onChange={handleMainImageChange}
-            className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
-          />
-          {mainImage && (
-            <div className="mt-3">
-              <Image
-                width={300}
-                height={300}
-                src={mainImage}
-                alt="Main Preview"
-                className="w-32 h-32 object-cover rounded-md"
-              />
+            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+              <h3 className="font-medium text-black dark:text-white">
+                Upload Image
+              </h3>
             </div>
-          )}
-        </div>
-
-        <div>
-          <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-            Upload Detail Images
-          </label>
-          <input
-            type="file"
-            required
-            accept="image/*"
-            multiple
-            onChange={handleDetailImagesChange}
-            className="w-full rounded-md border border-stroke p-3 outline-none transition file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-[#EEEEEE] file:px-2.5 file:py-1 file:text-sm focus:border-primary file:focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-strokedark dark:file:bg-white/30 dark:file:text-white"
-          />
-          <div className="mt-3 grid grid-cols-3 gap-3">
-            {detailImages.map((image, index) => (
-              <Image
-                key={index}
-                src={image}
-                width={300}
-                height={300}
-                alt={`Detail Preview ${index + 1}`}
-                className="w-32 h-32 object-cover rounded-md"
-              />
-            ))}
+            <div className="flex flex-col gap-5.5 p-6.5">
+              <div>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Upload Detail Images
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  required
+                  multiple
+                  onChange={handleDetailImagesChange}
+                  className="w-full rounded-md border border-stroke p-3 outline-none transition file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-[#EEEEEE] file:px-2.5 file:py-1 file:text-sm focus:border-primary file:focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-strokedark dark:file:bg-white/30 dark:file:text-white"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
         </div>
 
         <div className="flex flex-col gap-9">
@@ -240,88 +293,47 @@ const FormElements = () => {
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Discription
                 </label>
-                {textAreas.map((_, index) => (
-                  <textarea
-                    key={index}
-                    required
-                    rows={6}
-                    placeholder={`Update ${index + 1} Para description`}
-                    className="mb-2 w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                  ></textarea>
+                <textarea
+                  required
+                  rows={6}
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  placeholder={`Add Para description`}
+                  className="mb-2 w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                ></textarea>
+              </div>
+
+              <div>
+                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  Add Shiping and Product detail in one Line
+                </label>
+                {formData.points.map((point, index) => (
+                  <div key={index} className="mb-2">
+                    <input
+                      type="text"
+                      value={point}
+                      onChange={(e) => handlePointChange(index, e.target.value)}
+                      placeholder="Add shipping detail or policies"
+                      className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    />
+                  </div>
                 ))}
                 <button
-                  onClick={handleUpdateMore}
+                  onClick={handleAddMore}
+                  type="button"
                   className="mt-2 rounded-md bg-primary px-4 py-2 text-white"
                 >
-                  Update More
+                  Add More
                 </button>
               </div>
-
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Update Shiping and Product detail in one Line
-                </label>
-                {points.map((_, index) => (
-                <input
-                key={index}
-                required
-                  type="text"
-                  placeholder="Update shiping detail or ploicies"
-                  className="w-full rounded-lg border-[1.5px] mb-2 border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                />
-              ))}
-                <button onClick={handlepoint} className="mt-2 rounded-md bg-primary px-4 py-2 text-white">
-                  Update More
-                </button>
-              </div>
-
-              {/* 
-              <div>
-                <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                  Disabled textarea
-                </label>
-                <textarea
-                  rows={6}
-                  disabled
-                  placeholder="Disabled textarea"
-                  className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary dark:disabled:bg-black"
-                ></textarea>
-              </div> */}
             </div>
           </div>
-
-          {/* <!-- Checkbox and radio --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Checkbox and radio
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <CheckboxOne />
-              <CheckboxTwo />
-              <CheckboxThree />
-              <CheckboxFour />
-              <CheckboxFive />
-            </div>
-          </div> */}
-
-          {/* <!-- Select input --> */}
-          {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Select input
-              </h3>
-            </div>
-            <div className="flex flex-col gap-5.5 p-6.5">
-              <SelectGroupTwo />
-              <MultiSelect id="multiSelect" />
-            </div>
-          </div> */}
           
           <div className="flex justify-between mt-4">
-          <button className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
-                <button className="rounded-md bg-primary px-4 py-2 text-white">Upload</button>
+          <button type="reset" className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
+                <button type="submit" className="rounded-md bg-primary px-4 py-2 text-white" onClick={handleSubmit}>Upload</button>
               </div>
         </div>
       </form>

@@ -52,7 +52,7 @@ class AdminsAuthController {
             }
 
             const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET || 'rehmanarshad', { expiresIn: '7d' });
-            return res.status(200).json({ message: "Login successful", token, user: { id: user.id, name: user.name, phone: user.phone, email: user.email } });
+            return res.status(200).json({ message: "Login successful", success: true, token, user: { id: user.id, name: user.name, phone: user.phone, email: user.email } });
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
@@ -60,7 +60,7 @@ class AdminsAuthController {
 
     admin_logout = async (req, res) => {
         res.clearCookie("customerToken");
-        return res.status(200).json({ message: "Logout successful" });
+        return res.status(200).json({ message: "Logout successful", success: true });
     }
 
     getadminById = async (req, res) => {

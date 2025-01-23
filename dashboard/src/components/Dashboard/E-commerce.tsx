@@ -1,11 +1,15 @@
 "use client";
 import dynamic from "next/dynamic";
-import React from "react";
+import React, { useEffect } from "react";
 import ChartOne from "../Charts/ChartOne";
 import ChartTwo from "../Charts/ChartTwo";
 import ChatCard from "../Chat/ChatCard";
 import TableOne from "../Tables/TableOne";
 import CardDataStats from "../CardDataStats";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { getProducts } from "@/store/reducers/productReducer";
+import { all_users } from "@/store/reducers/adminReducer";
 
 const MapOne = dynamic(() => import("@/components/Maps/MapOne"), {
   ssr: false,
@@ -16,6 +20,23 @@ const ChartThree = dynamic(() => import("@/components/Charts/ChartThree"), {
 });
 
 const ECommerce: React.FC = () => {
+  const { products } = useSelector((state: RootState) => state.products)
+  const { users } = useSelector((state: RootState) => state.admin) 
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(getProducts())
+  }, [dispatch]);
+  const menu = Array.isArray(products) ? products : (products?.menu || []);
+
+  useEffect(() => {
+    dispatch(all_users());
+  }, [dispatch]);
+
+  const user = Array.isArray(users) ? users : users?.users || [];
+
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -61,7 +82,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats title="Total Product" total={menu.length} rate="2.59%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -80,7 +101,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Total Users" total={user.length} rate="0.95%" levelDown>
           <svg
             className="fill-primary dark:fill-white"
             width="22"

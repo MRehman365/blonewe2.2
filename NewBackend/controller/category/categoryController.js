@@ -5,7 +5,7 @@ class categoryController {
         try {
             const { name, image } = req.body;
             const category = await categoryModal.create({ name, image });
-            return res.status(200).json({ message: "Category added successfully", category });
+            return res.status(200).json({ message: "Category added successfully", success:true, category });
 
         } catch (error) {
             return res.status(500).json({ message: error.message });
@@ -24,9 +24,10 @@ class categoryController {
 
     deleteCategory = async (req, res) => {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
             const category = await categoryModal.findByIdAndDelete(id);
-            return res.status(200).json({ message: "Category deleted successfully", category });
+            const updatedCategories = await categoryModal.find(); // Fetch the updated list
+            return res.status(200).json({ categories: updatedCategories });
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
