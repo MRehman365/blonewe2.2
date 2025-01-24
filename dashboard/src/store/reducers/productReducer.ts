@@ -1,4 +1,4 @@
-// src/features/reducers/productReducer.js
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
@@ -9,7 +9,6 @@ export const addProduct = createAsyncThunk(
       const response = await api.post(`/addproduct`, formData);
       return response.data;
     } catch (error: any) {
-      // Custom error handling
       console.log(error.response);
     }
   },

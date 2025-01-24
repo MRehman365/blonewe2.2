@@ -1,8 +1,7 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../api';
 
-
+// Thunks for asynchronous operations
 export const registerUser = createAsyncThunk(
   'user/register',
   async (userData, { rejectWithValue }) => {
@@ -19,7 +18,22 @@ export const loginUser = createAsyncThunk(
   'user/login',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/login', userData);
+      const { data } = await api.post('/login', userData);
+      localStorage.setItem("myToken", data.token);
+      localStorage.setItem("userid", data.user.id);
+      return data; 
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// New thunk for getUserById
+export const getUserById = createAsyncThunk(
+  'user/getUserById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/getuserbyid/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -27,13 +41,55 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+export const addUserAddress = createAsyncThunk(
+    "user/addUserAddress",
+    async (addressData, { rejectWithValue }) => {
+      try {
+        const response = await api.post("/adduseraddress", addressData);
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to add address");
+      }
+    }
+  );
+  
+  // Get address by ID
+  export const getAddressById = createAsyncThunk(
+    "user/getAddressById",
+    async (userid, { rejectWithValue }) => {
+      try {
+        const response = await api.get(`/getaddressbyid/${userid}`);
+        // console.log(userid, 'id is here')
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to fetch address");
+      }
+    }
+  );
+  
+  // Update address
+  export const updateAddress = createAsyncThunk(
+    "user/updateAddress",
+    async ({userid, addressData}, { rejectWithValue }) => {
+      try {
+        const response = await api.put(`/updateaddress/${userid}`, addressData);
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data || "Failed to update address");
+      }
+    }
+  );
 
+// Initial state
 const initialState = {
   user: null,
   loading: false,
   error: null,
+  singleuser: null,
+  useraddress: null,
 };
 
+// User slice
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -70,7 +126,63 @@ const userSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+      // Get user by ID
+      .addCase(getUserById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.singleuser = action.payload;
+      })
+      .addCase(getUserById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+            // Add user address
+            .addCase(addUserAddress.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+              })
+              .addCase(addUserAddress.fulfilled, (state, action) => {
+                state.loading = false;
+                state.useraddress = action.payload;
+              })
+              .addCase(addUserAddress.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+              })
+        
+              // Get address by ID
+              .addCase(getAddressById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+              })
+              .addCase(getAddressById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.useraddress = action.payload;
+              })
+              .addCase(getAddressById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+              })
+        
+              // Update address
+              .addCase(updateAddress.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+              })
+              .addCase(updateAddress.fulfilled, (state, action) => {
+                state.loading = false;
+                state.useraddress = action.payload;
+              })
+              .addCase(updateAddress.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+              });
   },
 });
 

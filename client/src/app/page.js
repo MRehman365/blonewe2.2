@@ -217,6 +217,7 @@ export default function Home() {
               alt={`Slide ${index + 1}`}
               width={100}
               height={100}
+              loading="lazy"
               className="object-contain rounded-md h-[100px] w-[100px] transition-all md:h-[150px] md:w-[150px] bg-[#eceef0] mx-auto"
             />
             <p className="text-center p-2 font-[500] text-gray-500 transition-all group-hover:text-primary">

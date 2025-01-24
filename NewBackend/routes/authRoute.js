@@ -6,8 +6,11 @@ const router = require("express").Router();
 router.post("/register", userAuthController.register)
 router.post("/login", userAuthController.login)
 router.get("/logout", userAuthController.logout)
-router.get("/getuserbyid", userAuthController.getUserById)
+router.get("/getuserbyid/:id", userAuthController.getUserById)
 router.get("/getallusers", userAuthController.getAllUsers)
+router.post("/adduseraddress", userAuthController.AdduserAddress)
+router.get("/getaddressbyid/:id", userAuthController.getAddressById)
+router.put("/updateaddress/:id", userAuthController.updateAddress)
 
 // admin apis
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFacebookF, FaPinterest, FaTwitter } from "react-icons/fa";
 import {
   FiLayout,
@@ -17,6 +17,10 @@ import {
 import { IoCloseOutline } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import img1 from "../assets/image-1-1-1-450x450.png";
+import { addUserAddress, getAddressById, getUserById, updateAddress } from "@/store/reducer/authReducer";
+import { useDispatch, useSelector } from "react-redux";
+import api from "@/store/api";
+import { toast } from "react-toast";
 
 const products = [
   {
@@ -59,11 +63,32 @@ const navigation = [
 ];
 
 export default function AccountPage() {
+  const { singleuser, useraddress } = useSelector((state) => state.auth)
+  const id = localStorage.getItem('userid');
   const [currentSection, setCurrentSection] = useState("#dashboard");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isEditing, setIsEditing] = useState(null); 
+
+  // const [addressData, setAddressData] = useState({
+  //   userid: id,
+  //   name: "",
+  //   address: "",
+  //   city: "",
+  //   state: "",
+  //   country: "",
+  //   postal: "",
+  // })
+  const [addressUpdate, setAddressUpdate] = useState({
+    name: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    postal: "",
+  })
+  const dispatch = useDispatch();
 
   const handleEditClick = (type) => {
     setIsEditing(type);
@@ -73,6 +98,47 @@ export default function AccountPage() {
     setIsEditing(null);
   };
 
+  
+
+  useEffect(() => {
+dispatch(getUserById(id))
+  },[dispatch])
+
+  const handleaddress = () => {
+    e.preventDefault();
+    dispatch(updateAddress({userid: id, addressUpdate})).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    })
+    console.log(addressUpdate)
+  }
+
+
+  useEffect(() => {
+    dispatch(getAddressById({userid: id}))
+  }, [dispatch])
+
+const getaddress = Array.isArray(useraddress) ? useraddress : useraddress?.data || [];
+
+  console.log('address', getaddress)
+
+  const handleLogout = async () => {
+    try {
+      const { data } = await api.get("/logout");
+      localStorage.removeItem("myToken");
+      localStorage.removeItem("userid");
+      toast.success(data.message);
+      window.location.href = "/authentication";
+
+    } catch (error) {
+      toast.error(error);
+      console.log("failed to log out", error);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto py-10">
       <div className="grid grid-cols-1 p-2 md:grid-cols-4 gap-10">
@@ -80,11 +146,11 @@ export default function AccountPage() {
           <h1 className="text-2xl font-semibold mb-8">My Account</h1>
           <div className="flex items-center gap-3 mb-8">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
-              RN
+              {singleuser?.user?.name.slice(0,2)}
             </div>
             <div>
               <p className="text-sm text-gray-500">Welcome back</p>
-              <p className="font-medium">rehman</p>
+              <p className="font-medium">{singleuser?.user?.name}</p>
             </div>
           </div>
           <nav className="space-y-1">
@@ -114,10 +180,10 @@ export default function AccountPage() {
               {/* Greeting Section */}
               <div className="mb-6">
                 <p className="text-base">
-                  Hello <span className="font-bold">rehman</span> (not rehman?{" "}
-                  <a href="#" className="text-blue-400 hover:underline">
+                  Hello <span className="font-bold">{singleuser?.user?.name}</span> (not {singleuser?.user?.name}?{" "}
+                  <span onClick={handleLogout} className="text-blue-400 hover:underline">
                     Log out
-                  </a>
+                  </span>
                   )
                 </p>
                 <p className="text-gray-500 mt-2">
@@ -185,48 +251,18 @@ export default function AccountPage() {
                 <div className="grid gap-4">
                   <div className="space-y-2">
                     <label
-                      htmlFor="firstName"
-                      className="block text-sm font-medium text-gray-500"
-                    >
-                      First name *
-                    </label>
-                    <input
-                      id="firstName"
-                      required
-                      className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label
                       htmlFor="lastName"
                       className="block text-sm font-medium text-gray-500"
                     >
-                      Last name *
+                     User Name *
                     </label>
                     <input
                       id="lastName"
+                      defaultValue={singleuser.user.name}
                       required
                       className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="displayName"
-                    className="block text-sm font-medium text-gray-500"
-                  >
-                    Display name *
-                  </label>
-                  <input
-                    id="displayName"
-                    defaultValue="rehman"
-                    required
-                    className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  />
-                  <p className="text-sm text-gray-500">
-                    This will be how your name will be displayed in the account
-                    section and in reviews
-                  </p>
                 </div>
                 <div className="space-y-2">
                   <label
@@ -238,7 +274,7 @@ export default function AccountPage() {
                   <input
                     id="email"
                     type="email"
-                    defaultValue="rehmanmuhammd704@gmail.com"
+                    defaultValue={singleuser.user.email}
                     required
                     className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
@@ -284,6 +320,7 @@ export default function AccountPage() {
                     <div className="relative">
                       <input
                         id="newPassword"
+                        required
                         type={showNewPassword ? "text" : "password"}
                         className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       />
@@ -310,6 +347,7 @@ export default function AccountPage() {
                     <div className="relative">
                       <input
                         id="confirmPassword"
+                        required
                         type={showConfirmPassword ? "text" : "password"}
                         className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       />
@@ -358,62 +396,82 @@ export default function AccountPage() {
       <div className="grid grid-cols-2 gap-6">
         {/* Billing Address */}
         <div>
-          <h3 className="font-semibold mb-2">Billing address</h3>
+          <h3 className="font-semibold mb-2">Shipping address</h3>
           <button
             className="text-blue-600 hover:underline"
             onClick={() => handleEditClick("billing")}
           >
-            Edit Billing address
+            Edit Shiping address
           </button>
           {!isEditing || isEditing !== "billing" ? (
-            <p className="text-gray-700 mt-2">
-              M Rehman
+            <div>
+            {getaddress.map((item, index) => (
+            <p key={index} className="text-gray-700 mt-2">
+            {item.name}
               <br />
-              Near DHQ
+              {item.address}
               <br />
-              Lodhran
+              {item.city}
               <br />
-              Punjab
+              {item.state}
               <br />
-              59320
+              {item.postal}
               <br />
-              Pakistan
+              {item.country}
             </p>
+          ))}
+          </div>
           ) : (
             <div className="mt-4">
               <h4 className="font-semibold">Edit Billing Address</h4>
-              <form>
+              <form onSubmit={handleaddress}>
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Name"
+                  required
+                  value={addressUpdate.name}
+                  onChange={(e) => setAddressUpdate({...addressUpdate, name: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Address"
+                  required
+                  value={addressUpdate.address}
+                  onChange={(e) => setAddressUpdate({...addressUpdate, address: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="City"
+                  required
+                   value={addressUpdate.city}
+                  onChange={(e) => setAddressUpdate({...addressUpdate, city: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="State"
+                  required
+                  value={addressUpdate.state}
+                  onChange={(e) => setAddressUpdate({...addressUpdate, state: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Zip Code"
+                  required
+                  value={addressUpdate.postal}
+                  onChange={(e) => setAddressUpdate({...addressUpdate, postal: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Country"
+                  required
+                  value={addressUpdate.country}
+                  onChange={(e) => setAddressUpdate({...addressUpdate, country: e.target.value })}
                 />
                 <div className="flex space-x-2">
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded"
-                  >
-                    Save
-                  </button>
+                  <input
+                    type="submit"  className="bg-blue-600 text-white px-4 py-2 rounded"
+                   />
+                    {/* Save */}
                   <button
                     type="button"
                     className="bg-gray-300 px-4 py-2 rounded"
@@ -427,76 +485,6 @@ export default function AccountPage() {
           )}
         </div>
 
-        {/* Shipping Address */}
-        <div>
-          <h3 className="font-semibold mb-2">Shipping address</h3>
-          <button
-            className="text-blue-600 hover:underline"
-            onClick={() => handleEditClick("shipping")}
-          >
-            Edit Shipping address
-          </button>
-          {!isEditing || isEditing !== "shipping" ? (
-            <p className="text-gray-700 mt-2">
-              M Rehman
-              <br />
-              Near DHQ
-              <br />
-              Lodhran
-              <br />
-              Punjab
-              <br />
-              59320
-              <br />
-              Pakistan
-            </p>
-          ) : (
-            <div className="mt-4">
-              <h4 className="font-semibold">Edit Shipping Address</h4>
-              <form>
-                <input
-                  className="border p-2 w-full mb-2 rounded"
-                  placeholder="Name"
-                />
-                <input
-                  className="border p-2 w-full mb-2 rounded"
-                  placeholder="Address"
-                />
-                <input
-                  className="border p-2 w-full mb-2 rounded"
-                  placeholder="City"
-                />
-                <input
-                  className="border p-2 w-full mb-2 rounded"
-                  placeholder="State"
-                />
-                <input
-                  className="border p-2 w-full mb-2 rounded"
-                  placeholder="Zip Code"
-                />
-                <input
-                  className="border p-2 w-full mb-2 rounded"
-                  placeholder="Country"
-                />
-                <div className="flex space-x-2">
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-gray-300 px-4 py-2 rounded"
-                    onClick={closeForm}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-        </div>
       </div>
     </div>
           )}
@@ -605,7 +593,7 @@ export default function AccountPage() {
             <div>
               <h1 className="text-2xl font-semibold mb-8">Log out</h1>
               <p>Are you sure you want to log out?</p>
-              <button className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <button onClick={handleLogout} className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Log out
               </button>
             </div>

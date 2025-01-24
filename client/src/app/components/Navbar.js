@@ -37,6 +37,8 @@ import DiscountedProduct from "./DiscountedProduct";
 import ProductDetail from "./ProductDetail";
 
 import img1 from "../assets/image-1-1-1-450x450.png";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserById } from "@/store/reducer/authReducer";
 
 const categories = [
   {
@@ -98,15 +100,27 @@ const products = [
 ];
 
 const Navbar = () => {
+const { singleuser } = useSelector((state) => state.auth)
+
   const initialTime = 1 * 24 * 60 * 60 + 14 * 60 * 60 + 20 * 60 + 10;
   const [isOpen, setIsOpen] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [openNavbar, setOpenNav] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const dispatch = useDispatch();
 
   const [shopOpen, setShopOpen] = useState(false);
   const toggleShop = () => setShopOpen(!shopOpen);
+
+  const id = localStorage.getItem('userid');
+  
+
+  useEffect(() => {
+dispatch(getUserById(id))
+  },[dispatch])
+
+  // console.log('user', singleuser)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -263,7 +277,7 @@ const Navbar = () => {
             {/* Account Actions */}
             <div className="flex items-center space-x-6">
               <Link
-                href="/authentication"
+             href={id ? "/myaccount" : "/authentication"}
                 className="flex flex-col items-center"
               >
                 <FaRegCircleUser className="h-6 w-6 mb-1" />

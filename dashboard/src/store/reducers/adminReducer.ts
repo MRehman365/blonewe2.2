@@ -9,7 +9,7 @@ export const admin_login = createAsyncThunk(
           withCredentials: true,
         });
         localStorage.setItem("accessToken", data.token);
-        return data; // Fulfill with response data
+        return data; 
       } catch (error: any) {
         console.error("Error response:", error.response?.data || error.message);
         return rejectWithValue(error.response?.data || "Something went wrong");

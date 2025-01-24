@@ -20,7 +20,6 @@ const DropdownUser = () => {
 dispatch(get_admin())
   }, [dispatch])
 
-  console.log('admin', adminDetail)
 
   const handleLogout = async () => {
     try {

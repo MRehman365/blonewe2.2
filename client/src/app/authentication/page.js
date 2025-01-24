@@ -42,6 +42,7 @@ export default function AuthForm() {
     dispatch(loginUser(formData)).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
+        window.location.href = "/"
       } else {
         toast.error(res.payload.message);
       }
