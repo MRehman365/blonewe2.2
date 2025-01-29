@@ -153,6 +153,8 @@ export default function Home() {
     nextArrow: <CustomNextArrow />,
   };
 
+ console.log()
+
   return (
     <div className="">
       {/* Services Section */}

@@ -10,7 +10,6 @@ router.get("/getuserbyid/:id", userAuthController.getUserById)
 router.get("/getallusers", userAuthController.getAllUsers)
 router.post("/adduseraddress", userAuthController.AdduserAddress)
 router.get("/getaddressbyid/:id", userAuthController.getAddressById)
-router.put("/updateaddress/:id", userAuthController.updateAddress)
 
 // admin apis
 

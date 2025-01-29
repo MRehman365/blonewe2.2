@@ -3,12 +3,17 @@
 import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import img1 from "../assets/image-1-1-1-450x450.png";
 import { MdMenu } from "react-icons/md";
 import Link from "next/link";
+import { decreaseQuantity, deleteCart, getCart, increaseQuantity } from "@/store/reducer/cartReducer";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ShoppingCart() {
+  
+const { cartlist } = useSelector((state) => state.cart)
+const dispatch = useDispatch();
   const products = [
     {
       id: "electrolux",
@@ -24,23 +29,25 @@ export default function ShoppingCart() {
     },
   ];
 
-  const [quantities, setQuantities] = useState(
-    products.reduce((acc, product) => ({ ...acc, [product.id]: 1 }), {})
-  );
+  const userId = localStorage.getItem("userId");
 
-  const updateQuantity = (productId, increment) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [productId]: increment
-        ? prev[productId] + 1
-        : Math.max(1, prev[productId] - 1),
-    }));
-  };
+  useEffect(() => {
+    dispatch(getCart(userId))
+  },[dispatch])
+  
+  const cartno = Array.isArray(cartlist) ? cartlist : cartlist?.cart || [];
 
-  const subtotal = products.reduce(
-    (sum, product) => sum + product.price * quantities[product.id],
-    0
-  );
+  const addQuantity = (id) => {
+    dispatch(increaseQuantity(id))
+    console.log(id)
+  }
+  const minusQuantity = (id) => {
+    dispatch(decreaseQuantity(id))
+  }
+
+  const deleteproduct = (id) => {
+    dispatch(deleteCart(id))
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -61,14 +68,14 @@ export default function ShoppingCart() {
             </div>
 
             <div className="space-y-4">
-              {products.map((product) => (
+              {cartno.map((product, i) => (
                 <div
-                  key={product.id}
+                  key={i}
                   className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center border-b pb-4"
                 >
                   <div className="col-span-2 flex gap-4">
                     <Image
-                      src={product.image}
+                      src={product.productId.image[0]}
                       alt="img"
                       width={80}
                       height={80}
@@ -76,31 +83,31 @@ export default function ShoppingCart() {
                     />
                     <div>
                       <h3 className="font-medium text-[15px]">
-                        {product.name}
+                        {product.productId.name}
                       </h3>
                     </div>
                   </div>
                   <div className="hidden md:block">
-                  ₹{product.price.toFixed(2)}
+                  ₹{product.productId.price.toFixed(2)}
                   </div>
                   <div className=" hidden md:flex items-center justify-between">
                     <div>
-                    ₹{(product.price * quantities[product.id]).toFixed(2)}
+                    ₹{(product.productId.price * product.quantity).toFixed(2)}
                     </div>
                   </div>
                   <div className="">
                     <div className="flex items-center justify-center rounded-md gap-2 border py-2">
                       <button
-                        onClick={() => updateQuantity(product.id, false)}
+                        onClick={() => minusQuantity(product._id)}
                         className="p-1 hover:bg-gray-100 rounded"
                       >
                         <FiMinus className="w-4 h-4" />
                       </button>
                       <span className="w-8 text-center">
-                        {quantities[product.id]}
+                        {product.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(product.id, true)}
+                        onClick={() => addQuantity(product._id)}
                         className="p-1 hover:bg-gray-100 rounded"
                       >
                         <FiPlus className="w-4 h-4" />
@@ -108,7 +115,7 @@ export default function ShoppingCart() {
                     </div>
                   </div>
                   <div className="hidden md:block">
-                    <button className="p-1 bg-red-500 rounded-full ml-2">
+                    <button className="p-1 bg-red-500 rounded-full ml-2" onClick={() => deleteproduct(product._id)}>
                       <FiX className="w-4 h-4 text-white" />
                     </button>
                   </div>
@@ -140,7 +147,7 @@ export default function ShoppingCart() {
               {/* Subtotal */}
               <div className="flex justify-between py-3 border-b">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toFixed(2)}</span>
+                <span>₹999</span>
               </div>
 
               {/* Shipping Section 1 */}
@@ -237,7 +244,7 @@ export default function ShoppingCart() {
                 <div className="flex justify-between">
                   <span className="text-xl font-medium">Total</span>
                   <span className="text-xl font-medium text-red-500">
-                  ₹{subtotal.toFixed(2)}
+                  ₹9999
                   </span>
                 </div>
               </div>

@@ -1,41 +1,48 @@
-import React from 'react';
+'use client'
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { FaFacebookF, FaTwitter, FaPinterestP } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { IoCloseOutline } from 'react-icons/io5';
-import img1 from '../assets/image-1-1-1-450x450.png'
-
-const products = [
-  {
-    id: "1",
-    name: "ELECTROLUX EW6S226SUI",
-    image: img1,
-    originalPrice: 250.0,
-    salePrice: 190.0,
-    dateAdded: "November 27, 2024",
-    inStock: true,
-  },
-  {
-    id: "2",
-    name: "Huawei Watch GT 2 Pro Titanium 47mm",
-    image: img1,
-    originalPrice: 99.99,
-    salePrice: 79.99,
-    dateAdded: "November 27, 2024",
-    inStock: true,
-  },
-  {
-    id: "3",
-    name: "HomePod mini - Space Gray",
-    image: img1,
-    originalPrice: 359.99,
-    salePrice: 249.99,
-    dateAdded: "November 27, 2024",
-    inStock: true,
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteWishlist, getWishlist } from '@/store/reducer/wishlistReducer';
+import { toast } from 'react-toast';
+import { addToCart } from '@/store/reducer/cartReducer';
 
 const Wishlist = () => {
+const { wishlistproduct } = useSelector((state) => state.wishlist);
+const dispatch = useDispatch();
+
+const userId = localStorage.getItem('userid');
+
+useEffect(() => {
+  dispatch(getWishlist(userId));
+},[dispatch])
+
+const wish = Array.isArray(wishlistproduct) ? wishlistproduct : wishlistproduct?.wishlist || [];
+
+const deleteWish = (id) => {
+  dispatch(deleteWishlist(id)).then((res) => {
+    if (res?.payload?.success) {
+      toast.success(res.payload.message);
+    } else {
+      toast.error(res.payload.message);
+    }
+  });
+}
+
+const handlecart = (productId) => {
+  dispatch(addToCart({ userId, productId})).then((res) => {
+    if (res?.payload?.success) {
+      toast.success(res.payload.message);
+    } else {
+      toast.error(res.payload.message);
+    }
+  });
+ } 
+
+console.log(wish, 'wishlist')
+
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6 mt-8">
       <table className="w-full border-collapse">
@@ -50,48 +57,48 @@ const Wishlist = () => {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
-            <tr key={product.id} className="border-b">
-              {/* Product name with image */}
+          {wish.map((product, i) => (
+            <tr key={i} className="border-b">
               <td className="py-4 flex items-center gap-3">
                 <Image
-                  src={product.image}
-                  alt={product.name}
+                  src={product.productId?.image[0]}
+                  alt={product.productId?.name}
                   width={60}
                   height={60}
+                  sizes='60'
                   className="rounded"
                 />
-                <span>{product.name}</span>
+                <span>{product.productId?.name}</span>
               </td>
 
               {/* Price */}
               <td className="py-4 hidden md:table-cell">
                 <div>
-                  <span className="line-through text-gray-500 mr-2">₹{product.originalPrice.toFixed(2)}</span>
-                  <span className="font-medium">₹{product.salePrice.toFixed(2)}</span>
+                  <span className="line-through text-gray-500 mr-2">₹{product.productId?.price.toFixed(2)}</span>
+                  <span className="font-medium">₹{(product.productId?.price * (1 - product.productId?.discount / 100)).toFixed(2)}</span>
                 </div>
               </td>
 
               {/* Date Added */}
-              <td className="py-4 hidden md:table-cell">{product.dateAdded}</td>
+              <td className="py-4 hidden md:table-cell">{product.productId?.createdAt}</td>
 
               {/* Stock */}
               <td className="py-4 hidden md:table-cell">
-                <span className={product.inStock ? "text-green-600" : "text-red-600"}>
-                  {product.inStock ? "In Stock" : "Out of Stock"}
+                <span className={product.productId?.isAvailable ? "text-green-600" : "text-red-600"}>
+                  {product.productId?.isAvailable ? "In Stock" : "Out of Stock"}
                 </span>
               </td>
 
               {/* Add to Cart */}
               <td className="py-4">
-                <button className="px-2 py-2 bg-green-500 text-sm text-white rounded-md">
+                <button onClick={() => handlecart(product.productId?._id)} className="px-2 py-2 bg-green-500 text-sm text-white rounded-md">
                   Add to Cart
                 </button>
               </td>
 
               {/* Remove button */}
               <td className="py-4 hidden md:table-cell">
-                <button className="text-white bg-red-500 rounded-full">
+                <button onClick={() => deleteWish(product._id)} className="text-white bg-red-500 rounded-full">
                   <IoCloseOutline size={20} />
                 </button>
               </td>

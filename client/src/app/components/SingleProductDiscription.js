@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { FaStar, FaRegStar, FaRegHeart } from 'react-icons/fa'
 import { MdOutlineZoomOutMap } from 'react-icons/md'
 import prodcut1 from '../assets/image-1-1-1-450x450.png'
@@ -15,6 +15,8 @@ import prodcut7 from '../assets/image-1-16-450x450.png'
 import prodcut8 from '../assets/image-1-17-450x450.png'
 import prodcut9 from '../assets/image-1-7-450x450.png'
 import prodcut10 from '../assets/image-1-17-450x450.png'
+import { useDispatch, useSelector } from 'react-redux'
+import { getProductById } from '@/store/reducer/productReducer'
 
 const reviews = [
   {
@@ -40,113 +42,20 @@ const reviews = [
   }
 ]
 
-const products = [
-    {
-      id: "1",
-      name: "Huawei Watch GT 2 Pro Titanium 47mm",
-      price: 79,
-      originalPrice: 99,
-      discount: 21,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut1,
-      store: "graci",
-    },
-    {
-      id: "2",
-      name: "HomePod mini — Space Gray",
-      price: 249,
-      originalPrice: 359,
-      discount: 31,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut2,
-    },
-    {
-      id: "3",
-      name: "ELECTROLUX EW6S226SUI",
-      price: 190.0,
-      originalPrice: 250.0,
-      discount: 24,
-      rating: 3.33,
-      reviews: 3,
-      image: prodcut3,
-    },
-    {
-      id: "4",
-      name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-      price: 130.0,
-      originalPrice: 142.0,
-      discount: 9,
-      rating: 3.67,
-      reviews: 3,
-      image: prodcut4,
-    },
-    {
-      id: "5",
-      name: "Canon EOS R10 RF-S 18-45 IS STM",
-      price: 850.0,
-      originalPrice: 1099.0,
-      discount: 23,
-      rating: 4.0,
-      reviews: 3,
-      image: prodcut5,
-    },
-    {
-      id: "6",
-      name: "Huawei Watch GT 2 Pro Titanium 47mm",
-      price: 79,
-      originalPrice: 99,
-      discount: 21,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut6,
-    },
-    {
-      id: "7",
-      name: "HomePod mini — Space Gray",
-      price: 249,
-      originalPrice: 359,
-      discount: 31,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut7,
-    },
-    {
-      id: "8",
-      name: "ELECTROLUX EW6S226SUI",
-      price: 190.0,
-      originalPrice: 250.0,
-      discount: 24,
-      rating: 3.33,
-      reviews: 3,
-      image: prodcut8,
-    },
-    {
-      id: "9",
-      name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-      price: 130.0,
-      originalPrice: 142.0,
-      discount: 9,
-      rating: 3.67,
-      reviews: 3,
-      image: prodcut9,
-    },
-    {
-      id: "10",
-      name: "Canon EOS R10 RF-S 18-45 IS STM",
-      price: 850.0,
-      originalPrice: 1099.0,
-      discount: 23,
-      rating: 4.0,
-      reviews: 3,
-      image: prodcut10,
-    },
-  ]
 
-export default function SingleProductDiscription({handleview}) {
-  const [activeTab, setActiveTab] = useState('reviews') 
+export default function SingleProductDiscription({handleview, id}) {
+  const { singleproduct } = useSelector((state) => state.products);
+  const dispatch = useDispatch();
 
+  const [activeTab, setActiveTab] = useState('reviews');
+  useEffect(() => {
+    dispatch(getProductById(id));
+  }, [dispatch]);
+  const product = Array.isArray(singleproduct)
+  ? singleproduct
+  : singleproduct?.menu || [];
+
+  console.log(product.description, 'id passed');
   const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
 
   const ratingCounts = Array.from({ length: 5 }, (_, i) => {
@@ -182,12 +91,9 @@ export default function SingleProductDiscription({handleview}) {
         {activeTab === 'description' && (
           <div className="prose max-w-none">
             <h2 className="text-2xl font-bold mb-4">Product Description</h2>
-            <p className='text-gray-500 mb-4'>
-            Quisque varius diam vel metus mattis, id aliquam diam rhoncus. Proin vitae magna in dui finibus malesuada et at nulla. Morbi elit ex, viverra vitae ante vel, blandit feugiat ligula. Fusce fermentum iaculis nibh, at sodales leo maximus a. Nullam ultricies sodales nunc, in pellentesque lorem mattis quis. Cras imperdiet est in nunc tristique lacinia. Nullam aliquam mauris eu accumsan tincidunt. Suspendisse velit ex, aliquet vel ornare vel, dignissim a tortor.
-            </p>
-            <p className='text-gray-500'>
-            Morbi ut sapien vitae odio accumsan gravida. Morbi vitae erat auctor, eleifend nunc a, lobortis neque. Praesent aliquam dignissim viverra. Maecenas lacus odio, feugiat eu nunc sit amet, maximus sagittis dolor. Vivamus nisi sapien, elementum sit amet eros sit amet, ultricies cursus ipsum. Sed consequat luctus ligula. Curabitur laoreet rhoncus blandit. Aenean vel diam ut arcu pharetra dignissim ut sed leo. Vivamus faucibus, ipsum in vestibulum vulputate, lorem orci convallis quam, sit amet consequat nulla felis pharetra lacus. Duis semper erat mauris, sed egestas purus commodo vel.
-            </p>
+                  <p  className="flex items-center gap-2">
+                  {product?.description}
+                  </p>
           </div>
         )}
 

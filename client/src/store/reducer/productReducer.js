@@ -35,6 +35,7 @@ export const getProductById = createAsyncThunk(
 // Initial State
 const initialState = {
   products: [],
+  singleproduct: [],
   product: null,
   loading: false,
   error: null,
@@ -76,7 +77,7 @@ const productsSlice = createSlice({
       })
       .addCase(getProductById.fulfilled, (state, action) => {
         state.loading = false;
-        state.product = action.payload;
+        state.singleproduct = action.payload;
       })
       .addCase(getProductById.rejected, (state, action) => {
         state.loading = false;

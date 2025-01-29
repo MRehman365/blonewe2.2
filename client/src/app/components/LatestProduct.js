@@ -5,28 +5,33 @@ import { MdOutlineZoomOutMap } from "react-icons/md";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import prodcut1 from "../assets/image-1-1-1-450x450.png";
-import prodcut2 from "../assets/image-1-10-450x450.png";
-import prodcut3 from "../assets/image-1-11-450x450.png";
-import prodcut4 from "../assets/image-1-13-450x450.png";
-import prodcut5 from "../assets/image-1-14-450x450.png";
-import prodcut6 from "../assets/image-1-15-450x450.png";
-import prodcut7 from "../assets/image-1-16-450x450.png";
-import prodcut8 from "../assets/image-1-17-450x450.png";
-import prodcut9 from "../assets/image-1-7-450x450.png";
-import prodcut10 from "../assets/image-1-17-450x450.png";
 import Link from "next/link";
 import { toast } from "react-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "@/store/reducer/productReducer";
+import { addToWishlist } from "@/store/reducer/wishlistReducer";
+import { addToCart } from "@/store/reducer/cartReducer";
 
 const LatestProduct = ({ handleview }) => {
+
   const { products } = useSelector((state) => state.products);
   const dispatch = useDispatch();
+
+  const userId = localStorage.getItem('userid');
 
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
+  
+ const handlecart = (productId) => {
+  dispatch(addToCart({ userId, productId})).then((res) => {
+    if (res?.payload?.success) {
+      toast.success(res.payload.message);
+    } else {
+      toast.error(res.payload.message);
+    }
+  });
+ } 
 
   const product = Array.isArray(products) ? products : products.menu || [];
 
@@ -41,6 +46,17 @@ const LatestProduct = ({ handleview }) => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handlewish = (productId) => {
+    dispatch(addToWishlist({userId, productId})).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
+
+  }
 
   const days = Math.floor(timeRemaining / (24 * 60 * 60));
   const hours = Math.floor((timeRemaining % (24 * 60 * 60)) / (60 * 60));
@@ -82,8 +98,6 @@ const LatestProduct = ({ handleview }) => {
       },
     ],
   };
-  const wave = () => toast.success("Product Added to Wishlist");
-  const addCart = () => toast("Product Added to Cart");
   return (
     <div className="max-w-7xl mx-auto p-2 overflow-hidden">
       <div className="flex justify-between py-2">
@@ -111,16 +125,16 @@ const LatestProduct = ({ handleview }) => {
       </div>
       <Slider
         {...settings}
-        className="grid gap-0 border-[3px] border-red-500 rounded-lg overflow-hidden"
+        className="grid gap-0 border-[3px] border-red-500 rounded-lg overflow-hidden min-h-full"
       >
         {product.map((item, i) => (
-          <div key={i}>
-            <div className="group relative overflow-hidden w-full transition-all duration-300 h-full flex flex-col border border-gray-200 mx-auto">
+          <div key={i} className="h-full">
+            <div className="group relative overflow-hidden w-full transition-all duration-300 h-[376px] flex flex-col border border-gray-200 mx-auto">
               <div className="relative aspect-square">
-                <Link href={`/product/${item.id}`} className="overflow-hidden">
+                <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
-                    src={item.image[0]}
-                    alt={item.name}
+                    src={item?.image[0]}
+                    alt={item?.name}
                     loading="lazy"
                     fill
                     className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
@@ -136,14 +150,13 @@ const LatestProduct = ({ handleview }) => {
                 >
                   <button
                     className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
-                    onClick={handleview}
+                    onClick={() => handleview(item._id)}
                   >
                     <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
                   </button>
-                  <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+                  <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
                     <FaRegHeart
                       className="h-4 w-4 text-gray-600"
-                      onClick={wave}
                     />
                   </button>
                 </div>
@@ -151,15 +164,15 @@ const LatestProduct = ({ handleview }) => {
               <div className="p-4 flex-grow flex flex-col">
                 <div className="flex gap-2 items-center">
                   <div className="text-sm text-gray-500 line-through">
-                    ₹{item.price.toFixed(2)}
+                    ₹{item?.price.toFixed(2)}
                   </div>
                   <div className="text-lg font-bold bg-green-600 px-1 text-white rounded-md">
-                    ₹{(item.price * (1 - item.discount / 100)).toFixed(2)}
+                    ₹{(item?.price * (1 - item.discount / 100)).toFixed(2)}
                   </div>
                 </div>
 
                 <h3 className="mb-2 text-sm font-medium line-clamp-2">
-                  {item.name}
+                  {item?.name}
                 </h3>
                 <div className="h-[25px] overflow-hidden relative">
                   <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
@@ -178,8 +191,8 @@ const LatestProduct = ({ handleview }) => {
                 </div>
                 <div className="flex items-center justify-between mt-auto">
                   <button
+                  onClick={() => handlecart(item._id)}
                     className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80"
-                    onClick={addCart}
                   >
                     Add to cart
                   </button>

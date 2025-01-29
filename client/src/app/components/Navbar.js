@@ -39,6 +39,8 @@ import ProductDetail from "./ProductDetail";
 import img1 from "../assets/image-1-1-1-450x450.png";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserById } from "@/store/reducer/authReducer";
+import { getWishlist } from "@/store/reducer/wishlistReducer";
+import { getCart } from "@/store/reducer/cartReducer";
 
 const categories = [
   {
@@ -101,6 +103,9 @@ const products = [
 
 const Navbar = () => {
 const { singleuser } = useSelector((state) => state.auth)
+const { wishlistproduct } = useSelector((state) => state.wishlist);
+const { cartlist } = useSelector((state) => state.cart)
+
 
   const initialTime = 1 * 24 * 60 * 60 + 14 * 60 * 60 + 20 * 60 + 10;
   const [isOpen, setIsOpen] = useState(false);
@@ -114,6 +119,7 @@ const { singleuser } = useSelector((state) => state.auth)
   const toggleShop = () => setShopOpen(!shopOpen);
 
   const id = localStorage.getItem('userid');
+  const userId = localStorage.getItem('userid');
   
 
   useEffect(() => {
@@ -121,6 +127,18 @@ dispatch(getUserById(id))
   },[dispatch])
 
   // console.log('user', singleuser)
+
+  useEffect(() => {
+    dispatch(getWishlist(userId));
+  },[dispatch])
+  const wish = Array.isArray(wishlistproduct) ? wishlistproduct : wishlistproduct?.wishlist || [];
+
+  useEffect(() => {
+    dispatch(getCart(userId))
+  },[dispatch])
+  
+  const cartno = Array.isArray(cartlist) ? cartlist : cartlist?.cart || [];
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -290,7 +308,7 @@ dispatch(getUserById(id))
                 <FaRegHeart className="h-6 w-6 mb-1" />
                 <span className="text-[13px]">Wishlist</span>
                 <span className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  2
+                 {wish.length}
                 </span>
               </Link>
               <Link
@@ -313,7 +331,7 @@ dispatch(getUserById(id))
                 </svg>
                 <span className="text-[13px]">My Cart</span>
                 <span className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  3
+                  {cartno.length}
                 </span>
               </Link>
             </div>

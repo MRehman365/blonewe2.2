@@ -109,22 +109,50 @@ class UserAuthController {
   AdduserAddress = async (req, res) => {
     try {
       const { userid, name, address, city, state, country, postal } = req.body;
-      const data = await addressModal.create({
-        userid,
-        name,
-        address,
-        city,
-        country,
-        state,
-        postal,
-      });
-      return res
-        .status(201)
-        .json({ message: "Address added successfully", success: true, data });
+  
+      const existingAddress = await addressModal.findOne({ userid });
+  
+      if (!existingAddress) {
+        const data = await addressModal.create({
+          userid,
+          name,
+          address,
+          city,
+          state,
+          country,
+          postal,
+        });
+  
+        return res.status(201).json({
+          message: "Address added successfully",
+          success: true,
+          data,
+        });
+      } else {
+        const updatedAddress = await addressModal.findOneAndUpdate(
+          { userid }, 
+          {
+            name,
+            address,
+            city,
+            state,
+            country,
+            postal,
+          },
+          { new: true } 
+        );
+  
+        return res.status(200).json({
+          message: "Address updated successfully",
+          success: true,
+          data: updatedAddress,
+        });
+      }
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
   };
+  
   getAddressById = async (req, res) => {
     try {
       const { userid } = req.params;
@@ -136,22 +164,6 @@ class UserAuthController {
       return res.status(500).json({ message: error.message });
     }
   };
-  updateAddress = async (req, res) => {
-    try {
-      const { userid } = req.params;
-      const { name, address, city, state, country, postal } = req.body;
-      const data = await addressModal.findByIdAndUpdate(
-        userid,
-        { name, address, city, country, state, postal },
-        { new: true }
-      );
-      return res
-       .status(200)
-       .json({ message: "Address updated successfully", success: true, data });
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
-  }
 }
 
 module.exports = new UserAuthController();

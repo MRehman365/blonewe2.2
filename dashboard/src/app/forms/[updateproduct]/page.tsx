@@ -22,6 +22,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { useParams, useSearchParams } from "next/navigation";
 import { getProducts, updateProduct } from "@/store/reducers/productReducer";
 import { fetchCategories } from "@/store/reducers/categoriesReducer";
+import { toast } from "react-toast";
 
 const FormElements = () => {
 
@@ -122,7 +123,13 @@ const handleDetailImagesChange = (e) => {
       return;
     }
 
-    dispatch(updateProduct({ id, formData }));
+    dispatch(updateProduct({ id, formData })).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast(res.payload.message);
+      }
+    });
   };
   return (
     <DefaultLayout>

@@ -23,7 +23,7 @@ class cartController {
             }
             else {
                 const cart = await cartModal.create({ userId, productId, quantity });
-                return res.status(200).json({ message: "Cart added successfully", cart });
+                return res.status(200).json({ message: "Cart added successfully", success:true, cart });
             }
         } catch (error) {
             return res.status(500).json({ message: error.message });
@@ -31,9 +31,9 @@ class cartController {
     }
     deleteCart = async (req, res) => {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
             const cart = await cartModal.findByIdAndDelete(id);
-            return res.status(200).json({ message: "Cart deleted successfully", cart });
+            return res.status(200).json({ message: "Cart deleted successfully", success: true, cart });
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
@@ -46,7 +46,7 @@ class cartController {
                 return res.status(400).json({ message: "User ID is required" });
             }
             
-            const cart = await cartModal.find({ userId });
+            const cart = await cartModal.find({ userId }).populate('productId');
             if (!cart || cart.length === 0) {
                 return res.status(404).json({ message: "Cart not found" });
             }
@@ -59,10 +59,9 @@ class cartController {
 
     increaseQuantity = async (req, res) => {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
             const cart = await cartModal.findByIdAndUpdate(id, { $inc: { quantity: 1 } });
             return res.status(200).json({ message: "Cart quantity increased successfully", cart });
-
         } catch (error) {
             return res.status(500).json({ message: error.message });
         }
@@ -70,12 +69,11 @@ class cartController {
 
     decreaseQuantity = async (req, res) => {
         try {
-            const { id } = req.body;
+            const { id } = req.params;
             const cart = await cartModal.findByIdAndUpdate(id, { $inc: { quantity: -1 } });
             return res.status(200).json({ message: "Cart quantity decreased successfully", cart });
-
         } catch (error) {
-            
+            return res.status(500).json({ message: error.message });
         }
     }
 }

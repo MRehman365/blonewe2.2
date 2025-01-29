@@ -91,7 +91,7 @@ console.log('Products:', menu);
           
               <div className="h-12.5 w-15 rounded-md">
                 <Image
-                  src={product.image[0]}
+                  src={product?.image[0]}
                   width={60}
                   height={50}
                   alt="Product"

@@ -1,22 +1,39 @@
-const validateRegistration = (req, res, next) => {
-    const { name, email, password } = req.body;
+const UserModel = require("../modals/userAuthModal");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const express = require("express");
+const app = express();
 
-    const errors = [];
+app.use(cookieParser());
 
-    if (!name) errors.push('Name is required');
-    if (!email) errors.push('Email is required');
-    if (!password) errors.push('Password is required');
+const isAuthenticatedUser = async (req, res, next) => {
+  const token = req.cookies.token;
 
-    if (errors.length > 0) {
-        return res.status(400).json({ errors });
+  try {
+    if (!token) {
+      return res.status(401).send({
+        success: false,
+        message: "login user access this step",
+        token,
+      });
     }
+    const decdedData = jwt.verify(token, process.env.JWT_SECRET);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'Invalid email format' });
+    req.user = await UserModel.findById(decdedData.id);
+
+    if (!req.user) {
+      res.clearCookie("token");
+      return res.end();
     }
 
     next();
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "internal server error",
+    });
+  }
 };
 
-module.exports = { validateRegistration }; 
+// Export the function using CommonJS syntax
+module.exports = { isAuthenticatedUser };
