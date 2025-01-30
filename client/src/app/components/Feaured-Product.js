@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegHeart, FaStar } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
 import "slick-carousel/slick/slick.css";
@@ -17,113 +17,57 @@ import prodcut9 from "../assets/image-1-7-450x450.png";
 import prodcut10 from "../assets/image-1-17-450x450.png";
 import Link from "next/link";
 import { toast } from "react-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { getProducts } from "@/store/reducer/productReducer";
+import { fetchCategories } from "@/store/reducer/categoryReducer";
+import { addToCart } from "@/store/reducer/cartReducer";
+import { addToWishlist } from "@/store/reducer/wishlistReducer";
 
-const products = [
-  {
-    id: "1",
-    name: "Huawei Watch GT 2 Pro Titanium 47mm",
-    price: 79.99,
-    originalPrice: 99.99,
-    discount: 21,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut1,
-    store: "graci",
-  },
-  {
-    id: "2",
-    name: "HomePod mini — Space Gray",
-    price: 249.99,
-    originalPrice: 359.99,
-    discount: 31,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut2,
-  },
-  {
-    id: "3",
-    name: "ELECTROLUX EW6S226SUI",
-    price: 190.0,
-    originalPrice: 250.0,
-    discount: 24,
-    rating: 3.33,
-    reviews: 3,
-    image: prodcut3,
-  },
-  {
-    id: "4",
-    name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-    price: 130.0,
-    originalPrice: 142.0,
-    discount: 9,
-    rating: 3.67,
-    reviews: 3,
-    image: prodcut4,
-  },
-  {
-    id: "5",
-    name: "Canon EOS R10 RF-S 18-45 IS STM",
-    price: 850.0,
-    originalPrice: 1099.0,
-    discount: 23,
-    rating: 4.0,
-    reviews: 3,
-    image: prodcut5,
-  },
-  {
-    id: "6",
-    name: "Huawei Watch GT 2 Pro Titanium 47mm",
-    price: 79.99,
-    originalPrice: 99.99,
-    discount: 21,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut6,
-    store: "graci",
-  },
-  {
-    id: "7",
-    name: "HomePod mini — Space Gray",
-    price: 249.99,
-    originalPrice: 359.99,
-    discount: 31,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut7,
-  },
-  {
-    id: "8",
-    name: "ELECTROLUX EW6S226SUI",
-    price: 190.0,
-    originalPrice: 250.0,
-    discount: 24,
-    rating: 3.33,
-    reviews: 3,
-    image: prodcut8,
-  },
-  {
-    id: "9",
-    name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-    price: 130.0,
-    originalPrice: 142.0,
-    discount: 9,
-    rating: 3.67,
-    reviews: 3,
-    image: prodcut9,
-  },
-  {
-    id: "10",
-    name: "Canon EOS R10 RF-S 18-45 IS STM",
-    price: 850.0,
-    originalPrice: 1099.0,
-    discount: 23,
-    rating: 4.0,
-    reviews: 3,
-    image: prodcut10,
-  },
-];
 const FeauredProduct = ({ handleview }) => {
-  const [activeTab, setActiveTab] = useState("Electronics");
+  const { products } = useSelector((state) => state.products);
+  const { categories} = useSelector((state) => state.category)
+  const dispatch = useDispatch();
+  const userId = localStorage.getItem('userid');
+
+  useEffect(() => {
+    dispatch(getProducts());
+  }, [dispatch]);
+  const product = Array.isArray(products) ? products : products.menu || [];
+
+  console.log(product)
+
+  useEffect(() => {
+    dispatch(fetchCategories()) 
+  },[dispatch])
+  const category = Array.isArray(categories) ? categories : categories.category || [];
+  console.log(category, 'category onn ');
+  
+  const [activeTab, setActiveTab] = useState(category[0]?.name);
+
+  const filteredByCategory = product.filter(product => product.category === category[0]?.name);
+  const filteredByCategory2 = product.filter(product => product.category === category[1]?.name);
+  const filteredByCategory3 = product.filter(product => product.category === category[2]?.name);
+
+  const handlecart = (productId) => {
+    dispatch(addToCart({ userId, productId})).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
+   } 
+
+   const handlewish = (productId) => {
+    dispatch(addToWishlist({userId, productId})).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
+
+  }
 
   const settings = {
     infinite: true,
@@ -161,8 +105,6 @@ const FeauredProduct = ({ handleview }) => {
     ],
   };
 
-  const wave = () => toast.success('Product Added to Wishlist')
-  const addCart = () => toast('Product Added to Cart')
   return (
     <div className="max-w-7xl mx-auto p-2 overflow-hidden">
       <div className="flex justify-between py-2">
@@ -172,7 +114,7 @@ const FeauredProduct = ({ handleview }) => {
           </p>
           <div className="">
             <div className="flex gap-6">
-              {["Electronics", "Fashion", "Grocri"].map((tab) => (
+              {[category[0]?.name, category[1]?.name, category[2]?.name].map((tab) => (
                 <button
                   key={tab}
                   className={`relative h-9 rounded-full px-4 font-medium text-[12px] md:text-base  ${
@@ -182,8 +124,8 @@ const FeauredProduct = ({ handleview }) => {
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
-                  {tab === "Electronics"
-                    ? `Electronics`
+                  {tab === category[0]?.name
+                    ? `${category[0]?.name}`
                     : tab.charAt(0).toUpperCase() +
                       tab.slice(1).replace("-", " ")}
                 </button>
@@ -194,224 +136,257 @@ const FeauredProduct = ({ handleview }) => {
 
         <p className="text-sm md:text-base hover:text-[#1d1d72]">View all</p>
       </div>
-      {activeTab === "Electronics" && (
+      {activeTab === category[0]?.name && (
+        filteredByCategory.length === 0 ? (
+    <div className="text-center py-4 text-gray-500">
+      No products in this category.
+    </div>
+  ) : (
         <Slider {...settings} className="grid gap-1">
-          {products.map((product, i) => (
-            <div key={i}>
-              <div className="group relative overflow-hidden w-full transition-all duration-300 h-full flex flex-col border border-gray-300 mx-auto">
-                <div className="relative aspect-square">
-                <Link href='/product'>
+        {filteredByCategory.slice(0, 10).map((item, index) => (
+              <div key={item._id} className="h-full">
+            <div className="group relative overflow-hidden w-full transition-all duration-300 h-[378px] flex flex-col border border-gray-200 mx-auto">
+              <div className="relative aspect-square">
+                <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
-                    src={product.image}
-                    alt={product.name}
+                    src={item?.image[0]}
+                    alt={item?.name}
+                    loading="lazy"
                     fill
                     className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   />
-                  </Link>
-                  {product.discount > 0 && (
-                    <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                      {product.discount}%
-                    </div>
-                  )}
-                  <div
-                    className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
+                </Link>
+                {item?.discount > 0 && (
+                  <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    {item?.discount}%
+                  </div>
+                )}
+                <div
+                  className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
+                >
+                  <button
+                    className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+                    onClick={() => handleview(item._id)}
                   >
-                    <button
-                      className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
-                      onClick={handleview}
-                    >
-                      <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                    </button>
-                    <button onClick={wave} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
-                      <FaRegHeart className="h-4 w-4 text-gray-600" />
-                    </button>
+                    <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
+                  </button>
+                  <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+                    <FaRegHeart
+                      className="h-4 w-4 text-gray-600"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="p-4 flex-grow flex flex-col">
+                <div className="flex gap-2 items-center">
+                  <div className="text-sm text-gray-500 line-through">
+                    ₹{item?.price.toFixed(2)}
+                  </div>
+                  <div className="text-lg font-bold bg-green-600 px-1 text-white rounded-md">
+                    ₹{(item?.price * (1 - item.discount / 100)).toFixed(2)}
                   </div>
                 </div>
-                <div className="p-4 flex-grow flex flex-col">
-                  <div className="flex gap-2 items-center">
-                    <div className="text-sm text-gray-500 line-through">
-                      ₹{product.price.toFixed(2)}
+
+                <h3 className="mb-2 text-sm font-medium line-clamp-2">
+                  {item?.name}
+                </h3>
+                <div className="h-[25px] overflow-hidden relative">
+                  <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
+                    <div className="text-[12px] ">
+                      <span className="text-gray-400">Store:</span> {item.store}
                     </div>
-                    {product.originalPrice > product.price && (
-                      <div className=" text-lg font-bold bg-green-600 px-1 text-white rounded-md">
-                        ₹{product.originalPrice.toFixed(2)}
+                    <div className="mb-2 flex items-center gap-2">
+                      <div className="flex items-center">
+                        <FaStar className="text-yellow-300" />
                       </div>
-                    )}
-                  </div>
-                  <h3 className="mb-2 text-sm font-medium line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <div className="h-[25px] overflow-hidden relative">
-                    <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
-                      <div className="text-[12px] ">
-                        <span className="text-gray-400">Store:</span> Groci
-                      </div>
-                      <div className="mb-2 flex items-center gap-2">
-                        <div className="flex items-center">
-                          <FaStar className="text-yellow-300" />
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {product.rating} ({product.reviews} reviews)
-                        </div>
+                      <div className="text-sm text-gray-500">
+                        4.5 (14 reviews)
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
-                    <button onClick={addCart} className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80">
-                      Add to cart
-                    </button>
-                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-auto">
+                  <button
+                  onClick={() => handlecart(item._id)}
+                    className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80"
+                  >
+                    Add to cart
+                  </button>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+            ))}
         </Slider>
+      )
       )}
-      {activeTab === "Fashion" && (
+      {activeTab === category[1]?.name && (
+        filteredByCategory2.length === 0 ? (
+    <div className="text-center py-4 text-gray-500">
+      No products in this category.
+    </div>
+  ) : (
         <Slider {...settings} className="grid gap-1">
-          {products.map((product, i) => (
-            <div key={i}>
-              <div className="group relative overflow-hidden w-full transition-all duration-300 h-full flex flex-col border border-gray-300 mx-auto">
-                <div className="relative aspect-square">
-                <Link href='/product'>
+        {filteredByCategory2.slice(0, 10).map((item, index) => (
+              <div key={item._id} className="h-full">
+            <div className="group relative overflow-hidden w-full transition-all duration-300 h-[378px] flex flex-col border border-gray-200 mx-auto">
+              <div className="relative aspect-square">
+                <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
-                    src={product.image}
-                    alt={product.name}
+                    src={item?.image[0]}
+                    alt={item?.name}
+                    loading="lazy"
                     fill
                     className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   />
-                  </Link>
-                  {product.discount > 0 && (
-                    <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                      {product.discount}%
-                    </div>
-                  )}
-                  <div
-                    className={`absolute right-2 top-2  flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
+                </Link>
+                {item?.discount > 0 && (
+                  <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    {item?.discount}%
+                  </div>
+                )}
+                <div
+                  className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
+                >
+                  <button
+                    className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+                    onClick={() => handleview(item._id)}
                   >
-                    <button
-                      className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
-                      onClick={handleview}
-                    >
-                      <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                    </button>
-                    <button onClick={wave} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
-                      <FaRegHeart className="h-4 w-4 text-gray-600" />
-                    </button>
+                    <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
+                  </button>
+                  <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+                    <FaRegHeart
+                      className="h-4 w-4 text-gray-600"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="p-4 flex-grow flex flex-col">
+                <div className="flex gap-2 items-center">
+                  <div className="text-sm text-gray-500 line-through">
+                    ₹{item?.price.toFixed(2)}
+                  </div>
+                  <div className="text-lg font-bold bg-green-600 px-1 text-white rounded-md">
+                    ₹{(item?.price * (1 - item.discount / 100)).toFixed(2)}
                   </div>
                 </div>
-                <div className="p-4 flex-grow flex flex-col">
-                  <div className="flex gap-2 items-center">
-                    <div className="text-sm text-gray-500 line-through">
-                      ₹{product.price.toFixed(2)}
+
+                <h3 className="mb-2 text-sm font-medium line-clamp-2">
+                  {item?.name}
+                </h3>
+                <div className="h-[25px] overflow-hidden relative">
+                  <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
+                    <div className="text-[12px] ">
+                      <span className="text-gray-400">Store:</span> {item.store}
                     </div>
-                    {product.originalPrice > product.price && (
-                      <div className=" text-lg font-bold bg-green-600 px-1 text-white rounded-md">
-                        ₹{product.originalPrice.toFixed(2)}
+                    <div className="mb-2 flex items-center gap-2">
+                      <div className="flex items-center">
+                        <FaStar className="text-yellow-300" />
                       </div>
-                    )}
-                  </div>
-                  <h3 className="mb-2 text-sm font-medium line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <div className="h-[25px] overflow-hidden relative">
-                    <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
-                      <div className="text-[12px] ">
-                        <span className="text-gray-400">Store:</span> Groci
-                      </div>
-                      <div className="mb-2 flex items-center gap-2">
-                        <div className="flex items-center">
-                          <FaStar className="text-yellow-300" />
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {product.rating} ({product.reviews} reviews)
-                        </div>
+                      <div className="text-sm text-gray-500">
+                        4.5 (14 reviews)
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
-                      <button onClick={addCart} className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80">
-                        Add to cart
-                      </button>
-                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-auto">
+                  <button
+                  onClick={() => handlecart(item._id)}
+                    className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80"
+                  >
+                    Add to cart
+                  </button>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+            ))}
         </Slider>
+  )
       )}
-      {activeTab === "Grocri" && (
+      {activeTab === category[2]?.name && (
+        filteredByCategory3.length === 0 ? (
+    <div className="text-center py-4 text-gray-500">
+      No products in this category.
+    </div>
+  ) : (
         <Slider {...settings} className="grid gap-1">
-          {products.map((product, i) => (
-            <div key={i}>
-              <div className="group relative overflow-hidden w-full transition-all duration-300 h-full flex flex-col border border-gray-300 mx-auto">
-                <div className="relative aspect-square">
-                <Link href='/product'>
+        {filteredByCategory3.slice(0, 10).map((item, index) => (
+              <div key={item._id} className="h-full">
+            <div className="group relative overflow-hidden w-full transition-all duration-300 h-[378px] flex flex-col border border-gray-200 mx-auto">
+              <div className="relative aspect-square">
+                <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
-                    src={product.image}
-                    alt={product.name}
+                    src={item?.image[0]}
+                    alt={item?.name}
+                    loading="lazy"
                     fill
                     className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   />
-                  </Link>
-                  {product.discount > 0 && (
-                    <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                      {product.discount}%
-                    </div>
-                  )}
-                  <div
-                    className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
+                </Link>
+                {item?.discount > 0 && (
+                  <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    {item?.discount}%
+                  </div>
+                )}
+                <div
+                  className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
+                >
+                  <button
+                    className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+                    onClick={() => handleview(item._id)}
                   >
-                    <button
-                      className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
-                      onClick={handleview}
-                    >
-                      <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                    </button>
-                    <button onClick={wave} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
-                      <FaRegHeart className="h-4 w-4 text-gray-600" />
-                    </button>
+                    <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
+                  </button>
+                  <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+                    <FaRegHeart
+                      className="h-4 w-4 text-gray-600"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="p-4 flex-grow flex flex-col">
+                <div className="flex gap-2 items-center">
+                  <div className="text-sm text-gray-500 line-through">
+                    ₹{item?.price.toFixed(2)}
+                  </div>
+                  <div className="text-lg font-bold bg-green-600 px-1 text-white rounded-md">
+                    ₹{(item?.price * (1 - item.discount / 100)).toFixed(2)}
                   </div>
                 </div>
-                <div className="p-4 flex-grow flex flex-col">
-                  <div className="flex gap-2 items-center">
-                    <div className="text-sm text-gray-500 line-through">
-                      ₹{product.price.toFixed(2)}
+
+                <h3 className="mb-2 text-sm font-medium line-clamp-2">
+                  {item?.name}
+                </h3>
+                <div className="h-[25px] overflow-hidden relative">
+                  <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
+                    <div className="text-[12px] ">
+                      <span className="text-gray-400">Store:</span> {item.store}
                     </div>
-                    {product.originalPrice > product.price && (
-                      <div className=" text-lg font-bold bg-green-600 px-1 text-white rounded-md">
-                        ₹{product.originalPrice.toFixed(2)}
+                    <div className="mb-2 flex items-center gap-2">
+                      <div className="flex items-center">
+                        <FaStar className="text-yellow-300" />
                       </div>
-                    )}
-                  </div>
-                  <h3 className="mb-2 text-sm font-medium line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <div className="h-[25px] overflow-hidden relative">
-                    <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
-                      <div className="text-[12px] ">
-                        <span className="text-gray-400">Store:</span> Groci
-                      </div>
-                      <div className="mb-2 flex items-center gap-2">
-                        <div className="flex items-center">
-                          <FaStar className="text-yellow-300" />
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {product.rating} ({product.reviews} reviews)
-                        </div>
+                      <div className="text-sm text-gray-500">
+                        4.5 (14 reviews)
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
-                      <button onClick={addCart} className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80">
-                        Add to cart
-                      </button>
-                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-auto">
+                  <button
+                  onClick={() => handlecart(item._id)}
+                    className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80"
+                  >
+                    Add to cart
+                  </button>
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+            ))}
         </Slider>
+  )
       )}
     </div>
   );

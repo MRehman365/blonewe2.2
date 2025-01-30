@@ -17,7 +17,7 @@ import {
 import { IoCloseOutline } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import img1 from "../assets/image-1-1-1-450x450.png";
-import { addUserAddress, getAddressById, getUserById, updateAddress } from "@/store/reducer/authReducer";
+import { addUserAddress, getAddressById, getUserById } from "@/store/reducer/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import api from "@/store/api";
 import { toast } from "react-toast";
@@ -71,16 +71,8 @@ export default function AccountPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isEditing, setIsEditing] = useState(null); 
 
-  // const [addressData, setAddressData] = useState({
-  //   userid: id,
-  //   name: "",
-  //   address: "",
-  //   city: "",
-  //   state: "",
-  //   country: "",
-  //   postal: "",
-  // })
-  const [addressUpdate, setAddressUpdate] = useState({
+  const [addressData, setAddressData] = useState({
+    userid: id,
     name: "",
     address: "",
     city: "",
@@ -106,14 +98,14 @@ dispatch(getUserById(id))
 
   const handleaddress = () => {
     e.preventDefault();
-    dispatch(updateAddress({userid: id, addressUpdate})).then((res) => {
+    dispatch(addUserAddress({userid: id, addressData})).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     })
-    console.log(addressUpdate)
+    console.log(addressData)
   }
 
 
@@ -429,43 +421,43 @@ const getaddress = Array.isArray(useraddress) ? useraddress : useraddress?.data 
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Name"
                   required
-                  value={addressUpdate.name}
-                  onChange={(e) => setAddressUpdate({...addressUpdate, name: e.target.value })}
+                  value={addressData.name}
+                  onChange={(e) => setAddressData({...addressData, name: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Address"
                   required
-                  value={addressUpdate.address}
-                  onChange={(e) => setAddressUpdate({...addressUpdate, address: e.target.value })}
+                  value={addressData.address}
+                  onChange={(e) => setAddressData({...addressData, address: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="City"
                   required
-                   value={addressUpdate.city}
-                  onChange={(e) => setAddressUpdate({...addressUpdate, city: e.target.value })}
+                   value={addressData.city}
+                  onChange={(e) => setAddressData({...addressData, city: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="State"
                   required
-                  value={addressUpdate.state}
-                  onChange={(e) => setAddressUpdate({...addressUpdate, state: e.target.value })}
+                  value={addressData.state}
+                  onChange={(e) => setAddressData({...addressData, state: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Zip Code"
                   required
-                  value={addressUpdate.postal}
-                  onChange={(e) => setAddressUpdate({...addressUpdate, postal: e.target.value })}
+                  value={addressData.postal}
+                  onChange={(e) => setAddressData({...addressData, postal: e.target.value })}
                 />
                 <input
                   className="border p-2 w-full mb-2 rounded"
                   placeholder="Country"
                   required
-                  value={addressUpdate.country}
-                  onChange={(e) => setAddressUpdate({...addressUpdate, country: e.target.value })}
+                  value={addressData.country}
+                  onChange={(e) => setAddressData({...addressData, country: e.target.value })}
                 />
                 <div className="flex space-x-2">
                   <input

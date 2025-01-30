@@ -66,19 +66,6 @@ export const addUserAddress = createAsyncThunk(
       }
     }
   );
-  
-  // Update address
-  export const updateAddress = createAsyncThunk(
-    "user/updateAddress",
-    async ({userid, addressData}, { rejectWithValue }) => {
-      try {
-        const response = await api.put(`/updateaddress/${userid}`, addressData);
-        return response.data;
-      } catch (error) {
-        return rejectWithValue(error.response?.data || "Failed to update address");
-      }
-    }
-  );
 
 // Initial state
 const initialState = {
@@ -169,20 +156,6 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
               })
-        
-              // Update address
-              .addCase(updateAddress.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-              })
-              .addCase(updateAddress.fulfilled, (state, action) => {
-                state.loading = false;
-                state.useraddress = action.payload;
-              })
-              .addCase(updateAddress.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-              });
   },
 });
 

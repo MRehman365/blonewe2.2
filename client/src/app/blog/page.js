@@ -1,6 +1,10 @@
+'use client'
 import Image from "next/image";
 import Link from "next/link";
 import img from '../assets/about-image-2.jpg'
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBlogs } from "@/store/reducer/blogsReducer";
+import { useEffect } from "react";
 
 const recentPosts = [
   {
@@ -33,26 +37,37 @@ const recentPosts = [
 
 
 export default function BlogPost() {
+  const { blogsdata } = useSelector((state) => state.blogs)
+  
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchBlogs());
+  }, [dispatch]);
+
+  const data = Array.isArray(blogsdata) ? blogsdata : blogsdata?.blog || [];
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2">
-        {[1,2,3,4].map((index) => (
+        {data.map((item, index) => (
           <article key={index} className="mt-4">
         
             <Image
-              src={img}
+              src={item?.images[0]}
+              height={400}
+              width={400}
               alt="Featured"
               className="my-6 h-[400px] w-full rounded-lg object-cover"
             />
-                <span className="text-sm font-medium text-blue-600">TABLET</span>
+                <span className="text-sm font-medium text-blue-600">{item?.category}</span>
             <h1 className="mt-2 text-3xl font-bold">
-              English Breakfast Tea With Tasty Donut Desserts
+              {item?.title}
             </h1>
-            <time className="mt-2 block text-sm text-gray-500">March 7, 2023</time>
+            <time className="mt-2 block text-sm text-gray-500">Publish at : {item?.createdAt.slice(0, 10)}</time>
             <p className="text-gray-500 leading-relaxed">
-            Donec rhoncus quis diam sit amet faucibus. Vivamus pellentesquesem sed convallis ultricies, ante eros laoreet libero, suscipit lorem turpis sit amet lectus. Quisque egestas lorem umauris ultricies, vitae sollicitudin quam facilisis.
+           {item?.content[0]}
             </p>
             <button className="mt-4 px-4 py-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-gray-300">
               Read More
@@ -66,11 +81,13 @@ export default function BlogPost() {
           <div className="p-4 bg-[#ffffff02] rounded-md">
             <h3 className="text-lg font-bold mb-4">Recent Posts</h3>
             <div className="space-y-4">
-              {recentPosts.map((post, index) => (
+              {data.map((post, index) => (
                 <div key={index} className="flex gap-4">
                   <Image
-                    src={post.image}
-                    alt=""
+                    src={post?.images[0]}
+                    height={200}
+                    width={200}
+                    alt="blog"
                     className="h-20 w-20 rounded-lg object-cover"
                   />
                   <div>
@@ -81,7 +98,7 @@ export default function BlogPost() {
                       {post.title}
                     </Link>
                     <time className="block text-sm text-gray-500">
-                      {post.date}
+                    Publish at : {post.createdAt.slice(0, 10)}
                     </time>
                   </div>
                 </div>

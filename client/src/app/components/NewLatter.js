@@ -1,48 +1,26 @@
 import Image from 'next/image';
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import news1 from "../assets/post-01-500x347.jpg";
 import news2 from "../assets/post-02-500x347.jpg";
 import news3 from "../assets/post-03-500x347.jpg";
 import news4 from "../assets/post-04-500x347.jpg";
 import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBlogs } from '@/store/reducer/blogsReducer';
 
-const newsArticles = [
-    {
-      id: 1,
-      category: "Tablet",
-      title: "English Breakfast Tea With Tasty Donut Desserts",
-      author: "sinan",
-      date: "7 Mar 2023",
-      image: news1,
-    },
-    {
-      id: 2,
-      category: "Smartphone",
-      title: "The Problem With Typefaces on the Web",
-      author: "sinan",
-      date: "7 Mar 2023",
-      image: news2,
-    },
-    {
-      id: 3,
-      category: "Tablet",
-      title: "But I must explain to you how all this mistaken idea",
-      author: "sinan",
-      date: "7 Mar 2023",
-      image: news3,
-    },
-    {
-      id: 4,
-      category: "Smartphone",
-      title: "On the other hand we provide denounce with righteous",
-      author: "sinan",
-      date: "6 Mar 2023",
-      image: news4,
-    },
-  ];
   
 const NewLatter = () => {
+  const { blogsdata } = useSelector((state) => state.blogs)
+  
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchBlogs());
+  }, [dispatch]);
+
+  const data = Array.isArray(blogsdata) ? blogsdata : blogsdata?.blog || [];
+
   return (
     <div className='overflow-hidden'>
       <section className="p-2 max-w-7xl mx-auto">
@@ -53,15 +31,17 @@ const NewLatter = () => {
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {newsArticles.map((article) => (
+        {data?.map((article) => (
           <Link
-          href='/blog/SingleBlog'
-            key={article.id}
+          href={`/blog/SingleBlog/${article._id}`}
+            key={article._id}
             className=" rounded-lg overflow-hidden"
           >
             <Image
-              src={article.image}
+              src={article?.images[0]}
               alt={article.title}
+              height={400}
+              width={400}
               className="w-full h-48 object-cover"
             />
             <div className="p-4">
@@ -72,7 +52,7 @@ const NewLatter = () => {
                 {article.title}
               </h3>
               <p className="text-sm text-gray-500">
-                by {article.author} • {article.date}
+                by {article.store} • {article.createdAt}
               </p>
             </div>
           </Link>

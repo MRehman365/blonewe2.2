@@ -26,6 +26,16 @@ class blogsController {
     }
   };
 
+  get_blog_by_id = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const blog = await blogModal.findById(id);
+      return res.status(200).json({ message: "Blog fetched successfully", blog });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
   delete_blog = async (req, res) => {
     try {
       const { id } = req.params;

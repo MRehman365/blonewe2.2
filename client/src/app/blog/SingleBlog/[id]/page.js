@@ -1,8 +1,12 @@
+'use client'
 import Image from "next/image"
 import Link from "next/link"
 import { CiShare2 } from "react-icons/ci"
 import { FiMessageCircle } from "react-icons/fi"
-import img from '../../assets/about-image-2.jpg'
+import img from '../../../assets/about-image-2.jpg'
+import { useDispatch, useSelector } from "react-redux"
+import { getBlogById } from "@/store/reducer/blogsReducer"
+import { use, useEffect } from "react";
 
 const recentPosts = [
     {
@@ -33,37 +37,77 @@ const recentPosts = [
     },
   ];
 
-export default function BlogPost() {
+export default function BlogPost({ params }) {
+const { singleblog } = useSelector((state) => state.blogs)
+const myid = use(params)
+const id = myid.id
+
+console.log(id, ' id is here')
+
+const dispatch = useDispatch();
+
+useEffect(() => {
+  dispatch(getBlogById(id));
+}, [dispatch, id]);
+
+const data = Array.isArray(singleblog) ? singleblog : singleblog?.blog || [];
+
+
+console.log(data, 'published')
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <article className="lg:col-span-2 mx-auto px-4 py-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-4">
-          English Breakfast Tea With Tasty Donut Desserts
+          {data.title}
         </h1>
-        <div className="text-sm text-gray-500">March 2, 2024</div>
+        {/* <div className="text-sm text-gray-500">{data?.createdAt.slice(0, 10)}</div> */}
       </header>
+      
 
-      <div className="mb-8">
-        <Image
-          src={img}
-          alt="Tea and donuts on wooden table"
-          width={800}
-          height={400}
-          className="rounded-lg"
-        />
-      </div>
-{[1,2,3,4].map((index) => (
-   
-      <div key={index} className="prose prose-gray max-w-none mb-8">
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipiscing elit. Vestibulum tempor felis eu leo mollis mattis. 
-          Sed vitae enim quis mi tincidunt tempor. Sed volutpat nulla vitae magna iaculis, sit amet imperdiet 
-          metus maximus.
-        </p>
-      </div> 
-   ) )}
+      <div className="prose prose-gray max-w-none mb-8">
+  {data.content && data.images ? (
+    <>
+      {data.content.map((paragraph, index) => (
+        <div key={index}>
+          {/* Display image if it exists at this index */}
+          {data.images[index] && (
+            <div className="mb-8">
+              <Image
+                src={data.images[index]}
+                alt={`Image ${index + 1}`}
+                width={800}
+                height={400}
+                className="rounded-lg"
+              />
+            </div>
+          )}
+
+          {/* Display content paragraph */}
+          <p>{paragraph}</p>
+        </div>
+      ))}
+
+      {/* Display any remaining images if there are more images than content */}
+      {data.images.length > data.content.length &&
+        data.images.slice(data.content.length).map((image, index) => (
+          <div key={data.content.length + index} className="mb-8">
+            <Image
+              src={image}
+              alt={`Image ${data.content.length + index + 1}`}
+              width={800}
+              height={400}
+              className="rounded-lg"
+            />
+          </div>
+        ))}
+    </>
+  ) : (
+    <p>Loading...</p> // Fallback UI while data is being fetched
+  )}
+</div>
 
       <div className="flex items-center gap-4 mb-12">
         <button className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">

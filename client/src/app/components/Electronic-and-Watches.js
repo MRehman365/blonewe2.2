@@ -23,13 +23,11 @@ export default function Electronics({handleview}) {
   }, [dispatch]);
   const product = Array.isArray(products) ? products : products.menu || [];
 
-  console.log(product)
 
   useEffect(() => {
     dispatch(fetchCategories()) 
   },[dispatch])
   const category = Array.isArray(categories) ? categories : categories.category || [];
-  console.log(category, 'category');
 
   const filteredByCategory = product.filter(product => product.category === category[0]?.name);
 
@@ -82,7 +80,7 @@ export default function Electronics({handleview}) {
               <div key={i} className="h-full">
             <div className="group relative overflow-hidden w-full transition-all duration-300 h-[368px] flex flex-col border border-gray-200 mx-auto">
               <div className="relative aspect-square">
-                <Link href={`/product/${item.id}`} className="overflow-hidden">
+                <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
                     src={item?.image[0]}
                     alt={item?.name}

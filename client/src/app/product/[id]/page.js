@@ -35,6 +35,9 @@ import prodcut9 from "../../assets/image-1-7-450x450.png";
 import prodcut10 from "../../assets/image-1-17-450x450.png";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductById } from "@/store/reducer/productReducer";
+import { addToCart } from "@/store/reducer/cartReducer";
+import { addToWishlist } from "@/store/reducer/wishlistReducer";
+import { toast } from "react-toast";
 
 export default function ProductInfo({ params }) {
   const { singleproduct } = useSelector((state) => state.products);
@@ -42,13 +45,22 @@ export default function ProductInfo({ params }) {
   const data = use(params);
   const myid = data;
   const id = myid.id;
+  const userId = localStorage.getItem("userid");
+
+  
+  const product = Array.isArray(singleproduct)
+    ? singleproduct
+    : singleproduct?.menu || [];
+  const pImages = Array.isArray(product) ? product : product.image || [] ;
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   const handleOpenPopup = () => setIsPopupVisible(true);
   const handleClosePopup = () => setIsPopupVisible(false);
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(img1);
+  const [selectedImage, setSelectedImage] = useState(
+    pImages.length > 0 ? pImages[0] : "/placeholder.png"
+  );
   const [backgroundPosition, setBackgroundPosition] = useState("0% 0%");
   const imageRef = useRef(null);
   // const [product, setProduct] = useState(null);
@@ -65,17 +77,32 @@ export default function ProductInfo({ params }) {
     dispatch(getProductById(id));
   }, [dispatch]);
 
-  const product = Array.isArray(singleproduct)
-    ? singleproduct
-    : singleproduct?.menu || [];
-
-  const thumbnails = [img1, img2, img1];
+    const thumbnails = pImages.length > 0 ? pImages.slice(0, 3) : [];
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
   const decrementQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
-  // const singleproduct = products.find((p) => p.id === id);
+  const handlecart = (productId) => {
+    dispatch(addToCart({ userId, productId, quantity})).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
+   } 
+
+   const handlewish = (productId) => {
+    dispatch(addToWishlist({userId, productId})).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
+
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
@@ -92,13 +119,15 @@ export default function ProductInfo({ params }) {
             <MdOutlineZoomOutMap className="h-4 w-4" />
           </button>
           <div
-            className="relative w-[300px] h-[300px] md:w-[600px] md:h-[600px] overflow-hidden mx-auto"
+            className="relative w-full h-[400px] md:w-[600px] md:h-[600px] overflow-hidden mx-auto"
             onMouseMove={handleMouseMove}
           >
             {/* Main Image */}
             <Image
               ref={imageRef}
-              src={selectedImage} // Update this to your image path
+              src={selectedImage} 
+              height={400}
+              width={400}
               alt="Hover to magnify"
               className="object-cover w-full h-full rounded-lg"
             />
@@ -185,13 +214,13 @@ export default function ProductInfo({ params }) {
               </button>
             </div>
             <div>
-              <button className="flex-1 bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition duration-200">
+              <button onClick={() => handlecart(product._id)} className="flex-1 bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition duration-200">
                 Add to cart
               </button>
             </div>
           </div>
 
-          <button className="w-full py-2 px-4  transition duration-200 flex items-center justify-start">
+          <button onClick={() => handlewish(product._id)} className="w-full py-2 px-4  transition duration-200 flex items-center justify-start">
             <FaHeart className="mr-2 h-4 w-4" />
             Add to wishlist
             <span className="ml-2 text-gray-400">
