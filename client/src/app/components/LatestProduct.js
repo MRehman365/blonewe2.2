@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { FaRegHeart, FaStar } from "react-icons/fa";
+import { FaRegHeart, FaStar, FaShoppingCart } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -13,8 +13,7 @@ import { addToWishlist } from "@/store/reducer/wishlistReducer";
 import { addToCart } from "@/store/reducer/cartReducer";
 
 const LatestProduct = ({ handleview }) => {
-
-  const { products } = useSelector((state) => state.products);
+  const { products, loading, error } = useSelector((state) => state.products);
   const dispatch = useDispatch();
 
   const userId = localStorage.getItem('userid');
@@ -22,16 +21,24 @@ const LatestProduct = ({ handleview }) => {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-  
- const handlecart = (productId) => {
-  dispatch(addToCart({ userId, productId})).then((res) => {
-    if (res?.payload?.success) {
-      toast.success(res.payload.message);
-    } else {
-      toast.error(res.payload.message);
-    }
-  });
- } 
+
+  const [cartLoadingStates, setCartLoadingStates] = useState({});
+  const [inCartStates, setInCartStates] = useState({});
+
+  const handlecart = (productId) => {
+    setCartLoadingStates((prev) => ({ ...prev, [productId]: true }));
+
+    dispatch(addToCart({ userId, productId })).then((res) => {
+      setCartLoadingStates((prev) => ({ ...prev, [productId]: false }));
+
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+        setInCartStates((prev) => ({ ...prev, [productId]: true }));
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
+  };
 
   const product = Array.isArray(products) ? products : products.menu || [];
 
@@ -48,15 +55,14 @@ const LatestProduct = ({ handleview }) => {
   }, []);
 
   const handlewish = (productId) => {
-    dispatch(addToWishlist({userId, productId})).then((res) => {
+    dispatch(addToWishlist({ userId, productId })).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
-
-  }
+  };
 
   const days = Math.floor(timeRemaining / (24 * 60 * 60));
   const hours = Math.floor((timeRemaining % (24 * 60 * 60)) / (60 * 60));
@@ -98,6 +104,7 @@ const LatestProduct = ({ handleview }) => {
       },
     ],
   };
+
   return (
     <div className="max-w-7xl mx-auto p-2 overflow-hidden">
       <div className="flex justify-between py-2">
@@ -191,10 +198,20 @@ const LatestProduct = ({ handleview }) => {
                 </div>
                 <div className="flex items-center justify-between mt-auto">
                   <button
-                  onClick={() => handlecart(item._id)}
-                    className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80"
+                    onClick={() => handlecart(item._id)}
+                    className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80 flex items-center justify-center"
+                    disabled={cartLoadingStates[item._id] || inCartStates[item._id]}
                   >
-                    Add to cart
+                    {cartLoadingStates[item._id] ? (
+                      "Adding..."
+                    ) : inCartStates[item._id] ? (
+                      <>
+                        <FaShoppingCart className="mr-2" />
+                        Product in Cart
+                      </>
+                    ) : (
+                      "Add to cart"
+                    )}
                   </button>
                 </div>
               </div>

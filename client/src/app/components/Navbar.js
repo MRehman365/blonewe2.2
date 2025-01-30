@@ -135,7 +135,7 @@ dispatch(getUserById(id))
 
   useEffect(() => {
     dispatch(getCart(userId))
-  },[dispatch])
+  },[dispatch, cartlist?.length])
   
   const cartno = Array.isArray(cartlist) ? cartlist : cartlist?.cart || [];
 

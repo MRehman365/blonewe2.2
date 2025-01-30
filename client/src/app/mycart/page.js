@@ -12,23 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function ShoppingCart() {
   
-const { cartlist } = useSelector((state) => state.cart)
+const { cartlist, loading, error } = useSelector((state) => state.cart)
 const dispatch = useDispatch();
-  const products = [
-    {
-      id: "electrolux",
-      name: "ELECTROLUX EW6S226SUI",
-      price: 190.0,
-      image: img1,
-    },
-    {
-      id: "ecobee",
-      name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-      price: 130.0,
-      image: img1,
-    },
-  ];
-
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {

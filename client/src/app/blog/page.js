@@ -69,9 +69,11 @@ export default function BlogPost() {
             <p className="text-gray-500 leading-relaxed">
            {item?.content[0]}
             </p>
+            <Link href={`/blog/SingleBlog/${item._id}`} >
             <button className="mt-4 px-4 py-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-gray-300">
               Read More
             </button>
+            </Link>
           </article>
         ))}
         </div>
@@ -92,7 +94,7 @@ export default function BlogPost() {
                   />
                   <div>
                     <Link
-                      href="#"
+                     href={`/blog/SingleBlog/${post._id}`}
                       className="font-medium text-gray-500 hover:text-blue-600"
                     >
                       {post.title}

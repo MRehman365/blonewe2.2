@@ -5,7 +5,7 @@ import { CiShare2 } from "react-icons/ci"
 import { FiMessageCircle } from "react-icons/fi"
 import img from '../../../assets/about-image-2.jpg'
 import { useDispatch, useSelector } from "react-redux"
-import { getBlogById } from "@/store/reducer/blogsReducer"
+import { fetchBlogs, getBlogById } from "@/store/reducer/blogsReducer"
 import { use, useEffect } from "react";
 
 const recentPosts = [
@@ -38,7 +38,7 @@ const recentPosts = [
   ];
 
 export default function BlogPost({ params }) {
-const { singleblog } = useSelector((state) => state.blogs)
+const { singleblog, blogsdata } = useSelector((state) => state.blogs)
 const myid = use(params)
 const id = myid.id
 
@@ -52,13 +52,19 @@ useEffect(() => {
 
 const data = Array.isArray(singleblog) ? singleblog : singleblog?.blog || [];
 
+useEffect(() => {
+  dispatch(fetchBlogs());
+}, [dispatch]);
+
+const recent = Array.isArray(blogsdata) ? blogsdata : blogsdata?.blog || [];
+
 
 console.log(data, 'published')
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <article className="lg:col-span-2 mx-auto px-4 py-8">
+    <article className="lg:col-span-2 mx-auto md:px-4 py-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight mb-4">
           {data.title}
@@ -74,13 +80,13 @@ console.log(data, 'published')
         <div key={index}>
           {/* Display image if it exists at this index */}
           {data.images[index] && (
-            <div className="mb-8">
+            <div className="mb-8 w-full overflow-hidden rounded-lg">
               <Image
                 src={data.images[index]}
                 alt={`Image ${index + 1}`}
-                width={800}
+                width={400}
                 height={400}
-                className="rounded-lg"
+                className="rounded-lg object-cover md:h-[400px]  max-w-[100%] mx-auto md:w-full flex"
               />
             </div>
           )}
@@ -97,9 +103,9 @@ console.log(data, 'published')
             <Image
               src={image}
               alt={`Image ${data.content.length + index + 1}`}
-              width={800}
-              height={400}
-              className="rounded-lg"
+              width={100}
+              height={100}
+              className="rounded-lg h-[400px] w-full flex"
             />
           </div>
         ))}
@@ -186,22 +192,24 @@ console.log(data, 'published')
           <div className="p-4 bg-[#ffffff02] rounded-md">
             <h3 className="text-lg font-bold mb-4">Recent Posts</h3>
             <div className="space-y-4">
-              {recentPosts.map((post, index) => (
+            {recent.map((post, index) => (
                 <div key={index} className="flex gap-4">
                   <Image
-                    src={post.image}
-                    alt=""
+                    src={post?.images[0]}
+                    height={200}
+                    width={200}
+                    alt="blog"
                     className="h-20 w-20 rounded-lg object-cover"
                   />
                   <div>
                     <Link
-                      href="#"
+                      href={`/blog/SingleBlog/${post._id}`}
                       className="font-medium text-gray-500 hover:text-blue-600"
                     >
                       {post.title}
                     </Link>
                     <time className="block text-sm text-gray-500">
-                      {post.date}
+                    Publish at : {post.createdAt.slice(0, 10)}
                     </time>
                   </div>
                 </div>

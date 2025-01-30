@@ -114,9 +114,9 @@ const FeauredProduct = ({ handleview }) => {
           </p>
           <div className="">
             <div className="flex gap-6">
-              {[category[0]?.name, category[1]?.name, category[2]?.name].map((tab) => (
+              {[category[0]?.name, category[1]?.name, category[2]?.name].map((tab, index) => (
                 <button
-                  key={tab}
+                  key={index}
                   className={`relative h-9 rounded-full px-4 font-medium text-[12px] md:text-base  ${
                     activeTab === tab
                       ? " bg-gray-400 rounded-full text-white"
@@ -144,7 +144,7 @@ const FeauredProduct = ({ handleview }) => {
   ) : (
         <Slider {...settings} className="grid gap-1">
         {filteredByCategory.slice(0, 10).map((item, index) => (
-              <div key={item._id} className="h-full">
+              <div key={index} className="h-full">
             <div className="group relative overflow-hidden w-full transition-all duration-300 h-[378px] flex flex-col border border-gray-200 mx-auto">
               <div className="relative aspect-square">
                 <Link href={`/product/${item._id}`} className="overflow-hidden">
@@ -228,7 +228,7 @@ const FeauredProduct = ({ handleview }) => {
   ) : (
         <Slider {...settings} className="grid gap-1">
         {filteredByCategory2.slice(0, 10).map((item, index) => (
-              <div key={item._id} className="h-full">
+              <div key={index} className="h-full">
             <div className="group relative overflow-hidden w-full transition-all duration-300 h-[378px] flex flex-col border border-gray-200 mx-auto">
               <div className="relative aspect-square">
                 <Link href={`/product/${item._id}`} className="overflow-hidden">
@@ -312,7 +312,7 @@ const FeauredProduct = ({ handleview }) => {
   ) : (
         <Slider {...settings} className="grid gap-1">
         {filteredByCategory3.slice(0, 10).map((item, index) => (
-              <div key={item._id} className="h-full">
+              <div key={index} className="h-full">
             <div className="group relative overflow-hidden w-full transition-all duration-300 h-[378px] flex flex-col border border-gray-200 mx-auto">
               <div className="relative aspect-square">
                 <Link href={`/product/${item._id}`} className="overflow-hidden">

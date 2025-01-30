@@ -32,10 +32,28 @@ export const getProductById = createAsyncThunk(
   }
 );
 
+export const getSortedAndFilteredProducts = createAsyncThunk(
+  "products/getSortedAndFilteredProducts",
+  async ({ category, sortBy, minPrice, maxPrice }, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/products`, {
+        params: { category, sortBy, minPrice, maxPrice },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching sorted and filtered products:", error.response);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch sorted and filtered products"
+      );
+    }
+  }
+);
+
 // Initial State
 const initialState = {
   products: [],
   singleproduct: [],
+  filteredProducts: [], 
   product: null,
   loading: false,
   error: null,
@@ -51,6 +69,9 @@ const productsSlice = createSlice({
     },
     clearProduct: (state) => {
       state.product = null;
+    },
+    clearFilteredProducts: (state) => {
+      state.filteredProducts = [];
     },
   },
   extraReducers: (builder) => {
@@ -83,9 +104,24 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
+
+    // Handle getSortedAndFilteredProducts
+    builder
+      .addCase(getSortedAndFilteredProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getSortedAndFilteredProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.filteredProducts = action.payload; // Store filtered products
+      })
+      .addCase(getSortedAndFilteredProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { clearError, clearProduct } = productsSlice.actions;
+export const { clearError, clearProduct, clearFilteredProducts } = productsSlice.actions;
 
 export default productsSlice.reducer;

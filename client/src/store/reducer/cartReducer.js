@@ -78,6 +78,12 @@ const cartSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    clearCart: (state) => {
+      state.cart = [];
+    },
+    clearCartlist: (state) => {
+      state.cartlist = [];
+    },
   },
   extraReducers: (builder) => {
     builder
