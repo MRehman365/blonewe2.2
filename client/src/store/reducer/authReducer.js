@@ -67,6 +67,19 @@ export const addUserAddress = createAsyncThunk(
     }
   );
 
+  export const getUserDetails = createAsyncThunk(
+    'auth/me',
+    async (_, { rejectWithValue, fulfillWithValue }) => {
+      try {
+        const { data } = await api.get('/me',{withCredentials:true});
+     
+        return fulfillWithValue(data);
+      } catch (error) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  );
+
 // Initial state
 const initialState = {
   user: null,
@@ -74,6 +87,7 @@ const initialState = {
   error: null,
   singleuser: null,
   useraddress: null,
+  userDetail: null,
 };
 
 // User slice
@@ -155,6 +169,21 @@ const userSlice = createSlice({
               .addCase(getAddressById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+              })
+
+              .addCase(getUserDetails.pending, (state) => {
+                state.loader = true;
+              })
+              .addCase(getUserDetails.rejected, (state, { payload }) => {
+                // console.log('Login rejected payload:', payload); // Log payload
+                state.errorMessage = payload?.error || 'An error occurred';
+                state.loader = false;
+              })
+              .addCase(getUserDetails.fulfilled, (state, { payload }) => {     
+                 let userDetail=payload.data;
+                 state.successMessage = payload.message;
+                 state.loader = false;
+                 state.userDetail=userDetail;
               })
   },
 });

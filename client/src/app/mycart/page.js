@@ -57,31 +57,31 @@ export default function ShoppingCart() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="mb-6">
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-4 text-sm font-medium text-gray-600 mb-4">
+            <div className="grid grid-cols-4 md:grid-cols-6 gap-4 text-sm font-medium text-gray-600 mb-4">
               <div className="col-span-2">Product</div>
               <div className="hidden md:block">Price</div>
               <div className="hidden md:block">Subtotal</div>
               <div>Quantity</div>
-              <div className="hidden md:block">Remove</div>
+              <div className="block">Remove</div>
             </div>
 
             <div className="space-y-4">
               {cartno.map((product, i) => (
                 <div
                   key={i}
-                  className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center border-b pb-4"
+                  className="grid grid-cols-4 md:grid-cols-6 gap-4 items-center border-b pb-4"
                 >
                   <div className="col-span-2 flex gap-4">
                     <Image
                       src={product.productId.image[0]}
                       alt="img"
-                      width={80}
-                      height={80}
+                      width={50}
+                      height={50}
                       className=" object-cover"
                     />
                     <div>
                       <h3 className="font-medium text-[15px]">
-                        {product.productId.name}
+                        {product.productId.name.slice(0, 30)}..
                       </h3>
                     </div>
                   </div>
@@ -112,7 +112,7 @@ export default function ShoppingCart() {
                       </button>
                     </div>
                   </div>
-                  <div className="hidden md:block">
+                  <div className="block">
                     <button className="p-1 bg-red-500 rounded-full ml-2" onClick={() => deleteproduct(product._id)}>
                       <FiX className="w-4 h-4 text-white" />
                     </button>

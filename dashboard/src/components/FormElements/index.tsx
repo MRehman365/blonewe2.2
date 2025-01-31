@@ -35,6 +35,7 @@ const FormElements = () => {
     sku: "",
     description: "",
     points: [""],
+    image: [], // Array to store image URLs
   });
 
   const dispatch = useDispatch<AppDispatch>();
@@ -47,13 +48,40 @@ const FormElements = () => {
     ? categories
     : categories?.category || [];
 
-
-  const handleDetailImagesChange = (e) => {
+  const handleDetailImagesChange = async (e) => {
     const files = Array.from(e.target.files);
-    const imageUrls = files.map((file) => URL.createObjectURL(file));
+
+    // Upload each file to ImgBB and get the URLs
+    const imageUrls = await Promise.all(
+      files.map(async (file) => {
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+          const response = await fetch(
+            `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`, // Replace with your ImgBB API key
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          const data = await response.json();
+          return data.data.url; // Return the image URL from ImgBB
+        } catch (error) {
+          console.error("Error uploading image to ImgBB:", error);
+          return null;
+        }
+      })
+    );
+
+    // Filter out any failed uploads
+    const validImageUrls = imageUrls.filter((url) => url !== null);
+
+    // Update the form data with the image URLs
     setFormData((prevData) => ({
       ...prevData,
-      image: imageUrls,
+      image: validImageUrls,
     }));
   };
 
@@ -63,20 +91,34 @@ const FormElements = () => {
       points: [...prevData.points, ""], // Add new empty string to points array
     }));
   };
+
   const handlePointChange = (index, value) => {
     const newPoints = [...formData.points];
     newPoints[index] = value; // Update specific point
     setFormData({ ...formData, points: newPoints });
   };
 
-  const handlesubmit = (e) => {
+  const handlesubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    dispatch(addProduct(formData)).then((res) => {
+
+    // Ensure at least one image is uploaded
+    if (!formData.image || formData.image.length === 0) {
+      toast.error("Please upload at least one image.");
+      return;
+    }
+
+    // Prepare the data to send to the backend
+    const productData = {
+      ...formData,
+      points: formData.points.filter((point) => point.trim() !== ""), // Remove empty points
+    };
+
+    // Dispatch the addProduct action
+    dispatch(addProduct(productData)).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
-        toast(res.payload.message);
+        toast.error(res.payload.message);
       }
     });
   };

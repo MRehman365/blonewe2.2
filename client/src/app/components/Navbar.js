@@ -276,7 +276,7 @@ dispatch(getUserById(id))
           {/* Search Results */}
           {query && (
             <div
-              className="absolute w-full mt-2 bg-white text-black rounded-md shadow-lg z-50 max-h-60 overflow-y-auto"
+              className="absolute w-full mt-2 bg-white text-black rounded-md shadow-lg z-[9999] max-h-[500px] overflow-y-auto"
               style={{
                 backgroundColor: theme === "light" ? "#fff" : "#1a202c",
                 color: theme === "light" ? "#000" : "#fff",
@@ -357,10 +357,10 @@ dispatch(getUserById(id))
           <div className="flex flex-wrap items-center justify-between py-4">
             <div className="flex flex-wrap items-center space-x-4 md:space-x-8">
               {/*  */}
-              <div className="w-[330px] relative hidden md:block">
+              <div className="w-[330px] relative hidden md:block ">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center justify-between text-gray-500 w-full px-4 py-2 text-left  border border-gray-300 rounded-t-[8px] focus:outline-none focus:ring-none "
+                  className="flex items-center -z-[1] justify-between text-gray-500 w-full px-4 py-2 text-left  border border-gray-300 rounded-t-[8px] focus:outline-none focus:ring-none "
                   aria-expanded={isOpen}
                 >
                   <MdOutlineMenu className="h-5 w-5 transition-transform duration-200" />

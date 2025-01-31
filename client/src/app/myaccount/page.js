@@ -21,6 +21,8 @@ import { addUserAddress, getAddressById, getUserById } from "@/store/reducer/aut
 import { useDispatch, useSelector } from "react-redux";
 import api from "@/store/api";
 import { toast } from "react-toast";
+import { deleteWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
+import { FaPinterestP } from "react-icons/fa6";
 
 const products = [
   {
@@ -63,6 +65,8 @@ const navigation = [
 ];
 
 export default function AccountPage() {
+  
+  const { wishlistproduct } = useSelector((state) => state.wishlist);
   const { singleuser, useraddress } = useSelector((state) => state.auth)
   const id = localStorage.getItem('userid');
   const [currentSection, setCurrentSection] = useState("#dashboard");
@@ -82,6 +86,35 @@ export default function AccountPage() {
   })
   const dispatch = useDispatch();
 
+const userId = localStorage.getItem('userid');
+
+useEffect(() => {
+  dispatch(getWishlist(userId));
+},[dispatch])
+
+const wish = Array.isArray(wishlistproduct) ? wishlistproduct : wishlistproduct?.wishlist || [];
+
+const deleteWish = async (id) => {
+  await dispatch(deleteWishlist(id)).then((res) => {
+    if (res?.payload?.success) {
+      toast.success(res.payload.message);
+    } else {
+      toast.error(res.payload.message);
+    }
+  });
+  dispatch(getWishlist(userId))
+}
+
+const handlecart = (productId) => {
+  dispatch(addToCart({ userId, productId})).then((res) => {
+    if (res?.payload?.success) {
+      toast.success(res.payload.message);
+    } else {
+      toast.error(res.payload.message);
+    }
+  });
+ } 
+
   const handleEditClick = (type) => {
     setIsEditing(type);
   };
@@ -96,7 +129,7 @@ export default function AccountPage() {
 dispatch(getUserById(id))
   },[dispatch])
 
-  const handleaddress = () => {
+  const handleaddress = (e) => {
     e.preventDefault();
     dispatch(addUserAddress({userid: id, addressData})).then((res) => {
       if (res?.payload?.success) {
@@ -397,7 +430,7 @@ const getaddress = Array.isArray(useraddress) ? useraddress : useraddress?.data 
           </button>
           {!isEditing || isEditing !== "billing" ? (
             <div>
-            {getaddress.map((item, index) => (
+            {getaddress?.map((item, index) => (
             <p key={index} className="text-gray-700 mt-2">
             {item.name}
               <br />
@@ -483,102 +516,85 @@ const getaddress = Array.isArray(useraddress) ? useraddress : useraddress?.data 
 
           {currentSection === "#wishlist" && (
             <div className="max-w-7xl mx-auto p-4 space-y-6 mt-8">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b text-sm">
-                    <th className="text-left py-2">Product</th>
-                    <th className="text-left py-2 hidden md:table-cell">
-                      Price
-                    </th>
-                    <th className="text-left py-2 hidden md:table-cell">
-                      Date Added
-                    </th>
-                    <th className="text-left py-2 hidden md:table-cell">
-                      Stock
-                    </th>
-                    <th className="text-left py-2">Add to Cart</th>
-                    <th className="w-[50px] hidden md:table-cell">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product) => (
-                    <tr key={product.id} className="border-b">
-                      {/* Product name with image */}
-                      <td className="py-4 flex items-center gap-3">
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          width={40}
-                          height={40}
-                          className="rounded"
-                        />
-                        <span className="text-sm">{product.name}</span>
-                      </td>
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b">
+            <th className="text-left py-2">Product</th>
+            <th className="text-left py-2 hidden md:table-cell">Price</th>
+            <th className="text-left py-2 hidden md:table-cell">Date Added</th>
+            <th className="text-left py-2 hidden md:table-cell">Stock</th>
+            <th className="text-left py-2">Add to Cart</th>
+            <th className="w-[50px] hidden md:table-cell">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {wish.map((product, i) => (
+            <tr key={i} className="border-b">
+              <td className="py-4 flex items-center gap-3 text-sm">
+                <Image
+                  src={product.productId?.image[0]}
+                  alt={product.productId?.name}
+                  width={60}
+                  height={60}
+                  sizes='60'
+                  className="rounded"
+                />
+                <span>{product.productId?.name}</span>
+              </td>
 
-                      {/* Price */}
-                      <td className="py-4 hidden md:table-cell text-sm">
-                        <div>
-                          <span className="line-through text-gray-500 mr-2">
-                          ₹{product.originalPrice.toFixed(2)}
-                          </span>
-                          <span className="font-medium">
-                          ₹{product.salePrice.toFixed(2)}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Date Added */}
-                      <td className="py-4 hidden md:table-cell text-sm">
-                        {product.dateAdded}
-                      </td>
-
-                      {/* Stock */}
-                      <td className="py-4 hidden md:table-cell text-sm">
-                        <span
-                          className={
-                            product.inStock ? "text-green-600" : "text-red-600"
-                          }
-                        >
-                          {product.inStock ? "In Stock" : "Out of Stock"}
-                        </span>
-                      </td>
-
-                      {/* Add to Cart */}
-                      <td className="py-4">
-                        <button className="px-2 py-2 bg-green-500 text-[12px] text-white rounded-md">
-                          Add to Cart
-                        </button>
-                      </td>
-
-                      {/* Remove button */}
-                      <td className="py-4 hidden md:table-cell">
-                        <button className="text-white bg-red-500 rounded-full text-sm">
-                          <IoCloseOutline size={20} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <div className="flex items-center gap-2">
-                <span>Share on:</span>
-                <div className="flex gap-2">
-                  <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
-                    <FaFacebookF />
-                  </button>
-                  <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
-                    <FaTwitter />
-                  </button>
-                  <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
-                    <FaPinterest />
-                  </button>
-                  <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
-                    <MdEmail />
-                  </button>
+              {/* Price */}
+              <td className="py-4 hidden md:table-cell">
+                <div>
+                  <span className="font-medium text-sm">₹{(product.productId?.price * (1 - product.productId?.discount / 100)).toFixed(2)}</span>
                 </div>
-              </div>
-            </div>
+              </td>
+
+              {/* Date Added */}
+              <td className="py-4 hidden md:table-cell text-sm">{product.productId?.createdAt.slice(0, 10)}</td>
+
+              {/* Stock */}
+              <td className="py-4 hidden md:table-cell text-sm">
+                <span className={product.productId?.isAvailable ? "text-green-600" : "text-red-600"}>
+                  {product.productId?.isAvailable ? "In Stock" : "Out of Stock"}
+                </span>
+              </td>
+
+              {/* Add to Cart */}
+              <td className="py-4">
+                <button onClick={() => handlecart(product.productId?._id)} className="p-2 bg-green-500 text-sm text-white rounded-sm">
+                  Add to Cart
+                </button>
+              </td>
+
+              {/* Remove button */}
+              <td className="py-4 hidden md:table-cell">
+                <button onClick={() => deleteWish(product._id)} className="text-white bg-red-500 rounded-full">
+                  <IoCloseOutline size={18} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="flex items-center gap-2">
+        <span>Share on:</span>
+        <div className="flex gap-2">
+          <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
+            <FaFacebookF />
+          </button>
+          <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
+            <FaTwitter />
+          </button>
+          <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
+            <FaPinterestP />
+          </button>
+          <button className="p-2 border rounded-full hover:bg-[#004798] hover:text-white">
+            <MdEmail />
+          </button>
+        </div>
+      </div>
+    </div>
           )}
 
           {currentSection === "#logout" && (

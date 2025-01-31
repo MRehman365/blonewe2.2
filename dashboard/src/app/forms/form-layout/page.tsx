@@ -27,14 +27,15 @@ const FormLayout = () => {
     dispatch(getProducts())
   }, [dispatch]);
 
-  const handledelete = (id) => {
-    dispatch(deleteProduct(id)).then((res) => {
+  const handledelete = async (id) => {
+   await dispatch(deleteProduct(id)).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast(res.payload.message);
       }
     });
+    dispatch(getProducts());
   }
 
 // Ensure products is an array
@@ -92,9 +93,10 @@ console.log('Products:', menu);
               <div className="h-12.5 w-15 rounded-md">
                 <Image
                   src={product?.image[0]}
-                  width={60}
+                  width={50}
                   height={50}
                   alt="Product"
+                  className="h-16 w-auto overflow-hidden object-cover rounded-lg"
                 />
               </div>
               <p className="text-sm text-black dark:text-white">
