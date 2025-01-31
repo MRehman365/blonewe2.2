@@ -32,6 +32,21 @@ export const getProductById = createAsyncThunk(
   }
 );
 
+export const searchProducts = createAsyncThunk(
+  "products/searchProducts",
+  async (query, { rejectWithValue }) => {
+      try {
+          const response = await api.get(`/search?query=${query}`);
+          return response.data;
+      } catch (error) {
+          console.error("Error in searchProducts thunk:", error);
+          return rejectWithValue(
+              error.response?.data?.message || "Failed to search products"
+          );
+      }
+  }
+);
+
 // Initial State
 const initialState = {
   products: [],
@@ -52,9 +67,6 @@ const productsSlice = createSlice({
     },
     clearProduct: (state) => {
       state.product = null;
-    },
-    clearFilteredProducts: (state) => {
-      state.filteredProducts = [];
     },
   },
   extraReducers: (builder) => {
@@ -86,7 +98,21 @@ const productsSlice = createSlice({
       .addCase(getProductById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+      .addCase(searchProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.filteredProducts = action.payload.products; 
+      })
+      .addCase(searchProducts.rejected, (state, action) => {
+        console.error("Search products rejected:", action.payload);
+        state.loading = false;
+        state.error = action.payload;
+    });
   },
 });
 

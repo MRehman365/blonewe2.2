@@ -41,6 +41,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserById } from "@/store/reducer/authReducer";
 import { getWishlist } from "@/store/reducer/wishlistReducer";
 import { getCart } from "@/store/reducer/cartReducer";
+import { searchProducts } from "@/store/reducer/productReducer";
 
 const categories = [
   {
@@ -105,6 +106,22 @@ const Navbar = () => {
 const { singleuser } = useSelector((state) => state.auth)
 const { wishlistproduct } = useSelector((state) => state.wishlist);
 const { cartlist } = useSelector((state) => state.cart)
+const { filteredProducts, loading, error } = useSelector((state) => state.products);
+const [query, setQuery] = useState("");
+
+// Handle search input changes
+const handleSearch = (e) => {
+  const value = e.target.value;
+  setQuery(value);
+
+  if (value) {
+    // Dispatch the searchProducts action with the query
+    dispatch(searchProducts(value));
+  } else {
+    // Clear results if the query is empty
+    dispatch({ type: "products/clearFilteredProducts" }); // Clear filtered products
+  }
+};
 
 
   const initialTime = 1 * 24 * 60 * 60 + 14 * 60 * 60 + 20 * 60 + 10;
@@ -166,22 +183,8 @@ dispatch(getUserById(id))
     "Huawei P40",
   ];
 
-  const [query, setQuery] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-
-    if (value) {
-      const results = products.filter((product) =>
-        product.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredResults(results);
-    } else {
-      setFilteredResults([]);
-    }
-  };
 
   return (
     <div className="">
@@ -246,51 +249,60 @@ dispatch(getUserById(id))
 
             {/* Search Bar */}
             <div className="flex-1 max-w-4xl mx-0 md:mx-8 w-full mb-4 md:mb-0 relative">
-              <div className="relative">
-                <input
-                  type="search"
-                  placeholder="Search for products..."
-                  className="w-full bg-white text-black focus:ring-1 focus:ring-primary outline-none pl-4 pr-10 py-2 rounded-md"
-                  value={query}
-                  onChange={handleSearch}
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="absolute right-3 top-2.5 h-5 w-5 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search for products..."
+              className="w-full bg-white text-black focus:ring-1 focus:ring-primary outline-none pl-4 pr-10 py-2 rounded-md"
+              value={query}
+              onChange={handleSearch}
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute right-3 top-2.5 h-5 w-5 text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
 
-              {/* Search Results */}
-              {filteredResults.length > 0 && (
-                <ul className="absolute  shadow-lg rounded-md w-full mt-1 z-10 max-h-60 overflow-y-auto"  style={{
-        backgroundColor: theme === "light" ? "rgba(255, 255, 255, 1)" : "rgba(26, 32, 44, 1)",
-        color: theme === "light" ? "#000" : "#9B9B9B",
-      }}>
-                  {filteredResults.map((result, index) => (
-                    <li
-                      key={index}
-                      className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        setQuery(result);
-                        setFilteredResults([]);
-                      }}
-                    >
-                      {result}
-                    </li>
-                  ))}
-                </ul>
+          {/* Search Results */}
+          {query && (
+            <div
+              className="absolute w-full mt-2 bg-white text-black rounded-md shadow-lg z-50 max-h-60 overflow-y-auto"
+              style={{
+                backgroundColor: theme === "light" ? "#fff" : "#1a202c",
+                color: theme === "light" ? "#000" : "#fff",
+              }}
+            >
+              {loading ? (
+                <div className="px-4 py-2 text-sm text-gray-500">Loading...</div>
+              ) : error ? (
+                <div className="px-4 py-2 text-sm text-red-500">{error}</div>
+              ) : filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <Link
+                    key={product._id}
+                    href={`/product/${product._id}`}
+                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    {product.name}
+                  </Link>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-sm text-gray-500">No results found.</div>
               )}
             </div>
+          )}
+        </div>
+
 
             {/* Account Actions */}
             <div className="flex items-center space-x-6">

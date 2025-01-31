@@ -52,15 +52,19 @@ class ProductController {
     }
  }
 
-searchProducts = async (req, res) => {
+ searchProducts = async (req, res) => {
     try {
         const { query } = req.query;
-        const products = await productModal.find({ $text: { $search: query } });
+        if (!query) {
+            return res.status(400).json({ message: "Query parameter is required" });
+        }
+        const products = await productModal.find({ name: { $regex: query, $options: 'i' } });
         return res.status(200).json({ message: "Products fetched successfully", products });
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        console.error("Error in searchProducts controller:", error);
+        return res.status(500).json({ message: error.message || "Internal server error" });
     }
-}
+};
 
 }
 
