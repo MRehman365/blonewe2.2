@@ -52,37 +52,10 @@ class ProductController {
     }
  }
 
- getSortedAndFilteredProducts = async (req, res) => {
+searchProducts = async (req, res) => {
     try {
-        const { category, sortBy, minPrice, maxPrice } = req.query;
-        let query = {};
-
-        // Filter by category
-        if (category) {
-            query.category = category;
-        }
-
-        // Filter by price range
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) {
-                query.price.$gte = parseFloat(minPrice); // Greater than or equal to minPrice
-            }
-            if (maxPrice) {
-                query.price.$lte = parseFloat(maxPrice); // Less than or equal to maxPrice
-            }
-        }
-
-        // Sorting logic
-        let sortQuery = {};
-        if (sortBy === 'price_asc') {
-            sortQuery.price = 1; // Sort by price in ascending order
-        } else if (sortBy === 'price_desc') {
-            sortQuery.price = -1; // Sort by price in descending order
-        }
-
-        // Fetch products with filters and sorting
-        const products = await productModal.find(query).sort(sortQuery);
+        const { query } = req.query;
+        const products = await productModal.find({ $text: { $search: query } });
         return res.status(200).json({ message: "Products fetched successfully", products });
     } catch (error) {
         return res.status(500).json({ message: error.message });
