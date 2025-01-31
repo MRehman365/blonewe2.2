@@ -5,27 +5,18 @@ import { MdOutlineZoomOutMap } from "react-icons/md";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import prodcut1 from "../assets/image-1-1-1-450x450.png";
-import prodcut2 from "../assets/image-1-10-450x450.png";
-import prodcut3 from "../assets/image-1-11-450x450.png";
-import prodcut4 from "../assets/image-1-13-450x450.png";
-import prodcut5 from "../assets/image-1-14-450x450.png";
-import prodcut6 from "../assets/image-1-15-450x450.png";
-import prodcut7 from "../assets/image-1-16-450x450.png";
-import prodcut8 from "../assets/image-1-17-450x450.png";
-import prodcut9 from "../assets/image-1-7-450x450.png";
-import prodcut10 from "../assets/image-1-17-450x450.png";
 import Link from "next/link";
 import { toast } from "react-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "@/store/reducer/productReducer";
 import { fetchCategories } from "@/store/reducer/categoryReducer";
-import { addToCart } from "@/store/reducer/cartReducer";
-import { addToWishlist } from "@/store/reducer/wishlistReducer";
+import { addToCart, getCart } from "@/store/reducer/cartReducer";
+import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
 
 const FeauredProduct = ({ handleview }) => {
   const { products } = useSelector((state) => state.products);
   const { categories} = useSelector((state) => state.category)
+  const { cartlist } = useSelector((state) => state.cart)
   const dispatch = useDispatch();
   const userId = localStorage.getItem('userid');
 
@@ -34,13 +25,15 @@ const FeauredProduct = ({ handleview }) => {
   }, [dispatch]);
   const product = Array.isArray(products) ? products : products.menu || [];
 
-  console.log(product)
 
   useEffect(() => {
     dispatch(fetchCategories()) 
   },[dispatch])
   const category = Array.isArray(categories) ? categories : categories.category || [];
-  console.log(category, 'category onn ');
+
+  useEffect(() => {
+    dispatch(getCart(userId))
+  },[dispatch])
   
   const [activeTab, setActiveTab] = useState(category[0]?.name);
 
@@ -48,24 +41,26 @@ const FeauredProduct = ({ handleview }) => {
   const filteredByCategory2 = product.filter(product => product.category === category[1]?.name);
   const filteredByCategory3 = product.filter(product => product.category === category[2]?.name);
 
-  const handlecart = (productId) => {
-    dispatch(addToCart({ userId, productId})).then((res) => {
+  const handlecart = async (productId) => {
+   await dispatch(addToCart({ userId, productId})).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
+    dispatch(getCart(userId))
    } 
 
-   const handlewish = (productId) => {
-    dispatch(addToWishlist({userId, productId})).then((res) => {
+   const handlewish = async (productId) => {
+   await dispatch(addToWishlist({userId, productId})).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
+    dispatch(getWishlist(userId));
 
   }
 

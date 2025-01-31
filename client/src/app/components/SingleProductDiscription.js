@@ -17,8 +17,8 @@ import prodcut9 from "../assets/image-1-7-450x450.png";
 import prodcut10 from "../assets/image-1-17-450x450.png";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductById, getProducts } from "@/store/reducer/productReducer";
-import { addToWishlist } from "@/store/reducer/wishlistReducer";
-import { addToCart } from "@/store/reducer/cartReducer";
+import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
+import { addToCart, getCart } from "@/store/reducer/cartReducer";
 import { toast } from "react-toast";
 
 const reviews = [
@@ -66,26 +66,27 @@ export default function SingleProductDiscription({ handleview, id }) {
     ? products
     : products?.menu || [];
 
-    const handlecart = (productId) => {
-      dispatch(addToCart({ userId, productId})).then((res) => {
+    const handlewish = async (productId) => {
+      await dispatch(addToWishlist({ userId, productId })).then((res) => {
+         if (res?.payload?.success) {
+           toast.success(res.payload.message);
+         } else {
+           toast.error(res.payload.message);
+         }
+       });
+       dispatch(getWishlist(userId))
+     };
+  
+    const handlecart = async (productId) => {
+     await dispatch(addToCart({ userId, productId})).then((res) => {
         if (res?.payload?.success) {
           toast.success(res.payload.message);
         } else {
           toast.error(res.payload.message);
         }
       });
+      dispatch(getCart(userId))
      } 
-  
-     const handlewish = (productId) => {
-      dispatch(addToWishlist({userId, productId})).then((res) => {
-        if (res?.payload?.success) {
-          toast.success(res.payload.message);
-        } else {
-          toast.error(res.payload.message);
-        }
-      });
-  
-    }
     
 
   const averageRating =
@@ -131,7 +132,7 @@ export default function SingleProductDiscription({ handleview, id }) {
         {activeTab === "reviews" && (
           <div>
             <h2 className="text-xl md:text-2xl font-bold mb-6">
-              {reviews.length} reviews for Huawei Watch GT 2 Pro Titanium 47mm
+              {reviews.length} reviews for {product?.name}
             </h2>
 
             {/* Average Rating */}

@@ -21,14 +21,15 @@ useEffect(() => {
 
 const wish = Array.isArray(wishlistproduct) ? wishlistproduct : wishlistproduct?.wishlist || [];
 
-const deleteWish = (id) => {
-  dispatch(deleteWishlist(id)).then((res) => {
+const deleteWish = async (id) => {
+  await dispatch(deleteWishlist(id)).then((res) => {
     if (res?.payload?.success) {
       toast.success(res.payload.message);
     } else {
       toast.error(res.payload.message);
     }
   });
+  dispatch(getWishlist(userId))
 }
 
 const handlecart = (productId) => {
@@ -41,7 +42,6 @@ const handlecart = (productId) => {
   });
  } 
 
-console.log(wish, 'wishlist')
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6 mt-8">
@@ -74,7 +74,7 @@ console.log(wish, 'wishlist')
               {/* Price */}
               <td className="py-4 hidden md:table-cell">
                 <div>
-                  <span className="line-through text-gray-500 mr-2">₹{product.productId?.price.toFixed(2)}</span>
+                  <span className="line-through  mr-2 text-sm text-red-400">₹{product.productId?.price.toFixed(2)}</span>
                   <span className="font-medium">₹{(product.productId?.price * (1 - product.productId?.discount / 100)).toFixed(2)}</span>
                 </div>
               </td>

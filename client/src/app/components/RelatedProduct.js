@@ -5,127 +5,13 @@ import { MdOutlineZoomOutMap } from 'react-icons/md'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import prodcut1 from '../assets/image-1-1-1-450x450.png'
-import prodcut2 from '../assets/image-1-10-450x450.png'
-import prodcut3 from '../assets/image-1-11-450x450.png'
-import prodcut4 from '../assets/image-1-13-450x450.png'
-import prodcut5 from '../assets/image-1-14-450x450.png'
-import prodcut6 from '../assets/image-1-15-450x450.png'
-import prodcut7 from '../assets/image-1-16-450x450.png'
-import prodcut8 from '../assets/image-1-17-450x450.png'
-import prodcut9 from '../assets/image-1-7-450x450.png'
-import prodcut10 from '../assets/image-1-17-450x450.png'
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '@/store/reducer/productReducer';
-import { addToCart } from '@/store/reducer/cartReducer';
-import { addToWishlist } from '@/store/reducer/wishlistReducer';
+import { addToCart, getCart } from '@/store/reducer/cartReducer';
+import { addToWishlist, getWishlist } from '@/store/reducer/wishlistReducer';
 import { toast } from 'react-toast';
 import Link from 'next/link';
 
-const products = [
-    {
-      id: "1",
-      name: "Huawei Watch GT 2 Pro Titanium 47mm",
-      price: 79.99,
-      originalPrice: 99.99,
-      discount: 21,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut1,
-      store: "graci"
-    },
-    {
-      id: "2",
-      name: "HomePod mini — Space Gray",
-      price: 249.99,
-      originalPrice: 359.99,
-      discount: 31,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut2
-    },
-    {
-      id: "3",
-      name: "ELECTROLUX EW6S226SUI",
-      price: 190.00,
-      originalPrice: 250.00,
-      discount: 24,
-      rating: 3.33,
-      reviews: 3,
-      image: prodcut3
-    },
-    {
-      id: "4",
-      name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-      price: 130.00,
-      originalPrice: 142.00,
-      discount: 9,
-      rating: 3.67,
-      reviews: 3,
-      image: prodcut4
-    },
-    {
-      id: "5",
-      name: "Canon EOS R10 RF-S 18-45 IS STM",
-      price: 850.00,
-      originalPrice: 1099.00,
-      discount: 23,
-      rating: 4.00,
-      reviews: 3,
-      image: prodcut5
-    },
-    {
-      id: "6",
-      name: "Huawei Watch GT 2 Pro Titanium 47mm",
-      price: 79.99,
-      originalPrice: 99.99,
-      discount: 21,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut6,
-      store: "graci"
-    },
-    {
-      id: "7",
-      name: "HomePod mini — Space Gray",
-      price: 249.99,
-      originalPrice: 359.99,
-      discount: 31,
-      rating: 4.33,
-      reviews: 3,
-      image: prodcut7
-    },
-    {
-      id: "8",
-      name: "ELECTROLUX EW6S226SUI",
-      price: 190.00,
-      originalPrice: 250.00,
-      discount: 24,
-      rating: 3.33,
-      reviews: 3,
-      image: prodcut8
-    },
-    {
-      id: "9",
-      name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-      price: 130.00,
-      originalPrice: 142.00,
-      discount: 9,
-      rating: 3.67,
-      reviews: 3,
-      image: prodcut9
-    },
-    {
-      id: "10",
-      name: "Canon EOS R10 RF-S 18-45 IS STM",
-      price: 850.00,
-      originalPrice: 1099.00,
-      discount: 23,
-      rating: 4.00,
-      reviews: 3,
-      image: prodcut10
-    },
-  ]
 const RelatedProduct = ({handleview}) => {
   const { products } = useSelector((state) => state.products);
   const dispatch = useDispatch();
@@ -141,26 +27,27 @@ const RelatedProduct = ({handleview}) => {
     
   const product = Array.isArray(products) ? products : products.menu || [];
 
-  const handlecart = (productId) => {
-    dispatch(addToCart({ userId, productId})).then((res) => {
+  const handlewish = async (productId) => {
+    await dispatch(addToWishlist({ userId, productId })).then((res) => {
+       if (res?.payload?.success) {
+         toast.success(res.payload.message);
+       } else {
+         toast.error(res.payload.message);
+       }
+     });
+     dispatch(getWishlist(userId))
+   };
+
+  const handlecart = async (productId) => {
+   await dispatch(addToCart({ userId, productId})).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
+    dispatch(getCart(userId))
    } 
-
-   const handlewish = (productId) => {
-    dispatch(addToWishlist({userId, productId})).then((res) => {
-      if (res?.payload?.success) {
-        toast.success(res.payload.message);
-      } else {
-        toast.error(res.payload.message);
-      }
-    });
-
-  }
 
     const settings = {
         infinite: true,

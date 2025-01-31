@@ -18,8 +18,8 @@ import Link from "next/link"
 import { useDispatch, useSelector } from "react-redux"
 import { getProducts } from "@/store/reducer/productReducer"
 import { fetchCategories } from "@/store/reducer/categoryReducer"
-import { addToWishlist } from "@/store/reducer/wishlistReducer"
-import { addToCart } from "@/store/reducer/cartReducer"
+import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer"
+import { addToCart, getCart } from "@/store/reducer/cartReducer"
 import { toast } from "react-toast"
 
 export default function ModernFerniture({handleview}) {
@@ -41,25 +41,26 @@ export default function ModernFerniture({handleview}) {
 
   const filteredByCategory = product.filter(product => product.category === category[0]?.name);
 
-  const handlewish = (productId) => {
-    dispatch(addToWishlist({userId, productId})).then((res) => {
+  const handlewish = async (productId) => {
+    await dispatch(addToWishlist({ userId, productId })).then((res) => {
+       if (res?.payload?.success) {
+         toast.success(res.payload.message);
+       } else {
+         toast.error(res.payload.message);
+       }
+     });
+     dispatch(getWishlist(userId))
+   };
+
+  const handlecart = async (productId) => {
+   await dispatch(addToCart({ userId, productId})).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
-
-  }
-
-  const handlecart = (productId) => {
-    dispatch(addToCart({ userId, productId})).then((res) => {
-      if (res?.payload?.success) {
-        toast.success(res.payload.message);
-      } else {
-        toast.error(res.payload.message);
-      }
-    });
+    dispatch(getCart(userId))
    } 
 
   return (

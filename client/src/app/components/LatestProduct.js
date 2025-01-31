@@ -9,11 +9,12 @@ import Link from "next/link";
 import { toast } from "react-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "@/store/reducer/productReducer";
-import { addToWishlist } from "@/store/reducer/wishlistReducer";
-import { addToCart } from "@/store/reducer/cartReducer";
+import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
+import { addToCart, getCart } from "@/store/reducer/cartReducer";
 
 const LatestProduct = ({ handleview }) => {
   const { products, loading, error } = useSelector((state) => state.products);
+  const { cartlist } = useSelector((state) => state.cart)
   const dispatch = useDispatch();
 
   const userId = localStorage.getItem('userid');
@@ -22,13 +23,17 @@ const LatestProduct = ({ handleview }) => {
     dispatch(getProducts());
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(getCart(userId))
+  },[dispatch])
+
   const [cartLoadingStates, setCartLoadingStates] = useState({});
   const [inCartStates, setInCartStates] = useState({});
 
-  const handlecart = (productId) => {
+  const handlecart = async (productId) => {
     setCartLoadingStates((prev) => ({ ...prev, [productId]: true }));
 
-    dispatch(addToCart({ userId, productId })).then((res) => {
+    await dispatch(addToCart({ userId, productId })).then((res) => {
       setCartLoadingStates((prev) => ({ ...prev, [productId]: false }));
 
       if (res?.payload?.success) {
@@ -38,6 +43,7 @@ const LatestProduct = ({ handleview }) => {
         toast.error(res.payload.message);
       }
     });
+    dispatch(getCart(userId))
   };
 
   const product = Array.isArray(products) ? products : products.menu || [];
@@ -54,14 +60,15 @@ const LatestProduct = ({ handleview }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const handlewish = (productId) => {
-    dispatch(addToWishlist({ userId, productId })).then((res) => {
+  const handlewish = async (productId) => {
+   await dispatch(addToWishlist({ userId, productId })).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
+    dispatch(getWishlist(userId))
   };
 
   const days = Math.floor(timeRemaining / (24 * 60 * 60));

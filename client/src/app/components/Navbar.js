@@ -130,7 +130,7 @@ dispatch(getUserById(id))
 
   useEffect(() => {
     dispatch(getWishlist(userId));
-  },[dispatch])
+  },[dispatch, wishlistproduct?.length])
   const wish = Array.isArray(wishlistproduct) ? wishlistproduct : wishlistproduct?.wishlist || [];
 
   useEffect(() => {

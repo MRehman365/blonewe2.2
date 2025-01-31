@@ -12,27 +12,40 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function ShoppingCart() {
   
-const { cartlist, loading, error } = useSelector((state) => state.cart)
-const dispatch = useDispatch();
-  const userId = localStorage.getItem("userId");
+  const { cartlist, loading, error } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
+  const userId = localStorage.getItem("userid");
 
   useEffect(() => {
-    dispatch(getCart(userId))
-  },[dispatch])
-  
+    dispatch(getCart(userId));
+  }, [dispatch]);
+
   const cartno = Array.isArray(cartlist) ? cartlist : cartlist?.cart || [];
 
-  const addQuantity = (id) => {
-    dispatch(increaseQuantity(id))
-    console.log(id)
-  }
-  const minusQuantity = (id) => {
-    dispatch(decreaseQuantity(id))
-  }
+  const addQuantity = async (id) => {
+    await dispatch(increaseQuantity(id));
+    dispatch(getCart(userId));
+  };
 
-  const deleteproduct = (id) => {
-    dispatch(deleteCart(id))
-  }
+  const minusQuantity = async (id) => {
+    await dispatch(decreaseQuantity(id));
+    dispatch(getCart(userId));
+  };
+
+  const deleteproduct = async (id) => {
+    await dispatch(deleteCart(id));
+    dispatch(getCart(userId));
+  };
+
+  // Calculate the total price
+  const calculateTotalPrice = () => {
+    return cartno.reduce((total, product) => {
+      const priceAfterDiscount = product.productId?.price * (1 - product.productId?.discount / 100);
+      return total + priceAfterDiscount * product.quantity;
+    }, 0).toFixed(2);
+  };
+
+  const totalPrice = calculateTotalPrice();
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -73,11 +86,11 @@ const dispatch = useDispatch();
                     </div>
                   </div>
                   <div className="hidden md:block">
-                  ₹{product.productId.price.toFixed(2)}
+                  ₹{(product.productId?.price * (1 - product.productId?.discount / 100)).toFixed(2)}
                   </div>
                   <div className=" hidden md:flex items-center justify-between">
                     <div>
-                    ₹{(product.productId.price * product.quantity).toFixed(2)}
+                    ₹{(product.productId?.price * (1 - product.productId?.discount / 100)) * product.quantity }
                     </div>
                   </div>
                   <div className="">
@@ -132,7 +145,7 @@ const dispatch = useDispatch();
               {/* Subtotal */}
               <div className="flex justify-between py-3 border-b">
                 <span>Subtotal</span>
-                <span>₹999</span>
+                <span>₹{totalPrice}</span>
               </div>
 
               {/* Shipping Section 1 */}
@@ -229,7 +242,7 @@ const dispatch = useDispatch();
                 <div className="flex justify-between">
                   <span className="text-xl font-medium">Total</span>
                   <span className="text-xl font-medium text-red-500">
-                  ₹9999
+                  ₹{totalPrice}
                   </span>
                 </div>
               </div>
@@ -244,8 +257,6 @@ const dispatch = useDispatch();
           </div>
         </div>
       </div>
-
-
     </div>
   );
 }

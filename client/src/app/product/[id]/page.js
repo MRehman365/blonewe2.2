@@ -18,25 +18,15 @@ import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import img1 from "../../assets/image-1-13-450x450.png";
 import img2 from "../../assets/image-1-15-450x450.png";
 import { MdOutlineZoomOutMap } from "react-icons/md";
-import Magnifier from "react-magnifier";
+import Magnifier from "react-magnifier"; // Import the Magnifier component
 import SingleProductDiscription from "@/app/components/SingleProductDiscription";
 import RelatedProduct from "@/app/components/RelatedProduct";
 import SubNewsLatter from "@/app/components/SubNewsLatter";
 import ProductDetail from "@/app/components/ProductDetail";
-import prodcut1 from "../../assets/image-1-1-1-450x450.png";
-import prodcut2 from "../../assets/image-1-10-450x450.png";
-import prodcut3 from "../../assets/image-1-11-450x450.png";
-import prodcut4 from "../../assets/image-1-13-450x450.png";
-import prodcut5 from "../../assets/image-1-14-450x450.png";
-import prodcut6 from "../../assets/image-1-15-450x450.png";
-import prodcut7 from "../../assets/image-1-16-450x450.png";
-import prodcut8 from "../../assets/image-1-17-450x450.png";
-import prodcut9 from "../../assets/image-1-7-450x450.png";
-import prodcut10 from "../../assets/image-1-17-450x450.png";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductById } from "@/store/reducer/productReducer";
-import { addToCart } from "@/store/reducer/cartReducer";
-import { addToWishlist } from "@/store/reducer/wishlistReducer";
+import { addToCart, getCart } from "@/store/reducer/cartReducer";
+import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
 import { toast } from "react-toast";
 
 export default function ProductInfo({ params }) {
@@ -47,69 +37,68 @@ export default function ProductInfo({ params }) {
   const id = myid.id;
   const userId = localStorage.getItem("userid");
 
-  
   const product = Array.isArray(singleproduct)
     ? singleproduct
     : singleproduct?.menu || [];
-  const pImages = Array.isArray(product) ? product : product.image || [] ;
+  const pImages = Array.isArray(product) ? product : product.image || [];
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-
   const handleOpenPopup = () => setIsPopupVisible(true);
   const handleClosePopup = () => setIsPopupVisible(false);
   const [quantity, setQuantity] = useState(1);
+
+  // Set the default image (index 0) as the selected image
   const [selectedImage, setSelectedImage] = useState(
     pImages.length > 0 ? pImages[0] : "/placeholder.png"
   );
-  const [backgroundPosition, setBackgroundPosition] = useState("0% 0%");
-  const imageRef = useRef(null);
-  // const [product, setProduct] = useState(null);
 
-  const handleMouseMove = (e) => {
-    const { left, top, width, height } =
-      imageRef.current.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100; 
-    setBackgroundPosition(`${x}% ${y}%`);
-  };
-
+  // Reset selectedImage when product changes
   useEffect(() => {
-    dispatch(getProductById(id));
-  }, [dispatch]);
+    if (pImages.length > 0) {
+      setSelectedImage(pImages[0]); // Set the first image as the selected image
+    } else {
+      setSelectedImage("/placeholder.png"); // Fallback to a placeholder image
+    }
+  }, [product]); // Watch for changes in the product data
 
-    const thumbnails = pImages.length > 0 ? pImages.slice(0, 3) : [];
+  const thumbnails = pImages.length > 0 ? pImages.slice(0, 3) : [];
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
   const decrementQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
-  const handlecart = (productId) => {
-    dispatch(addToCart({ userId, productId, quantity})).then((res) => {
+  const handlewish = async (productId) => {
+    await dispatch(addToWishlist({ userId, productId })).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
-   } 
+    dispatch(getWishlist(userId));
+  };
 
-   const handlewish = (productId) => {
-    dispatch(addToWishlist({userId, productId})).then((res) => {
+  const handlecart = async (productId) => {
+    await dispatch(addToCart({ userId, productId })).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
         toast.error(res.payload.message);
       }
     });
+    dispatch(getCart(userId));
+  };
 
-  }
+  useEffect(() => {
+    dispatch(getProductById(id));
+  }, [dispatch, id]); // Fetch product data when the ID changes
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
       <div className="grid gap-8 md:grid-cols-2">
         {/* Product Images */}
         <div className="relative">
-          <span className="absolute left-4 top-4 bg-red-500 text-white text-sm font-bold rounded-full flex justify-center items-center h-[50px] w-[50px]">
+          <span className="absolute left-4 z-20 top-4 bg-red-500 text-white text-sm font-bold rounded-full flex justify-center items-center h-[50px] w-[50px]">
             {product?.discount}%
           </span>
           <button
@@ -118,31 +107,16 @@ export default function ProductInfo({ params }) {
           >
             <MdOutlineZoomOutMap className="h-4 w-4" />
           </button>
-          <div
-            className="relative w-full h-[400px] md:w-[600px] md:h-[600px] overflow-hidden mx-auto"
-            onMouseMove={handleMouseMove}
-          >
-            {/* Main Image */}
-            <Image
-              ref={imageRef}
-              src={selectedImage} 
-              height={400}
-              width={400}
-              alt="Hover to magnify"
-              className="object-cover w-full h-full rounded-lg"
-            />
-
-            {/* Magnified Overlay */}
-            <div
-              className="absolute inset-0 pointer-events-none rounded-lg bg-cover bg-center"
-              style={{
-                backgroundImage: selectedImage
-                  ? `url(${selectedImage})`
-                  : "none",
-                backgroundSize: "200%",
-                backgroundPosition: backgroundPosition,
-                backgroundRepeat: "no-repeat",
-              }}
+          <div className="relative w-full h-[400px] md:w-[600px] md:h-[600px] overflow-hidden mx-auto">
+            {/* Main Image with Magnifier */}
+            <Magnifier
+              src={selectedImage}
+              width={600}
+              height={600}
+              mgWidth={200}
+              mgHeight={200}
+              zoomFactor={1.5}
+              className="rounded-lg"
             />
           </div>
           <div className="mt-4 flex gap-4">
@@ -214,13 +188,19 @@ export default function ProductInfo({ params }) {
               </button>
             </div>
             <div>
-              <button onClick={() => handlecart(product._id)} className="flex-1 bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition duration-200">
+              <button
+                onClick={() => handlecart(product._id)}
+                className="flex-1 bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition duration-200"
+              >
                 Add to cart
               </button>
             </div>
           </div>
 
-          <button onClick={() => handlewish(product._id)} className="w-full py-2 px-4  transition duration-200 flex items-center justify-start">
+          <button
+            onClick={() => handlewish(product._id)}
+            className="w-full py-2 px-4  transition duration-200 flex items-center justify-start"
+          >
             <FaHeart className="mr-2 h-4 w-4" />
             Add to wishlist
             <span className="ml-2 text-gray-400">
