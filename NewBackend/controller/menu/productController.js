@@ -62,6 +62,41 @@ searchProducts = async (req, res) => {
     }
 }
 
+
+//filter product api 
+filterProducts  = async(req,res) =>{
+    try 
+    {   
+        const search = req.query.search || "auto cart";
+
+
+		const productDetails = await productModal.find({
+			name: { $regex: search, $options: "i" },
+		});
+
+		
+	    return res.status(200).json({ message: "Products fetched successfully", productDetails });
+		
+
+
+
+
+
+
+    }
+    catch(error)
+    {
+          return res.status(200).json({ message: error.message })
+    }
 }
+
+
+
+}
+
+
+
+
+
 
 module.exports = new ProductController();
