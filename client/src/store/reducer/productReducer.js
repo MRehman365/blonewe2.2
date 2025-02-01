@@ -47,6 +47,8 @@ export const searchProducts = createAsyncThunk(
   }
 );
 
+
+
 // Initial State
 const initialState = {
   products: [],
