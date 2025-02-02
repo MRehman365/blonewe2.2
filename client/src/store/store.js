@@ -5,6 +5,7 @@ import productReducer from './reducer/productReducer';
 import wishlistReducer from './reducer/wishlistReducer';
 import cartReducer from './reducer/cartReducer';
 import blogsReducer from './reducer/blogsReducer';
+import checkoutReducer from './reducer/checkoutReducer';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     wishlist : wishlistReducer,
     cart : cartReducer,
     blogs : blogsReducer,
+    checkout: checkoutReducer,
 
   },
 });

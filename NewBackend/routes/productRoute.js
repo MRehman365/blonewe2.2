@@ -10,13 +10,7 @@ router.get("/allproduct", productController.getProduct);
 router.get("/getproduct/:id", productController.getProductById);
 router.put("/updateproduct/:id", productController.updateProduct);
 router.delete("/deleteproduct/:id", productController.deleteProduct);
-// router.get("/filterproducts", productController.getSortedAndFilteredProducts);
-// router.get("/category/:category" , productController.filterProducts);
-// router.get("/products"  , productController.filterByPrice) ;
-
-
-
-
-
+router.get('/search', productController.searchProducts);
+router.get('/filterproduct', productController.filterproducts);
 
 module.exports = router;

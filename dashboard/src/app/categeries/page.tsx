@@ -1,39 +1,15 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import CheckboxFive from "@/components/Checkboxes/CheckboxFive";
-import CheckboxFour from "@/components/Checkboxes/CheckboxFour";
-import CheckboxOne from "@/components/Checkboxes/CheckboxOne";
-import CheckboxThree from "@/components/Checkboxes/CheckboxThree";
-import CheckboxTwo from "@/components/Checkboxes/CheckboxTwo";
-import SwitcherFour from "@/components/Switchers/SwitcherFour";
-import SwitcherOne from "@/components/Switchers/SwitcherOne";
-import SwitcherThree from "@/components/Switchers/SwitcherThree";
-import SwitcherTwo from "@/components/Switchers/SwitcherTwo";
-import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";
-import Buttons from "@/app/ui/buttons/page";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { FcDeleteColumn } from "react-icons/fc";
-import { BiCross } from "react-icons/bi";
-import { CgRemove } from "react-icons/cg";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import {
-  addCategory,
-  deleteCategory,
-  fetchCategories,
-} from "@/store/reducers/categoriesReducer";
+import { addCategory, deleteCategory, fetchCategories } from "@/store/reducers/categoriesReducer";
 import { toast } from "react-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-const categeries = [
-  {
-    name: "Fashion",
-  },
-];
-
-const categories = () => {
+const Categories = () => {
   const { categories } = useSelector((state: RootState) => state.category);
 
   const [name, setName] = useState("");
@@ -45,6 +21,42 @@ const categories = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
+  const handleMainImageChange = async (e) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      toast.error("Please select an image.");
+      return;
+    }
+
+    // Create a FormData object
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      // Upload the image to ImgBB
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (data && data.data && data.data.url) {
+        setMainImage(data.data.url); // Set the image URL from ImgBB
+      } else {
+        console.error("Invalid ImgBB response:", data);
+        toast.error("Failed to upload image to ImgBB.");
+      }
+    } catch (error) {
+      console.error("Error uploading image to ImgBB:", error);
+      toast.error("Failed to upload image to ImgBB.");
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -53,24 +65,34 @@ const categories = () => {
       return;
     }
 
-    dispatch(addCategory({ name, image })).then((res) => {
+    const categoryData = {
+      name,
+      image, // This is the ImgBB URL
+    };
+
+    // Dispatch the addCategory action
+    dispatch(addCategory(categoryData)).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
+        setName(""); // Reset the name field
+        setMainImage(null); // Reset the image field
       } else {
         toast.error(res.payload.message);
       }
     });
   };
 
-  const handleMainImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setMainImage(URL.createObjectURL(file));
-    }
-  };
+  const handleDelete = async (id) => {
+   await dispatch(deleteCategory(id)).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
 
-  const handleDelete = (id) => {
-    dispatch(deleteCategory(id));
+    dispatch(fetchCategories());
+
   };
 
   return (
@@ -83,7 +105,7 @@ const categories = () => {
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Add Product
+                Add Category
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
@@ -96,7 +118,7 @@ const categories = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  placeholder="Default Input"
+                  placeholder="Category Name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                 />
               </div>
@@ -180,4 +202,4 @@ const categories = () => {
   );
 };
 
-export default categories;
+export default Categories;

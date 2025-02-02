@@ -167,7 +167,7 @@ const cartSlice = createSlice({
       .addCase(decreaseQuantity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
   },
 });
 

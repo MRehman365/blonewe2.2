@@ -164,6 +164,24 @@ class UserAuthController {
       return res.status(500).json({ message: error.message });
     }
   };
+
+  // get usr details
+ getUserDetails = async (req, res, next) => {
+  try {
+    const user = await UserModel.findById(req.user._id);
+    return res.status(200).send({
+      success: true,
+      message: "User details find successfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Error in getting user details",
+      error:error.message,
+    });
+  }
+};
 }
 
 module.exports = new UserAuthController();

@@ -177,7 +177,7 @@ export default function Home() {
       </div>
 
       {/* Slider Section */}
-      <div className="p-2 relative overflow-hidden">
+      <div className="p-2 relative overflow-hidden -z-[1]">
         <div
           className="keen-slider max-w-7xl mx-auto rounded-lg overflow-hidden relative"
           ref={sliderRef}

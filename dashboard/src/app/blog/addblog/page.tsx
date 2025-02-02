@@ -28,17 +28,45 @@ const [formData, setFormData] = useState({
   store: "",
   category: "",
   content: [" "],
+  images: [],
 })
 
 const dispatch = useDispatch<AppDispatch>();
 
 
-const handleDetailImagesChange = (e) => {
+const handleDetailImagesChange = async (e) => {
   const files = Array.from(e.target.files);
-  const imageUrls = files.map((file) => URL.createObjectURL(file));
+
+  // Upload each file to ImgBB and get the URLs
+  const imageUrls = await Promise.all(
+    files.map(async (file) => {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        const response = await fetch(
+          `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`, // Replace with your actual ImgBB API key
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const result = await response.json();
+        return result.data.url; // Return the uploaded image URL
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return null;
+      }
+    })
+  );
+
+  // Filter out any failed uploads
+  const validImageUrls = imageUrls.filter((url) => url !== null);
+
   setFormData((prevData) => ({
     ...prevData,
-    images: imageUrls,
+    images: [...prevData.images, ...validImageUrls], // Append new image URLs
   }));
 };
 

@@ -183,7 +183,7 @@ const FeauredProduct = ({ handleview }) => {
                 </div>
 
                 <h3 className="mb-2 text-sm font-medium line-clamp-2">
-                  {item?.name}
+                 {item?.name.slice(0, 25)}...
                 </h3>
                 <div className="h-[25px] overflow-hidden relative">
                   <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
@@ -267,7 +267,7 @@ const FeauredProduct = ({ handleview }) => {
                 </div>
 
                 <h3 className="mb-2 text-sm font-medium line-clamp-2">
-                  {item?.name}
+                 {item?.name.slice(0, 25)}...
                 </h3>
                 <div className="h-[25px] overflow-hidden relative">
                   <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
@@ -351,7 +351,7 @@ const FeauredProduct = ({ handleview }) => {
                 </div>
 
                 <h3 className="mb-2 text-sm font-medium line-clamp-2">
-                  {item?.name}
+                 {item?.name.slice(0, 25)}...
                 </h3>
                 <div className="h-[25px] overflow-hidden relative">
                   <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
