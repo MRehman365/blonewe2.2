@@ -15,8 +15,6 @@ import {
 } from "react-icons/fa";
 import { use } from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
-import img1 from "../../assets/image-1-13-450x450.png";
-import img2 from "../../assets/image-1-15-450x450.png";
 import { MdOutlineZoomOutMap } from "react-icons/md";
 import Magnifier from "react-magnifier"; // Import the Magnifier component
 import SingleProductDiscription from "@/app/components/SingleProductDiscription";

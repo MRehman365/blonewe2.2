@@ -64,14 +64,6 @@ const services = [
 ];
 
 const sliderImages = [img1, img2, img3];
-const sliderCat = [
-  { img: cat1, name: "Fashion" },
-  { img: cat2, name: "Electronics" },
-  { img: cat3, name: "Fashion" },
-  { img: cat4, name: "Electronics" },
-  { img: cat5, name: "Fashion" },
-  { img: cat6, name: "Electronics" },
-];
 
 export default function Home() {
   const { categories} = useSelector((state) => state.category)
@@ -153,7 +145,6 @@ export default function Home() {
     nextArrow: <CustomNextArrow />,
   };
 
- console.log()
 
   return (
     <div className="">
@@ -210,7 +201,7 @@ export default function Home() {
       <Slider {...settings} className="grid grid-cols-6">
         {category?.map((item, index) => (
           <Link 
-          href='/shop'
+          href={`/shop/${item?.name}`}
             key={index}
             className="flex justify-center overflow-hidden group"
           >

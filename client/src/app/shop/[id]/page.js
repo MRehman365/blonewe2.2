@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { FaCross, FaRegHeart, FaStar } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
-import banner2 from "../assets/banner-16.jpg";
-import ProductDetail from "../components/ProductDetail";
+import banner2 from "../../assets/banner-16.jpg";
+import ProductDetail from "../../components/ProductDetail";
 import { FaCropSimple, FaPlus } from "react-icons/fa6";
 import { BsGrid, BsListUl } from "react-icons/bs";
 import { IoIosArrowDown, IoMdClose } from "react-icons/io";
@@ -19,21 +19,22 @@ import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
 import { addToCart, getCart } from "@/store/reducer/cartReducer";
 import Link from "next/link";
 
-export default function ProductListing() {
+export default function ProductListing({ params }) {
   const { categories } = useSelector((state) => state.category);
   const { products } = useSelector((state) => state.products);
+  const data = use(params);
+  console.log(data, 'params')
+  const set = data.id;
 
   const userId = localStorage.getItem('userid');
 
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([set]);
   const [wishlist, setWishlist] = useState([]);
   const [showInStock, setShowInStock] = useState(false);
   const [showOnSale, setShowOnSale] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
-  const [showOpen, setShowOpen] = useState(false);
   const [sortValue, setSortValue] = useState("latest");
-  const [showValue, setShowValue] = useState("20 items");
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
 

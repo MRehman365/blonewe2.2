@@ -373,7 +373,7 @@ dispatch(getUserById(id))
                     {categorydata?.slice(0, 7).map((category, index) => (
                       <Link
                         key={index}
-                        href={`/category/${category.id}`}
+                        href={`/shop/${category.name}`}
                         className="flex items-center gap-3 group px-4 py-2 hover:bg-[#004798] hover:text-white transition-colors text-[14px]"
                       >
                         <span className="text-primary group-hover:text-white">
@@ -533,7 +533,7 @@ dispatch(getUserById(id))
               </div>
 
               <Link
-                href="/shop"
+                        href={`/shop/${categorydata[0]?.name}`}
                 className="flex items-center text-gray-500 hover:text-[#003B95]"
               >
                 <span className="mr-2">
@@ -543,7 +543,7 @@ dispatch(getUserById(id))
               </Link>
 
               <Link
-                href="/shop"
+                        href={`/shop/${categorydata[1]?.name}`}
                 className="flex items-center text-gray-500 hover:text-[#003B95]"
               >
                 <span className="mr-2">
@@ -553,7 +553,7 @@ dispatch(getUserById(id))
               </Link>
 
               <Link
-                href="/shop"
+                        href={`/shop/${categorydata[2]?.name}`}
                 className="flex items-center text-gray-500 hover:text-[#003B95]"
               >
                 <span className="mr-2">
@@ -708,10 +708,10 @@ dispatch(getUserById(id))
                   {categorydata?.map((category, index) => (
                     <Link
                       key={index}
-                      href="/shop"
+                      href={`/shop/${category.name}`}
                       className="flex items-center gap-3 py-2 hover:bg-[#004798] hover:text-white transition-colors text-[14px]"
                     >
-                      <span className="text-primary">{category.icon}</span>
+                      {/* <span className="text-primary">{category.icon}</span> */}
                       <span>{category.name}</span>
                     </Link>
                   ))}
