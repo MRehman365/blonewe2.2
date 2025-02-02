@@ -40,7 +40,10 @@ exports.createCheckout = async (req, res) => {
 // Get all checkouts
 exports.getAllCheckouts = async (req, res) => {
   try {
-    const checkouts = await checkoutModal.find();
+    const checkouts = await checkoutModal.find().populate({
+        path: 'products.productId',
+        model: 'Products',
+      });
     res.status(200).json({
       success: true,
       message: "Checkouts fetched successfully.",

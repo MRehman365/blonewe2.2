@@ -139,22 +139,31 @@ class ProductController {
     }
   };
 
-  //filter product api
-  filterProducts = async (req, res) => {
+  filterproducts = async(req, res) => {
     try {
-      const { search } = req.body || "auto cart";
-
-      const productDetails = await productModal.find({
-        name: { $regex: search, $options: "i" },
-      });
-
-      return res
-        .status(200)
-        .json({ message: "Products fetched successfully", productDetails });
+      let { categories, sortBy } = req.query;
+  
+      let categoryFilter = {};
+      if (categories) {
+        categoryFilter.category = { $in: categories.split(",") };
+      }
+  
+      let sortOption = {};
+      if (sortBy === "lowtohigh") {
+        sortOption.price = 1;
+      } else if (sortBy === "hightolow") {
+        sortOption.price = -1;
+      }
+  
+      const products = await productModal.find(categoryFilter).sort(sortOption);
+      res.json(products);
+  
     } catch (error) {
-      return res.status(200).json({ message: error.message });
+      res.status(500).json({ message: "Server Error", error });
     }
-  };
+  }
+
+
 }
 
 module.exports = new ProductController();

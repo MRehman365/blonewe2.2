@@ -47,6 +47,20 @@ export const searchProducts = createAsyncThunk(
   }
 );
 
+export const fetchFilteredProducts = createAsyncThunk(
+  "filterProducts/fetchFilteredProducts",
+  async ({ categories, sortBy }, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/filterproduct", {
+        params: { categories: categories.join(","), sortBy },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
 
 
 // Initial State
@@ -54,6 +68,7 @@ const initialState = {
   products: [],
   singleproduct: [],
   filteredProducts: [], 
+  shopproducts: [], 
   product: null,
   loading: false,
   error: null,
@@ -114,6 +129,18 @@ const productsSlice = createSlice({
         console.error("Search products rejected:", action.payload);
         state.loading = false;
         state.error = action.payload;
+    })
+    .addCase(fetchFilteredProducts.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchFilteredProducts.fulfilled, (state, action) => {
+      state.loading = false;
+      state.products = action.payload;
+    })
+    .addCase(fetchFilteredProducts.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
     });
   },
 });

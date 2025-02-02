@@ -82,7 +82,7 @@ console.log(data, 'published')
           {data.images[index] && (
             <div className="mb-8 w-full overflow-hidden rounded-lg">
               <Image
-                src={data.images[index]}
+                src={data?.images[index]}
                 alt={`Image ${index + 1}`}
                 width={400}
                 height={400}
@@ -97,12 +97,12 @@ console.log(data, 'published')
       ))}
 
       {/* Display any remaining images if there are more images than content */}
-      {data.images.length > data.content.length &&
-        data.images.slice(data.content.length).map((image, index) => (
-          <div key={data.content.length + index} className="mb-8">
+      {data?.images.length > data?.content.length &&
+        data?.images.slice(data?.content.length).map((image, index) => (
+          <div key={data?.content.length + index} className="mb-8">
             <Image
               src={image}
-              alt={`Image ${data.content.length + index + 1}`}
+              alt={`Image ${data?.content.length + index + 1}`}
               width={100}
               height={100}
               className="rounded-lg h-[400px] w-full flex"
@@ -120,13 +120,13 @@ console.log(data, 'published')
           <CiShare2 className="w-4 h-4 mr-2" />
           Share
         </button>
-        <button className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        {/* <button className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           <FiMessageCircle className="w-4 h-4 mr-2" />
           Comment
-        </button>
+        </button> */}
       </div>
 
-      <div className="border-t pt-8">
+      {/* <div className="border-t pt-8">
         <h2 className="text-xl font-semibold mb-4">Leave a Reply</h2>
         <form className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -185,7 +185,7 @@ console.log(data, 'published')
             Post Comment
           </button>
         </form>
-      </div>
+      </div> */}
     </article>
         {/* Sidebar */}
         <div className="lg:sticky lg:top-8 lg:h-fit space-y-8">

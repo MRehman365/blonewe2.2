@@ -42,6 +42,7 @@ import { getUserById } from "@/store/reducer/authReducer";
 import { getWishlist } from "@/store/reducer/wishlistReducer";
 import { getCart } from "@/store/reducer/cartReducer";
 import { searchProducts } from "@/store/reducer/productReducer";
+import { fetchCategories } from "@/store/reducer/categoryReducer";
 
 const categories = [
   {
@@ -87,24 +88,11 @@ const categories = [
   { id: "sport4", name: "Best Selling" },
 ];
 
-const products = [
-  {
-    id: "electrolux",
-    name: "ELECTROLUX EW6S226SUI",
-    price: 190.0,
-    image: img1,
-  },
-  {
-    id: "ecobee",
-    name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-    price: 130.0,
-    image: img1,
-  },
-];
 
 const Navbar = () => {
 const { singleuser } = useSelector((state) => state.auth)
 const { wishlistproduct } = useSelector((state) => state.wishlist);
+const { categories } = useSelector((state) => state.category);
 const { cartlist } = useSelector((state) => state.cart)
 const { filteredProducts, loading, error } = useSelector((state) => state.products);
 const [query, setQuery] = useState("");
@@ -172,18 +160,14 @@ dispatch(getUserById(id))
 
   const handleOpenPopup = () => setIsPopupVisible(true);
   const handleClosePopup = () => setIsPopupVisible(false);
-  const products = [
-    "Apple iPhone",
-    "Samsung Galaxy",
-    "Google Pixel",
-    "OnePlus Nord",
-    "Sony Xperia",
-    "LG Velvet",
-    "Nokia Lumia",
-    "Huawei P40",
-  ];
 
   const [filteredResults, setFilteredResults] = useState([]);
+
+  useEffect(() => {
+    dispatch(fetchCategories()) 
+  },[dispatch])
+
+  const categorydata = Array.isArray(categories) ? categories : categories.category || [];
 
 
   return (
@@ -386,9 +370,9 @@ dispatch(getUserById(id))
                   }}
                 >
                   <nav className="py-2  relative text-gray-500">
-                    {categories.map((category) => (
+                    {categorydata?.slice(0, 7).map((category, index) => (
                       <Link
-                        key={category.id}
+                        key={index}
                         href={`/category/${category.id}`}
                         className="flex items-center gap-3 group px-4 py-2 hover:bg-[#004798] hover:text-white transition-colors text-[14px]"
                       >
@@ -555,7 +539,7 @@ dispatch(getUserById(id))
                 <span className="mr-2">
                   <TbArmchair />
                 </span>{" "}
-                Furniture
+                {categorydata[0]?.name}
               </Link>
 
               <Link
@@ -565,7 +549,7 @@ dispatch(getUserById(id))
                 <span className="mr-2">
                   <ImMobile2 />
                 </span>{" "}
-                Electronics
+                {categorydata[1]?.name}
               </Link>
 
               <Link
@@ -575,7 +559,7 @@ dispatch(getUserById(id))
                 <span className="mr-2">
                   <PiDress />
                 </span>{" "}
-                Fashion
+                {categorydata[2]?.name}
               </Link>
 
               <a href="/blog" className="text-gray-500 hover:text-[#003B95]">
@@ -721,9 +705,9 @@ dispatch(getUserById(id))
                   BROWSE CATEGORIES
                 </div>
                 <nav className="py-2  relative text-gray-500">
-                  {categories.map((category) => (
+                  {categorydata?.map((category, index) => (
                     <Link
-                      key={category.id}
+                      key={index}
                       href="/shop"
                       className="flex items-center gap-3 py-2 hover:bg-[#004798] hover:text-white transition-colors text-[14px]"
                     >

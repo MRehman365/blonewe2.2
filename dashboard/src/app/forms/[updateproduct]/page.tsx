@@ -74,31 +74,47 @@ useEffect(() => {
         sku: product.sku || "",
         description: product.description || "",
         points: product.points || [""],
-        image: product.image || [],
+        image:  [],
       });
     }
   
 }, [products, id]);
 
-// console.log(formData, 'product');
 
-const handleDetailImagesChange = (e) => {
+const handleDetailImagesChange = async (e) => {
   const files = Array.from(e.target.files);
 
-  // Convert files to URLs
-  const newImageUrls = files.map((file) => URL.createObjectURL(file));
+  // Upload each file to ImgBB and get the URLs
+  const imageUrls = await Promise.all(
+    files.map(async (file) => {
+      const formData = new FormData();
+      formData.append("image", file);
 
-  setFormData((prevData) => {
-    const updatedImages = [...prevData.image, ...newImageUrls];
+      try {
+        const response = await fetch(
+          `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`, // Replace with your actual ImgBB API key
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
-    // Remove duplicates (if any)
-    const uniqueImages = Array.from(new Set(updatedImages));
+        const result = await response.json();
+        return result.data.url; // Return the uploaded image URL
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return null;
+      }
+    })
+  );
 
-    return {
-      ...prevData,
-      image: uniqueImages, // Update with unique images
-    };
-  });
+  // Filter out any failed uploads
+  const validImageUrls = imageUrls.filter((url) => url !== null);
+
+  setFormData((prevData) => ({
+    ...prevData,
+    image: [...prevData.image, ...validImageUrls], // Append new image URLs
+  }));
 };
 
 

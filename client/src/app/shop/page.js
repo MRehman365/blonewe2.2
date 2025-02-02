@@ -5,189 +5,71 @@ import { useEffect, useRef, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { FaCross, FaRegHeart, FaStar } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
-import prodcut1 from "../assets/image-1-1-1-450x450.png";
-import prodcut2 from "../assets/image-1-10-450x450.png";
-import prodcut3 from "../assets/image-1-11-450x450.png";
-import prodcut4 from "../assets/image-1-13-450x450.png";
-import prodcut5 from "../assets/image-1-14-450x450.png";
-import prodcut6 from "../assets/image-1-15-450x450.png";
-import prodcut7 from "../assets/image-1-16-450x450.png";
-import prodcut8 from "../assets/image-1-17-450x450.png";
-import prodcut9 from "../assets/image-1-7-450x450.png";
-import prodcut10 from "../assets/image-1-17-450x450.png";
 import banner2 from "../assets/banner-16.jpg";
 import ProductDetail from "../components/ProductDetail";
 import { FaCropSimple, FaPlus } from "react-icons/fa6";
 import { BsGrid, BsListUl } from "react-icons/bs";
 import { IoIosArrowDown, IoMdClose } from "react-icons/io";
 import { LuFilter } from "react-icons/lu";
-
-const products = [
-  {
-    id: "1",
-    name: "Huawei Watch GT 2 Pro Titanium 47mm",
-    price: 79,
-    originalPrice: 99,
-    discount: 21,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut1,
-    store: "graci",
-  },
-  {
-    id: "2",
-    name: "HomePod mini — Space Gray",
-    price: 249,
-    originalPrice: 359,
-    discount: 31,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut2,
-  },
-  {
-    id: "3",
-    name: "ELECTROLUX EW6S226SUI",
-    price: 190.0,
-    originalPrice: 250.0,
-    discount: 24,
-    rating: 3.33,
-    reviews: 3,
-    image: prodcut3,
-  },
-  {
-    id: "4",
-    name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-    price: 130.0,
-    originalPrice: 142.0,
-    discount: 9,
-    rating: 3.67,
-    reviews: 3,
-    image: prodcut4,
-  },
-  {
-    id: "5",
-    name: "Canon EOS R10 RF-S 18-45 IS STM",
-    price: 850.0,
-    originalPrice: 1099.0,
-    discount: 23,
-    rating: 4.0,
-    reviews: 3,
-    image: prodcut5,
-  },
-  {
-    id: "6",
-    name: "Huawei Watch GT 2 Pro Titanium 47mm",
-    price: 79,
-    originalPrice: 99,
-    discount: 21,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut6,
-  },
-  {
-    id: "7",
-    name: "HomePod mini — Space Gray",
-    price: 249,
-    originalPrice: 359,
-    discount: 31,
-    rating: 4.33,
-    reviews: 3,
-    image: prodcut7,
-  },
-  {
-    id: "8",
-    name: "ELECTROLUX EW6S226SUI",
-    price: 190.0,
-    originalPrice: 250.0,
-    discount: 24,
-    rating: 3.33,
-    reviews: 3,
-    image: prodcut8,
-  },
-  {
-    id: "9",
-    name: "ecobee 3 Lite Smart Thermostat 2.0, No Hub Required",
-    price: 130.0,
-    originalPrice: 142.0,
-    discount: 9,
-    rating: 3.67,
-    reviews: 3,
-    image: prodcut9,
-  },
-  {
-    id: "10",
-    name: "Canon EOS R10 RF-S 18-45 IS STM",
-    price: 850.0,
-    originalPrice: 1099.0,
-    discount: 23,
-    rating: 4.0,
-    reviews: 3,
-    image: prodcut10,
-  },
-];
-
-const categories = [
-  "Auto Parts",
-  "Cosmetic",
-  "Electronics",
-  "Fashion",
-  "Furniture",
-  "Grocery",
-  "Jewellery",
-  "Kids",
-  "Sports",
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategories } from "@/store/reducer/categoryReducer";
+import { fetchFilteredProducts } from "@/store/reducer/productReducer";
+import { toast } from "react-toast";
+import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
+import { addToCart, getCart } from "@/store/reducer/cartReducer";
+import Link from "next/link";
 
 export default function ProductListing() {
-  const [selectedCategories, setSelectedCategories] = useState(["Fashion"]);
+  const { categories } = useSelector((state) => state.category);
+  const { products } = useSelector((state) => state.products);
+
+  const userId = localStorage.getItem('userid');
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [showInStock, setShowInStock] = useState(false);
   const [showOnSale, setShowOnSale] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [showOpen, setShowOpen] = useState(false);
-  const [sortValue, setSortValue] = useState("Sort by latest");
+  const [sortValue, setSortValue] = useState("lowtohigh");
   const [showValue, setShowValue] = useState("20 items");
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
 
-  // price Slider
-  const [priceRange, setPriceRange] = useState([0, 1000])
-  const [isDragging, setIsDragging] = useState(false)
-  const [activeDot, setActiveDot] = useState(null)
-  const sliderRef = useRef(null)
+  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [activeDot, setActiveDot] = useState(null);
+  const sliderRef = useRef(null);
+  const dispatch = useDispatch();
 
-  const handleOpenPopup = () => setIsPopupVisible(true);
-  const handleClosePopup = () => setIsPopupVisible(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 8;
+  // Fetch categories on component mount
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  // Pagination logic
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
+  const categorydata = Array.isArray(categories) ? categories : categories.category || [];
 
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  // Fetch filtered products when selectedCategories or sortValue changes
+  useEffect(() => {
+    const queryParams = {
+      categories: selectedCategories.join(','), // Convert array to comma-separated string
+      sortBy: sortValue.toLowerCase().replace(' ', ''), // Format sort value
+    };
+    dispatch(fetchFilteredProducts(queryParams));
+  }, [dispatch, selectedCategories, sortValue]);
 
-  const toggleWishlist = (productId) => {
-    setWishlist((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    );
-  };
+  const productdata = Array.isArray(products) ? products : products.menu || [];
 
-  const clearFilters = () => {
-    setSelectedCategories([]);
-    setPriceRange([20, 80]);
-    setShowInStock(false);
-    setShowOnSale(false);
-  };
+  console.log(products, 'shopproducts');
 
+  // Toggle category selection
   const toggleCategory = (category) => {
+    const queryParams = {
+      categories: selectedCategories.join(','), // Convert array to comma-separated string
+      sortBy: sortValue.toLowerCase().replace(' ', ''), // Format sort value
+    };
+    dispatch(fetchFilteredProducts(queryParams));
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
@@ -195,71 +77,48 @@ export default function ProductListing() {
     );
   };
 
-  // price SLider
-  const handleStart = (event, type) => {
-    event.preventDefault()
-    setIsDragging(true)
-    setActiveDot(type)
-  }
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setSortValue("Sort by latest");
+  };
 
-  const handleEnd = () => {
-    setIsDragging(false)
-    setActiveDot(null)
-  }
-
-  const handleMove = (event) => {
-    if (!isDragging || !sliderRef.current) return
-
-    const slider = sliderRef.current
-    const rect = slider.getBoundingClientRect()
-    const clientX = event.type.includes('mouse') 
-      ? event.clientX 
-      : event.touches[0].clientX
-    const position = (clientX - rect.left) / rect.width
-    const value = Math.round(position * (1000 - 0) + 0)
-    const clampedValue = Math.min(Math.max(value, 0), 1000)
-
-    if (activeDot === 'min') {
-      if (clampedValue < priceRange[1]) {
-        setPriceRange([clampedValue, priceRange[1]])
-        console.log('Price range:', clampedValue, '-', priceRange[1])
+  // Handle wishlist
+  const handlewish = async (productId) => {
+    await dispatch(addToWishlist({ userId, productId })).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
       }
-    } else if (activeDot === 'max') {
-      if (clampedValue > priceRange[0]) {
-        setPriceRange([priceRange[0], clampedValue])
-        console.log('Price range:', priceRange[0], '-', clampedValue)
+    });
+    dispatch(getWishlist(userId));
+  };
+
+  // Handle cart
+  const handlecart = async (productId) => {
+    await dispatch(addToCart({ userId, productId })).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
       }
-    }
-  }
-
-  useEffect(() => {
-    const handleEndGlobal = () => {
-      setIsDragging(false)
-      setActiveDot(null)
-    }
-
-    window.addEventListener('mouseup', handleEndGlobal)
-    window.addEventListener('touchend', handleEndGlobal)
-    return () => {
-      window.removeEventListener('mouseup', handleEndGlobal)
-      window.removeEventListener('touchend', handleEndGlobal)
-    }
-  }, [])
-
-  const getLeftPosition = (value) => {
-    return ((value - 55) / (1000 - 55)) * 100
-  }
-
+    });
+    dispatch(getCart(userId));
+  };
 
   return (
     <div className="max-w-7xl mx-auto mt-4">
-      <div className=" mx-auto overflow-hidden rounded-md">
+      {/* Banner */}
+      <div className="mx-auto overflow-hidden rounded-md">
         <Image
           src={banner2}
           alt="banner"
           className="w-full h-[300px] md:h-[300px] object-cover rounded-md"
         />
       </div>
+
+      {/* Filters and Sorting */}
       <div className="flex items-center justify-between py-4 px-2">
         <p className="text-sm text-gray-500 hidden md:block">
           Showing 1–20 of 67 results
@@ -277,7 +136,7 @@ export default function ProductListing() {
             <div className="relative">
               <button
                 onClick={() => setSortOpen(!sortOpen)}
-                className="flex items-center justify-between w-[140px] px-3 py-1.5 text-[12px] md:text-sm border rounded-md  "
+                className="flex items-center justify-between w-[140px] px-3 py-1.5 text-[12px] md:text-sm border rounded-md"
               >
                 <span>{sortValue}</span>
                 <IoIosArrowDown
@@ -288,16 +147,16 @@ export default function ProductListing() {
               </button>
 
               {sortOpen && (
-                <div className="absolute z-10 w-full mt-1  border rounded-md shadow-lg">
+                <div className="absolute z-10 w-full mt-1 border rounded-md shadow-lg">
                   {[
                     "By latest",
-                    " Low to High",
-                    " High to Low",
+                    "Low to High",
+                    "High to Low",
                     "By popularity",
                   ].map((option) => (
                     <button
                       key={option}
-                      className="w-full px-3 py-1.5 text-left text-[12px] md:text-sm "
+                      className="w-full px-3 py-1.5 text-left text-[12px] md:text-sm"
                       onClick={() => {
                         setSortValue(option);
                         setSortOpen(false);
@@ -316,7 +175,7 @@ export default function ProductListing() {
             <div className="relative">
               <button
                 onClick={() => setShowOpen(!showOpen)}
-                className="flex items-center justify-between w-[100px] px-3 py-1.5 text-[12px] md:text-sm border rounded-md  "
+                className="flex items-center justify-between w-[100px] px-3 py-1.5 text-[12px] md:text-sm border rounded-md"
               >
                 <span>{showValue}</span>
                 <IoIosArrowDown
@@ -327,11 +186,11 @@ export default function ProductListing() {
               </button>
 
               {showOpen && (
-                <div className="absolute z-10 w-full mt-1  border rounded-md shadow-lg">
+                <div className="absolute z-10 w-full mt-1 border rounded-md shadow-lg">
                   {["12 items", "20 items", "30 items"].map((option) => (
                     <button
                       key={option}
-                      className="w-full px-3 py-1.5 text-left text-sm "
+                      className="w-full px-3 py-1.5 text-left text-sm"
                       onClick={() => {
                         setShowValue(option);
                         setShowOpen(false);
@@ -346,33 +205,35 @@ export default function ProductListing() {
           </div>
 
           <div className="md:flex gap-1 ml-4 hidden">
-        <button
-          className={`p-1.5 text-gray-500 hover:bg-gray-100 rounded-md ${
-            viewMode === "grid" ? "bg-gray-200" : ""
-          }`}
-          onClick={() => setViewMode("grid")}
-        >
-          <BsGrid className="h-4 w-4" />
-          <span className="sr-only">Grid view</span>
-        </button>
-        <button
-          className={`p-1.5 text-gray-500 hover:bg-gray-100 rounded-md ${
-            viewMode === "list" ? "bg-gray-200" : ""
-          }`}
-          onClick={() => setViewMode("list")}
-        >
-          <BsListUl className="h-4 w-4" />
-          <span className="sr-only">List view</span>
-        </button>
-      </div>
+            <button
+              className={`p-1.5 text-gray-500 hover:bg-gray-100 rounded-md ${
+                viewMode === "grid" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setViewMode("grid")}
+            >
+              <BsGrid className="h-4 w-4" />
+              <span className="sr-only">Grid view</span>
+            </button>
+            <button
+              className={`p-1.5 text-gray-500 hover:bg-gray-100 rounded-md ${
+                viewMode === "list" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setViewMode("list")}
+            >
+              <BsListUl className="h-4 w-4" />
+              <span className="sr-only">List view</span>
+            </button>
+          </div>
         </div>
       </div>
-      <div className=" py-4 flex flex-col md:flex-row gap-8 ">
+
+      {/* Main Content */}
+      <div className="py-4 flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <div
           className={`w-64 fixed md:sticky min-h-[100vh] z-[99] top-0 ${
             isSidebarVisible ? "left-0" : "-left-[100%]"
-          } bg-white md:bg-[#ffffff04]  z-50 p-2 transition-all duration-300`}
+          } bg-white md:bg-[#ffffff04] z-50 p-2 transition-all duration-300`}
         >
           <div className="space-y-6">
             {/* Categories */}
@@ -384,19 +245,19 @@ export default function ProductListing() {
             <div>
               <h2 className="text-lg font-semibold mb-4">Product Categories</h2>
               <div className="space-y-2">
-                {categories.map((category) => (
+                {categorydata.map((category, index) => (
                   <label
-                    key={category}
-                    className="flex space-y-3 items-center justify-between "
+                    key={index}
+                    className="flex space-y-3 items-center justify-between"
                   >
-                    <div className="space-x-2  text-sm text-gray-500">
+                    <div className="space-x-2 text-sm text-gray-500">
                       <input
                         type="checkbox"
                         className="text-[#004798]"
-                        checked={selectedCategories.includes(category)}
-                        onChange={() => toggleCategory(category)}
+                        checked={selectedCategories.includes(category.name)}
+                        onChange={() => toggleCategory(category.name)}
                       />
-                      <span>{category}</span>
+                      <span>{category.name}</span>
                     </div>
                     <FaPlus className="text-sm text-gray-500" />
                   </label>
@@ -407,42 +268,42 @@ export default function ProductListing() {
             {/* Price Filter */}
             <div>
               <h2 className="text-lg font-semibold mb-4">Filter by Price</h2>
-              <div 
-        className="relative h-1 bg-gray-200 rounded-full mt-8 mb-4"
-        ref={sliderRef}
-        onMouseMove={handleMove}
-        onTouchMove={handleMove}
-      >
-        {/* Progress bar */}
-        <div 
-          className="absolute h-full bg-primary rounded-full"
-          style={{
-            left: `${getLeftPosition(priceRange[0])}%`,
-            right: `${100 - getLeftPosition(priceRange[1])}%`
-          }}
-        />
-        
-        {/* Min handle */}
-        <div
-          className="absolute w-6 h-6 bg-white border-2 border-primary rounded-full -mt-2.5 cursor-pointer transform -translate-x-1/2 hover:scale-110 transition-transform"
-          style={{ left: `${getLeftPosition(priceRange[0])}%` }}
-          onMouseDown={(e) => handleStart(e, 'min')}
-          onTouchStart={(e) => handleStart(e, 'min')}
-        />
-        
-        {/* Max handle */}
-        <div
-          className="absolute w-6 h-6 bg-white border-2 border-primary rounded-full -mt-2.5 cursor-pointer transform -translate-x-1/2 hover:scale-110 transition-transform"
-          style={{ left: `${getLeftPosition(priceRange[1])}%` }}
-          onMouseDown={(e) => handleStart(e, 'max')}
-          onTouchStart={(e) => handleStart(e, 'max')}
-        />
-      </div>
-      
-      <div className="flex justify-between mt-2">
-        <span className="text-sm text-gray-600">{priceRange[0]} $</span>
-        <span className="text-sm text-gray-600">{priceRange[1]} $</span>
-      </div>
+              <div
+                className="relative h-1 bg-gray-200 rounded-full mt-8 mb-4"
+                // ref={sliderRef}
+                // onMouseMove={handleMove}
+                // onTouchMove={handleMove}
+              >
+                {/* Progress bar */}
+                <div
+                  className="absolute h-full bg-primary rounded-full"
+                  // style={{
+                  //   left: `${getLeftPosition(priceRange[0])}%`,
+                  //   right: `${100 - getLeftPosition(priceRange[1])}%`,
+                  // }}
+                />
+
+                {/* Min handle */}
+                <div
+                  className="absolute w-6 h-6 bg-white border-2 border-primary rounded-full -mt-2.5 cursor-pointer transform -translate-x-1/2 hover:scale-110 transition-transform"
+                  // style={{ left: `${getLeftPosition(priceRange[0])}%` }}
+                  // onMouseDown={(e) => handleStart(e, 'min')}
+                  // onTouchStart={(e) => handleStart(e, 'min')}
+                />
+
+                {/* Max handle */}
+                <div
+                  className="absolute w-6 h-6 bg-white border-2 border-primary rounded-full -mt-2.5 cursor-pointer transform -translate-x-1/2 hover:scale-110 transition-transform"
+                  // style={{ left: `${getLeftPosition(priceRange[1])}%` }}
+                  // onMouseDown={(e) => handleStart(e, 'max')}
+                  // onTouchStart={(e) => handleStart(e, 'max')}
+                />
+              </div>
+
+              <div className="flex justify-between mt-2">
+                <span className="text-sm text-gray-600">{priceRange[0]} $</span>
+                <span className="text-sm text-gray-600">{priceRange[1]} $</span>
+              </div>
             </div>
 
             {/* Additional Filters */}
@@ -496,141 +357,100 @@ export default function ProductListing() {
           </div>
 
           <div
-        className={`grid gap-1 p-2 ${
-          viewMode === "grid"
-            ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4"
-            : "grid-cols-1"
-        }`}
-      >
-        {currentProducts.map((product) => (
-          <div
-            key={product.id}
-            className={`group relative overflow-hidden w-full border border-gray-300 flex ${
-              viewMode === "grid" ? "flex-col" : "flex-row h-[200px]"
+            className={`grid gap-1 p-2 ${
+              viewMode === "grid"
+                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4"
+                : "grid-cols-1"
             }`}
           >
-            {/* Product Image */}
-            <div
-              className={`relative ${
-                viewMode === "grid" ? "aspect-square" : "w-1/2"
-              }`}
-              onMouseEnter={(e) => e.currentTarget.classList.add("hovered")}
-              onMouseLeave={(e) =>
-                e.currentTarget.classList.remove("hovered")
-              }
-            >
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className={`${
-                  viewMode === "grid" ? "object-cover" : "object-contain"
-                }  transition-transform duration-300 group-hover:scale-105`}
-              />
-              {product.discount > 0 && (
-                <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                  {product.discount}%
-                </div>
-              )}
-              <div className="absolute right-2 top-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100">
-                    <button
-                      className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
-                      onClick={() => console.log("Popup opened")}
+            {productdata?.map((item, i) => (
+              <div key={i} className="h-full">
+                <div className="group relative overflow-hidden w-full transition-all duration-300 h-[376px] flex flex-col border border-gray-200 mx-auto">
+                  <div className="relative aspect-square">
+                    <Link href={`/product/${item._id}`} className="overflow-hidden">
+                      <Image
+                        src={item?.image[0]}
+                        alt={item?.name}
+                        loading="lazy"
+                        fill
+                        className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </Link>
+                    {item?.discount > 0 && (
+                      <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        {item?.discount}%
+                      </div>
+                    )}
+                    <div
+                      className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
                     >
-                      <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                    </button>
-                    <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
-                      <FaRegHeart className="h-4 w-4 text-gray-600" />
-                    </button>
-                  </div>
-            </div>
-
-            {/* Product Details */}
-            <div className={`p-4 flex-grow flex flex-col`}>
-              <div className="flex gap-2 items-center">
-                <div className="text-sm text-gray-500 line-through">
-                  ₹{product.price.toFixed(2)}
-                </div>
-                <div className=" text-lg font-bold bg-green-600 px-1 text-white rounded-md">
-                  ₹{product.originalPrice.toFixed(2)}
-                </div>
-              </div>
-              <h3 className="text-sm font-medium mt-2 line-clamp-2">
-                {product.name}
-              </h3>
-              <div
-                className={`${
-                  viewMode === "grid" ? "h-[25px]" : "mt-2 h-[25px]"
-                } overflow-hidden relative`}
-              >
-                <div
-                  className={`absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500`}
-                >
-                  <div className="text-[12px]">
-                    <span className="text-gray-400">Store:</span> Groci
-                  </div>
-                  <div className="mb-2 flex items-center gap-2">
-                    <div className="flex items-center">
-                      <FaStar className="text-yellow-300" />
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {product.rating} ({product.reviews} reviews)
+                      <button
+                        className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+                      >
+                        <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
+                      </button>
+                      <button
+                        onClick={() => handlewish(item._id)}
+                        className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+                      >
+                        <FaRegHeart className="h-4 w-4 text-gray-600" />
+                      </button>
                     </div>
                   </div>
+                  <div className="p-4 flex-grow flex flex-col">
+                    <div className="flex gap-2 items-center">
+                      <div className="text-sm text-gray-500 line-through">
+                        ₹{item?.price.toFixed(2)}
+                      </div>
+                      <div className="text-lg font-bold bg-green-600 px-1 text-white rounded-md">
+                        ₹{(item?.price * (1 - item.discount / 100)).toFixed(2)}
+                      </div>
+                    </div>
+
+                    <h3 className="mb-2 text-sm font-medium line-clamp-2">
+                      {item?.name.slice(0, 25)}...
+                    </h3>
+                    <div className="h-[25px] overflow-hidden relative">
+                      <div className="absolute flex flex-col gap-2 bottom-0 group-hover:-bottom-7 transform transition-all duration-500">
+                        <div className="text-[12px]">
+                          <span className="text-gray-400">Store:</span> {item.store}
+                        </div>
+                        <div className="mb-2 flex items-center gap-2">
+                          <div className="flex items-center">
+                            <FaStar className="text-yellow-300" />
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            4.5 (14 reviews)
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto">
+                      <button
+                        onClick={() => handlecart(item._id)}
+                        className="px-3 py-2 w-full bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80 flex items-center justify-center"
+                      >
+                        Add to cart
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <button className="mt-auto px-3 py-2 bg-[#004798] text-white text-sm font-medium rounded-md hover:bg-[#004798]/80">
-                Add to cart
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-          {/* Pagination */}
-          <div className="flex justify-center items-center mt-6 space-x-2">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => prev - 1)}
-              className="px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-2 border rounded-md ${
-                  currentPage === index + 1
-                    ? "bg-[#004798] text-white"
-                    : "hover:bg-gray-50"
-                }`}
-              >
-                {index + 1}
-              </button>
             ))}
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-              className="px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-            >
-              Next
-            </button>
           </div>
         </div>
       </div>
+
+      {/* Popup for Product Detail */}
       {isPopupVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="relative w-full max-w-4xl rounded-lg shadow-lg">
-            {/* Close Button */}
             <button
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
               onClick={handleClosePopup}
             >
               <span className="text-2xl md:text-4xl font-bold">&times;</span>
             </button>
-
-            {/* Product Detail Component */}
             <ProductDetail />
           </div>
         </div>

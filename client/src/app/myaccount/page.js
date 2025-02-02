@@ -28,41 +28,13 @@ import { toast } from "react-toast";
 import { deleteWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
 import { FaPinterestP } from "react-icons/fa6";
 import { getCheckoutById } from "@/store/reducer/checkoutReducer";
+import { addToCart, getCart } from "@/store/reducer/cartReducer";
 
-const products = [
-  {
-    id: "1",
-    name: "ELECTROLUX EW6S226SUI",
-    image: img1,
-    originalPrice: 250.0,
-    salePrice: 190.0,
-    dateAdded: "November 27, 2024",
-    inStock: true,
-  },
-  {
-    id: "2",
-    name: "Huawei Watch GT 2 Pro Titanium 47mm",
-    image: img1,
-    originalPrice: 99.99,
-    salePrice: 79.99,
-    dateAdded: "November 27, 2024",
-    inStock: true,
-  },
-  {
-    id: "3",
-    name: "HomePod mini - Space Gray",
-    image: img1,
-    originalPrice: 359.99,
-    salePrice: 249.99,
-    dateAdded: "November 27, 2024",
-    inStock: true,
-  },
-];
 
 const navigation = [
   { name: "Dashboard", href: "#dashboard", icon: FiLayout },
   { name: "Orders", href: "#orders", icon: FiPackage },
-  { name: "Downloads", href: "#downloads", icon: FiDownload },
+  // { name: "Downloads", href: "#downloads", icon: FiDownload },
   { name: "Addresses", href: "#addresses", icon: FiMapPin },
   { name: "Account details", href: "#account-details", icon: FiUser },
   { name: "Wishlist", href: "#wishlist", icon: FiHeart },
@@ -74,6 +46,7 @@ export default function AccountPage() {
   const { singleuser, useraddress } = useSelector((state) => state.auth);
   const { checkout } = useSelector((state) => state.checkout);
   const id = localStorage.getItem("userid");
+  const fakeid = localStorage.getItem("userid");
   const [currentSection, setCurrentSection] = useState("#dashboard");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -107,7 +80,7 @@ export default function AccountPage() {
         toast.error(res.payload.message);
       }
     });
-    dispatch(getWishlist({ userid: id }));
+    dispatch(getWishlist({ userid: fakeid }));
   };
 
   const handlecart = (productId) => {
@@ -209,8 +182,6 @@ export default function AccountPage() {
   ? checkout
   : checkout?.data || [];
 
-  console.log(history , 'checkout')
-
   return (
     <div className="max-w-6xl mx-auto py-10">
       <div className="grid grid-cols-1 p-2 md:grid-cols-4 gap-10">
@@ -304,7 +275,7 @@ export default function AccountPage() {
   <div>
     <h1 className="text-2xl font-semibold mb-8">Orders</h1>
     <table className="w-full shadow rounded-lg">
-      <thead>
+      <thead className="bg-primary text-white">
         <tr className="text-left bg-[#ffffff0d]">
           <th className="p-3">Order Id</th>
           <th className="p-3">Date</th>
@@ -328,7 +299,7 @@ export default function AccountPage() {
                       ? "bg-yellow-100 text-yellow-600"
                       : order.delivery_status === "delivered"
                       ? "bg-green-100 text-green-600"
-                      : "bg-red-100 text-red-600"
+                      : "bg-purple-100 text-purple-600"
                   }`}
                 >
                   {order.delivery_status}
@@ -743,7 +714,6 @@ export default function AccountPage() {
               <h1 className="text-2xl font-semibold mb-8">Log out</h1>
               <p>Are you sure you want to log out?</p>
               <button
-                onClick={handleLogout}
                 className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Log out

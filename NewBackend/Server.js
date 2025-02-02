@@ -25,6 +25,8 @@ app.use("/api", require("./routes/cartRoute"));
 app.use("/api", require("./routes/categoryRoute"));
 app.use("/api", require("./routes/blogRoute"));
 app.use("/api", require("./routes/checkoutRoute"));
+app.use("/api", require("./routes/bannerRoute"));
+app.use("/api", require("./routes/coupenRoute"));
 
 db();
 server.listen(8000, () => console.log("Server is running on port 8000"));
