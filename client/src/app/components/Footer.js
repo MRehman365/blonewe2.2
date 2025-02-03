@@ -48,7 +48,8 @@ export default function Footer() {
   { label: "Refund and Returns Policy", path: "/privacy/return-refund" },
   { label: "Privacy Policy", path: "/privacy/privacy-policy" },
   { label: "Terms and Conditions", path: "/privacy/term-condition" },
-  { label: "Cookie Settings", path: "/privacy/term-condition" },
+  { label: "Cookie Settings", path: "/privacy/cookies-setting" },
+
   { label: "Help Center", path: "/contact" },
 ].map((item, index) => (
                 <li key={index}>
@@ -65,14 +66,14 @@ export default function Footer() {
             <h2 className="text-lg font-semibold mb-4">Make Money with Us</h2>
             <ul className="space-y-2">
               {[
-                { label: "Sell on Blonwe", path: "/about" },
+                { label: "Sell on Blonwe", path: "/privacy/sellonblone" },
   { label: "Sell Your Services on Blonwe", path: "/contact" },
   { label: "Sell on Blonwe Business", path: "/contact" },
   { label: "Sell Your Apps on Blonwe", path: "/shop" },
   { label: "Become an Affiliate", path: "/contact/contact-3" },
-  { label: "Advertise Your Products", path: "/privacy/term-condition" },
-  { label: "Self-Publish with Us", path: "/privacy/term-condition" },
-  { label: "Become a Blonwe Vendor", path: "/privacy/privacy-policy" },
+  { label: "Advertise Your Products", path: "/privacy/advertise" },
+  { label: "Self-Publish with Us", path: "/privacy/selfpublish" },
+  { label: "Become a Blonwe Vendor", path: "/privacy/vendor" },
 
               ].map((item, index) => (
                 <li key={index}>
@@ -89,17 +90,23 @@ export default function Footer() {
             <h2 className="text-lg font-semibold mb-4">Get to Know Us</h2>
             <ul className="space-y-2">
               {[
-                "Careers for Blonwe",
-                "About Blonwe",
-                "Inverstor Relations",
-                "Blonwe Devices",
-                "Customer reviews",
-                "Social Responsibility",
-                "Store Locations"
+                 { label:"Careers for Blonwe"  , path: "/privacy/carriers" },  
+                 {  label: "About Blonwe", path:"/privacy/about" },
+                 {label :"Inverstor Relations", path : "/privacy/investors"},
+                 {label : "Blonwe Devices" , path : "/privacy/devices"},
+                 {label : "Customer Device"  , path : "/privacy/customer"},
+                 {label : "Social Responsibility" , path:"/privacy/social"},
+                 {label : "Store Locations"  , path : "/privacy/store"},
+                // "About Blonwe",
+                // "Inverstor Relations",
+                // "Blonwe Devices",
+                // "Customer reviews",
+                // "Social Responsibility",
+                // "Store Locations"
               ].map((item) => (
                 <li key={item}>
-                  <Link href="#" className="text-sm text-muted-foreground hover:text-primary hover:underline">
-                    {item}
+                  <Link href={item.path} className="text-sm text-muted-foreground hover:text-primary hover:underline">
+                    {item.label}
                   </Link>
                 </li>
               ))}
