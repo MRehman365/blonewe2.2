@@ -195,9 +195,9 @@ export default function ShoppingCart() {
                   Apply coupon
                 </button>
               </form>
-              <button className="px-4 py-2 border rounded hover:bg-gray-50 transition-colors">
+              {/* <button className="px-4 py-2 border rounded hover:bg-gray-50 transition-colors">
                 Clear All
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

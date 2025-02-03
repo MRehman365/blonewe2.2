@@ -44,7 +44,7 @@ export default function Footer() {
               {[
   { label: "Your Orders", path: "/myaccount" },
   { label: "Returns & Replacements", path: "/privacy/return-refund" },
-  { label: "Shipping Rates & Policies", path: "/privacy/return-refund" },
+  { label: "Shipping Rates & Policies", path: "/privacy/shiping" },
   { label: "Refund and Returns Policy", path: "/privacy/return-refund" },
   { label: "Privacy Policy", path: "/privacy/privacy-policy" },
   { label: "Terms and Conditions", path: "/privacy/term-condition" },

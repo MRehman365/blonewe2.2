@@ -23,7 +23,7 @@ import { FaRegCircleUser, FaRegHeart, FaScaleBalanced } from "react-icons/fa6";
 import { TbArmchair, TbMoodKid } from "react-icons/tb";
 import { ImMobile2 } from "react-icons/im";
 import { PiDress } from "react-icons/pi";
-import { CiDiscount1, CiUser } from "react-icons/ci";
+import { CiDiscount1, CiShop, CiUser } from "react-icons/ci";
 import { MdMenu, MdOutlineMenu, MdOutlineSportsTennis } from "react-icons/md";
 import { GiCrystalEarrings, GiLipstick } from "react-icons/gi";
 import {
@@ -122,7 +122,9 @@ dispatch(getUserById(id))
     dispatch(fetchCategories()) 
   },[dispatch])
 
-  const categorydata = Array.isArray(categories) ? categories : categories.category || [];
+  const categorydata = Array.isArray(categories) ? categories : categories?.category || [];
+
+  console.log(categorydata, 'categorydata')
 
 
   return (
@@ -348,143 +350,10 @@ dispatch(getUserById(id))
               <div className=" group">
                 <Link
                   href="/shop"
-                  className="flex items-center text-gray-500 hover:text-[#003B95]"
+                  className="flex items-center gap-1 text-gray-500 hover:text-[#003B95]"
                 >
-                  Shop
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="ml-1 h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+               <span><CiShop size={20} /></span>   Shop
                 </Link>
-                <div
-                  className="absolute left-1/2 transform -translate-x-1/2 z-10 hidden group-hover:block border rounded-md  py-2 w-[80%]"
-                  style={{
-                    backgroundColor:
-                      theme === "light"
-                        ? "rgba(255, 255, 255, 1)"
-                        : "rgba(26, 32, 44, 1)",
-                    color: theme === "light" ? "#000" : "#fff",
-                  }}
-                >
-                  <nav className="w-full p-6" aria-label="Shop navigation">
-                    <div className="max-w-5xl mx-auto">
-                      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-                        {/* Shop Lists Column */}
-                        <div className="space-y-4">
-                          <h2 className="text-lg font-semibold">Shop Lists</h2>
-                          <ul className="space-y-2">
-                            {[
-                              "Shop Default",
-                              "Shop Right Sidebar",
-                              "Shop Wide",
-                              "Filters Area",
-                              "List Left Sidebar",
-                              "Load More Button",
-                              "Infinite Scrolling",
-                            ].map((item) => (
-                              <li key={item}>
-                                <Link
-                                  href="#"
-                                  className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
-                                >
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        {/* Product Detail Column */}
-                        <div className="space-y-4">
-                          <h2 className="text-lg font-semibold">
-                            Product Detail
-                          </h2>
-                          <ul className="space-y-2">
-                            {[
-                              "Product Variable",
-                              "Product Default",
-                              "Product Grouped",
-                              "Product External",
-                              "Product Downloadable",
-                              "Product With Video",
-                            ].map((item) => (
-                              <li key={item}>
-                                <Link
-                                  href="#"
-                                  className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
-                                >
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        {/* Shop Pages Column */}
-                        <div className="space-y-4">
-                          <h2 className="text-lg font-semibold">Shop Pages</h2>
-                          <ul className="space-y-2">
-                            {[
-                              "Cart",
-                              "Checkout",
-                              "My account",
-                              "Wishlist",
-                              "Order Tracking",
-                              "Featured Products",
-                              "Best Selling Products",
-                            ].map((item) => (
-                              <li key={item}>
-                                <Link
-                                  href="#"
-                                  className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
-                                >
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        {/* Shop Layouts Column */}
-                        <div className="space-y-4">
-                          <h2 className="text-lg font-semibold">
-                            Shop Layouts
-                          </h2>
-                          <ul className="space-y-2">
-                            {[
-                              "Two Columns",
-                              "Three Columns",
-                              "Three Columns Wide",
-                              "Four Columns",
-                              "Four Columns Wide",
-                              "Five Columns Wide",
-                              "Six Columns Wide",
-                            ].map((item) => (
-                              <li key={item}>
-                                <Link
-                                  href="#"
-                                  className="text-gray-600 text-sm hover:text-gray-900 transition-colors"
-                                >
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </nav>
-                </div>
               </div>
 
               <Link

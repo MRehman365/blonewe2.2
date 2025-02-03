@@ -77,7 +77,7 @@ export default function ProductInfo({ params }) {
   };
 
   const handlecart = async (productId) => {
-    await dispatch(addToCart({ userId, productId })).then((res) => {
+    await dispatch(addToCart({ userId, productId, quantity })).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {

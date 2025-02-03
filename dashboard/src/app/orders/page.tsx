@@ -32,16 +32,16 @@ const Page = () => {
     }
   };
 
-  const handleSave = (id: string) => {
+  const handleSave = async(id: string) => {
     if (!payment_status && !delivery_status) {
       alert('Please update at least one field (Payment Status or Delivery Status).');
       return;
     }
-    console.log('Updating order:', { id, payment_status, delivery_status });
 
     // Dispatch the update action
-    dispatch(updateCheckout({ id, payment_status, delivery_status }));
+   await dispatch(updateCheckout({ id, payment_status, delivery_status }));
     setEditableOrderId(null);
+    window.location.reload();
   };
 
   const handleDelete = async(orderId: string) => {
@@ -78,8 +78,9 @@ const Page = () => {
               </tr>
             </thead>
             <tbody>
-              {datacheck.map((checkout) => (
-                <tr key={checkout._id} className="hover:bg-gray-50 dark:bg-boxdark">
+              {datacheck.length > 0 &&
+              datacheck?.map((checkout, index) => (
+                <tr key={index} className="hover:bg-gray-50 dark:bg-boxdark">
                   <td className="border border-gray-200 px-4 py-2 text-sm">{checkout._id}</td>
                   <td className="border border-gray-200 px-4 py-2 text-sm">{checkout.shippingInfo.name}</td>
                   <td className="border border-gray-200 px-4 py-2">
