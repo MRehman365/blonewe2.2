@@ -1,15 +1,63 @@
+'use client'
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-
-export const metadata: Metadata = {
-  title: "Next.js Settings | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Settings page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
-};
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { useState } from "react";
+import { update_admin_details } from "@/store/reducers/adminReducer";
+import { toast } from "react-toast";
 
 const Settings = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const adminId = localStorage.getItem('adminid');
+  const [image, setMainImage] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [bio, setBio] = useState<string>('');
+  const [fullname, setFullname] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+
+  const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) {
+      toast.error("Please select an image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (data?.data?.url) {
+        setMainImage(data.data.url);
+      } else {
+        console.error("Invalid ImgBB response:", data);
+        toast.error("Failed to upload image to ImgBB.");
+      }
+    } catch (error) {
+      console.error("Error uploading image to ImgBB:", error);
+      toast.error("Failed to upload image to ImgBB.");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(update_admin_details({ adminId, email, image, bio, phone, username, fullname }));
+  };
+
   return (
     <DefaultLayout>
       <div className="mx-auto max-w-270">
@@ -24,7 +72,7 @@ const Settings = () => {
                 </h3>
               </div>
               <div className="p-7">
-                <form action="#">
+                <form onSubmit={handleSubmit}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
                       <label
@@ -65,7 +113,8 @@ const Settings = () => {
                           name="fullName"
                           id="fullName"
                           placeholder="Devid Jhon"
-                          defaultValue="Devid Jhon"
+                          value={fullname}
+                          onChange={(e) => setFullname(e.target.value)}
                         />
                       </div>
                     </div>
@@ -83,7 +132,8 @@ const Settings = () => {
                         name="phoneNumber"
                         id="phoneNumber"
                         placeholder="+990 3343 7865"
-                        defaultValue="+990 3343 7865"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
                   </div>
@@ -127,7 +177,8 @@ const Settings = () => {
                         name="emailAddress"
                         id="emailAddress"
                         placeholder="devidjond45@gmail.com"
-                        defaultValue="devidjond45@gmail.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                   </div>
@@ -145,14 +196,15 @@ const Settings = () => {
                       name="Username"
                       id="Username"
                       placeholder="devidjhon24"
-                      defaultValue="devidjhon24"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
 
                   <div className="mb-5.5">
                     <label
                       className="mb-3 block text-sm font-medium text-black dark:text-white"
-                      htmlFor="Username"
+                      htmlFor="bio"
                     >
                       BIO
                     </label>
@@ -193,6 +245,8 @@ const Settings = () => {
                         name="bio"
                         id="bio"
                         rows={6}
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
                         placeholder="Write your bio here"
                         defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere fermentum urna, eu condimentum mauris tempus ut. Donec fermentum blandit aliquet."
                       ></textarea>
@@ -225,11 +279,11 @@ const Settings = () => {
                 </h3>
               </div>
               <div className="p-7">
-                <form action="#">
+                <form>
                   <div className="mb-4 flex items-center gap-3">
                     <div className="h-14 w-14 rounded-full">
                       <Image
-                        src={"/images/user/user-03.png"}
+                        src={image || "/images/user/user-03.png"} // Use uploaded image or default
                         width={55}
                         height={55}
                         alt="User"
@@ -240,11 +294,12 @@ const Settings = () => {
                         Edit your photo
                       </span>
                       <span className="flex gap-2.5">
-                        <button className="text-sm hover:text-primary">
+                        <button
+                          className="text-sm hover:text-primary"
+                          type="button"
+                          onClick={() => setMainImage(null)} // Clear the image
+                        >
                           Delete
-                        </button>
-                        <button className="text-sm hover:text-primary">
-                          Update
                         </button>
                       </span>
                     </div>
@@ -258,6 +313,7 @@ const Settings = () => {
                       type="file"
                       accept="image/*"
                       className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
+                      onChange={handleImage} // Add onChange handler
                     />
                     <div className="flex flex-col items-center justify-center space-y-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-full border border-stroke bg-white dark:border-strokedark dark:bg-boxdark">
@@ -295,21 +351,6 @@ const Settings = () => {
                       <p className="mt-1.5">SVG, PNG, JPG or GIF</p>
                       <p>(max, 800 X 800px)</p>
                     </div>
-                  </div>
-
-                  <div className="flex justify-end gap-4.5">
-                    <button
-                      className="flex justify-center rounded border border-stroke px-6 py-2 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                      type="submit"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
-                      type="submit"
-                    >
-                      Save
-                    </button>
                   </div>
                 </form>
               </div>

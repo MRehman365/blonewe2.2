@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post("/createcoupen", addcoupen);
 router.get("/getallcoupen", getcoupen);
-router.get("/getcoupen/:id", getCouponByCode);
+router.get("/getcoupen/:code", getCouponByCode);
 router.delete("/deletecoupen/:id", deleteCoupen);
 
 module.exports = router;

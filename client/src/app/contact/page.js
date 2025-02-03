@@ -1,9 +1,32 @@
+'use client'
 import Image from "next/image"
 import img from '../assets/contact-image-1.jpg'
 import Features from "../components/Features"
 import SubNewsLatter from "../components/SubNewsLatter"
+import { useDispatch } from "react-redux"
+import { sendContactForm } from "@/store/reducer/authReducer"
+import { useState } from "react"
 
 export default function ContactPage() {
+  const dispatch = useDispatch()
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(sendContactForm(formData))
+  }
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       {/* Header Section */}
@@ -84,7 +107,7 @@ export default function ContactPage() {
             </p>
           </div>
           
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label htmlFor="name" className="text-sm block">
@@ -93,6 +116,9 @@ export default function ContactPage() {
                 <input
                   id="name"
                   type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-[#ffffff09] focus:ring-2 focus:ring-[#004798]"
                 />
@@ -104,6 +130,9 @@ export default function ContactPage() {
                 <input
                   id="email"
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-[#ffffff09] focus:ring-2 focus:ring-[#004798]"
                 />
@@ -117,6 +146,9 @@ export default function ContactPage() {
               <input
                 id="subject"
                 type="text"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-[#ffffff09] focus:ring-2 focus:ring-[#004798]"
               />
@@ -128,17 +160,21 @@ export default function ContactPage() {
               </label>
               <textarea
                 id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none bg-[#ffffff09] focus:ring-2 focus:ring-[#004798] min-h-[150px]"
               ></textarea>
             </div>
             
             <button
               type="submit"
-              className="px-4 py-2 bg-[#004798] text-white rounded-md hover:bg-[#004798] "
+              className="px-4 py-2 bg-[#004798] text-white rounded-md hover:bg-[#004798]"
             >
-              Send Message
+              Submit
             </button>
           </form>
+
         </div>
       </div>
       <Features />

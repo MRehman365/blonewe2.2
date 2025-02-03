@@ -217,9 +217,9 @@ export default function AuthForm() {
                     </div>
                   </div>
                   
-                  <Link href="/authentication/forgetPassword" className="text-sm flex justify-end text-[#004798] hover:underline text-right w-full py-1 ">
+                  {/* <Link href="/authentication/forgetPassword" className="text-sm flex justify-end text-[#004798] hover:underline text-right w-full py-1 ">
                         Forgot password?
-                      </Link>
+                      </Link> */}
                   <button
                     type="submit"
                     className="w-full rounded-md bg-[#004798] px-4 py-2 text-white hover:bg-[#004798]/90 focus:outline-none focus:ring-2 focus:ring-[#004798] focus:ring-offset-2"

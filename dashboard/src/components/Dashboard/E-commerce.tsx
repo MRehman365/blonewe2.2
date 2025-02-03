@@ -46,6 +46,8 @@ const ECommerce: React.FC = () => {
     ? checkouts
     : checkouts?.data || [];
 
+    console.log(datacheck, 'checkouts')
+
   // Calculate Total Sale
   const totalSale = datacheck.reduce((acc, checkout) => {
     return acc + parseFloat(checkout.price);
@@ -186,7 +188,7 @@ const ECommerce: React.FC = () => {
         <div className="col-span-12 xl:col-span-8">
           <TableOne />
         </div>
-        <ChatCard />
+        {/* <ChatCard /> */}
       </div>
     </>
   );

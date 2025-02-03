@@ -49,10 +49,10 @@ export const searchProducts = createAsyncThunk(
 
 export const fetchFilteredProducts = createAsyncThunk(
   "filterProducts/fetchFilteredProducts",
-  async ({ categories, sortBy }, { rejectWithValue }) => {
+  async ({ categories, sortBy, page }, { rejectWithValue }) => {
     try {
       const response = await api.get("/filterproduct", {
-        params: { categories: categories.join(","), sortBy },
+        params: { categories: categories.join(","), sortBy, page },
       });
       return response.data;
     } catch (error) {

@@ -79,6 +79,38 @@ export const getUserDetails = createAsyncThunk(
   }
 );
 
+export const updatePassword = createAsyncThunk(
+  "auth/updatePassword",
+  async ({ email, password, newPassword, confirmPassword }, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/updatepassword", {
+        email,
+        password,
+        newPassword,
+        confirmPassword,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const sendContactForm = createAsyncThunk(
+  "contact/sendContactForm",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        "/contact", // Update with your API endpoint
+        formData
+      );
+      return response.data; 
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to send message");
+    }
+  }
+);
+
 // Initial state
 const initialState = {
   user: null,
@@ -87,6 +119,7 @@ const initialState = {
   singleuser: null,
   useraddress: null,
   userDetail: null,
+  message: null,
 };
 
 // User slice
@@ -183,6 +216,38 @@ const userSlice = createSlice({
         state.successMessage = payload.message;
         state.loader = false;
         state.userDetail = userDetail;
+      })
+
+      // update password
+
+      .addCase(updatePassword.pending, (state) => {
+        state.loading = true;
+        state.message = null;
+        state.error = null;
+      })
+      .addCase(updatePassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.message;
+      })
+
+      // contact from 
+      .addCase(sendContactForm.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      })
+      .addCase(sendContactForm.fulfilled, (state) => {
+        state.loading = false;
+        state.success = true;
+      })
+      .addCase(sendContactForm.rejected, (state, action) => {
+        state.loading = false;
+        state.success = false;
+        state.error = action.payload;
       });
   },
 });

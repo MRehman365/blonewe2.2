@@ -2,6 +2,10 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const UserModel = require("../../modals/userAuthModal");
 const addressModal = require("../../modals/addressModal");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+
 
 class UserAuthController {
   register = async (req, res) => {
@@ -182,6 +186,48 @@ class UserAuthController {
     });
   }
 };
+
+contactForm = async(req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "rehmanarshad365@gmail.com",
+        pass: "holl xwkn svxj wosp",
+      },
+    });
+
+    // Email options
+    const mailOptions = {
+      from: email, // User's email
+      to: "rehmanarshad365@gmail.com", // Admin email
+      subject: `New Contact Form Submission: ${subject}`,
+      text: `
+        Name: ${name}
+        Email: ${email}
+        Subject: ${subject}
+        Message: ${message}
+      `,
+      html: `
+        <h1>New Contact Form Submission</h1>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong> ${message}</p>
+      `,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Error in sending email:", error);
+    res.status(500).json({ message: "Error in sending email" });
+  }
+}
 }
 
 module.exports = new UserAuthController();

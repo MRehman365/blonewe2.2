@@ -39,7 +39,7 @@ export default function ModernFerniture({handleview}) {
   },[dispatch])
   const category = Array.isArray(categories) ? categories : categories.category || [];
 
-  const filteredByCategory = product.filter(product => product.category === category[0]?.name);
+  const filteredByCategory = product.filter(product => product.category === category[1]?.name);
 
   const handlewish = async (productId) => {
     await dispatch(addToWishlist({ userId, productId })).then((res) => {
@@ -67,7 +67,7 @@ export default function ModernFerniture({handleview}) {
     <div className="max-w-7xl mx-auto py-8">
       <div className="flex justify-between py-2">
         <p className="text-base md:text-lg">{category[1]?.name}</p>
-        <p className="text-sm md:text-base hover:text-[#004798]">View all</p>
+        <Link href={`/shop/${category[1]?.name}`} className="text-sm md:text-base hover:text-[#004798]">View all</Link>
       </div>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-1/4 bg-gray-500 text-white p-6 rounded-lg">
@@ -106,12 +106,12 @@ export default function ModernFerniture({handleview}) {
                 <div
                   className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
                 >
-                  <button
+                  {/* <button
                     className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
                     onClick={() => handleview(item._id)}
                   >
                     <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                  </button>
+                  </button> */}
                   <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
                     <FaRegHeart
                       className="h-4 w-4 text-gray-600"

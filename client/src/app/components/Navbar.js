@@ -44,49 +44,6 @@ import { getCart } from "@/store/reducer/cartReducer";
 import { searchProducts } from "@/store/reducer/productReducer";
 import { fetchCategories } from "@/store/reducer/categoryReducer";
 
-const categories = [
-  {
-    id: "electronics",
-    name: "Electronics",
-    icon: <ImMobile2 className="h-5 w-5" />,
-  },
-  { id: "fashion", name: "Fashion", icon: <PiDress className="h-5 w-5" /> },
-  {
-    id: "furniture",
-    name: "Furniture",
-    icon: <TbArmchair className="h-5 w-5" />,
-  },
-  {
-    id: "auto-parts",
-    name: "Auto Parts",
-    icon: <IoCarSportOutline className="h-5 w-5" />,
-  },
-  {
-    id: "grocery",
-    name: "Grocery",
-    icon: <IoStorefrontOutline className="h-5 w-5" />,
-  },
-  {
-    id: "cosmetic",
-    name: "Cosmetic",
-    icon: <GiLipstick className="h-5 w-5" />,
-  },
-  { id: "kids", name: "Kids", icon: <TbMoodKid className="h-5 w-5" /> },
-  {
-    id: "jewellery",
-    name: "Jewellery",
-    icon: <GiCrystalEarrings className="h-5 w-5" />,
-  },
-  {
-    id: "sports",
-    name: "Sports",
-    icon: <MdOutlineSportsTennis className="h-5 w-5" />,
-  },
-  { id: "sport1", name: "Discount Goods" },
-  { id: "sport2", name: "We Recommended" },
-  { id: "sport3", name: "New Product" },
-  { id: "sport4", name: "Best Selling" },
-];
 
 
 const Navbar = () => {
@@ -160,8 +117,6 @@ dispatch(getUserById(id))
 
   const handleOpenPopup = () => setIsPopupVisible(true);
   const handleClosePopup = () => setIsPopupVisible(false);
-
-  const [filteredResults, setFilteredResults] = useState([]);
 
   useEffect(() => {
     dispatch(fetchCategories()) 
@@ -376,9 +331,9 @@ dispatch(getUserById(id))
                         href={`/shop/${category.name}`}
                         className="flex items-center gap-3 group px-4 py-2 hover:bg-[#004798] hover:text-white transition-colors text-[14px]"
                       >
-                        <span className="text-primary group-hover:text-white">
+                        {/* <span className="text-primary group-hover:text-white">
                           {category.icon}
-                        </span>
+                        </span> */}
                         <span>{category.name}</span>
                       </Link>
                     ))}
@@ -537,7 +492,7 @@ dispatch(getUserById(id))
                 className="flex items-center text-gray-500 hover:text-[#003B95]"
               >
                 <span className="mr-2">
-                  <TbArmchair />
+                  {/* <TbArmchair /> */}
                 </span>{" "}
                 {categorydata[0]?.name}
               </Link>
@@ -547,7 +502,7 @@ dispatch(getUserById(id))
                 className="flex items-center text-gray-500 hover:text-[#003B95]"
               >
                 <span className="mr-2">
-                  <ImMobile2 />
+                  {/* <ImMobile2 /> */}
                 </span>{" "}
                 {categorydata[1]?.name}
               </Link>
@@ -557,7 +512,7 @@ dispatch(getUserById(id))
                 className="flex items-center text-gray-500 hover:text-[#003B95]"
               >
                 <span className="mr-2">
-                  <PiDress />
+                  {/* <PiDress /> */}
                 </span>{" "}
                 {categorydata[2]?.name}
               </Link>

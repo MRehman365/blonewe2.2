@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { FaCross, FaRegHeart, FaStar } from "react-icons/fa";
 import { MdOutlineZoomOutMap } from "react-icons/md";
@@ -21,7 +21,7 @@ import Link from "next/link";
 
 export default function ProductListing() {
   const { categories } = useSelector((state) => state.category);
-  const { products } = useSelector((state) => state.products);
+  const { products, totalPages } = useSelector((state) => state.products); // Add totalPages to Redux state
 
   const userId = localStorage.getItem('userid');
 
@@ -36,11 +36,8 @@ export default function ProductListing() {
   const [showValue, setShowValue] = useState("20 items");
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
+  const [page, setPage] = useState(1); // Add page state
 
-  const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [activeDot, setActiveDot] = useState(null);
-  const sliderRef = useRef(null);
   const dispatch = useDispatch();
 
   // Fetch categories on component mount
@@ -50,10 +47,10 @@ export default function ProductListing() {
 
   const categorydata = Array.isArray(categories) ? categories : categories.category || [];
 
-  // Fetch filtered products when selectedCategories or sortValue changes
+  // Fetch filtered products when selectedCategories, sortValue, or page changes
   useEffect(() => {
-    dispatch(fetchFilteredProducts({ categories: selectedCategories, sortBy: sortValue }));
-  }, [selectedCategories, sortValue, dispatch]);
+    dispatch(fetchFilteredProducts({ categories: selectedCategories, sortBy: sortValue, page }));
+  }, [selectedCategories, sortValue, page, dispatch]);
 
   // Handle category selection
   const handleCategoryChange = (categoryId) => {
@@ -67,6 +64,7 @@ export default function ProductListing() {
   // Handle sorting change
   const handleSortChange = (sortBy) => {
     setSortValue(sortBy);
+    setPage(1); // Reset to first page when sorting changes
   };
 
   const productdata = Array.isArray(products) ? products : products.menu || [];
@@ -91,6 +89,7 @@ export default function ProductListing() {
   const clearFilters = () => {
     setSelectedCategories([]);
     setSortValue("Sort by latest");
+    setPage(1); // Reset to first page when clearing filters
   };
 
   // Handle wishlist
@@ -115,6 +114,11 @@ export default function ProductListing() {
       }
     });
     dispatch(getCart(userId));
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
   };
 
   return (
@@ -142,70 +146,36 @@ export default function ProductListing() {
             <LuFilter className="text-xl" />
           </button>
           <div className="flex items-center justify-between py-4 px-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[12px] md:text-sm text-gray-500">Sort:</span>
-          <div className="relative">
-            <button
-              onClick={() => setSortOpen(!sortOpen)}
-              className="flex items-center justify-between w-[140px] px-3 py-1.5 text-[12px] md:text-sm border rounded-md"
-            >
-              <span>{sortValue}</span>
-              <IoIosArrowDown className={`transition-transform ${sortOpen ? "rotate-180" : ""}`} />
-            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] md:text-sm text-gray-500">Sort:</span>
+              <div className="relative">
+                <button
+                  onClick={() => setSortOpen(!sortOpen)}
+                  className="flex items-center justify-between w-[140px] px-3 py-1.5 text-[12px] md:text-sm border rounded-md"
+                >
+                  <span>{sortValue}</span>
+                  <IoIosArrowDown className={`transition-transform ${sortOpen ? "rotate-180" : ""}`} />
+                </button>
 
-            {sortOpen && (
-              <div className="absolute z-10 w-full mt-1 border rounded-md shadow-lg">
-                {["latest", "lowtohigh", "hightolow"].map((option) => (
-                  <button
-                    key={option}
-                    className="w-full px-3 py-1.5 text-left text-[12px] md:text-sm"
-                    onClick={() => {
-                      handleSortChange(option);
-                      setSortOpen(false);
-                    }}
-                  >
-                    {option}
-                  </button>
-                ))}
+                {sortOpen && (
+                  <div className="absolute z-10 w-full mt-1 border rounded-md shadow-lg">
+                    {["latest", "lowtohigh", "hightolow"].map((option) => (
+                      <button
+                        key={option}
+                        className="w-full px-3 py-1.5 text-left text-[12px] md:text-sm"
+                        onClick={() => {
+                          handleSortChange(option);
+                          setSortOpen(false);
+                        }}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-          {/* <div className="flex items-center gap-2">
-            <span className="text-[12px] md:text-sm text-gray-500">Show:</span>
-            <div className="relative">
-              <button
-                onClick={() => setShowOpen(!showOpen)}
-                className="flex items-center justify-between w-[100px] px-3 py-1.5 text-[12px] md:text-sm border rounded-md"
-              >
-                <span>{showValue}</span>
-                <IoIosArrowDown
-                  className={`transition-transform ${
-                    showOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {showOpen && (
-                <div className="absolute z-10 w-full mt-1 border rounded-md shadow-lg">
-                  {["12 items", "20 items", "30 items"].map((option) => (
-                    <button
-                      key={option}
-                      className="w-full px-3 py-1.5 text-left text-sm"
-                      onClick={() => {
-                        setShowValue(option);
-                        setShowOpen(false);
-                      }}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
-          </div> */}
+          </div>
 
           <div className="md:flex gap-1 ml-4 hidden">
             <button
@@ -267,8 +237,6 @@ export default function ProductListing() {
                 ))}
               </div>
             </div>
-
-   
 
             {/* Additional Filters */}
             <div>
@@ -348,11 +316,11 @@ export default function ProductListing() {
                     <div
                       className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
                     >
-                      <button
+                      {/* <button
                         className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
                       >
                         <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                      </button>
+                      </button> */}
                       <button
                         onClick={() => handlewish(item._id)}
                         className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
@@ -401,6 +369,29 @@ export default function ProductListing() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-center mt-8">
+            <div className="flex gap-2">
+              <button
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+                className="px-4 py-2 border rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page === totalPages}
+                className="px-4 py-2 border rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -21,6 +21,7 @@ import {
   addUserAddress,
   getAddressById,
   getUserById,
+  updatePassword,
 } from "@/store/reducer/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import api from "@/store/api";
@@ -52,6 +53,13 @@ export default function AccountPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
+  const [formData, setFormData] = useState({
+    email: singleuser?.user?.email || "",
+    name: singleuser?.user?.name || "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const [addressData, setAddressData] = useState({
     userid: id,
@@ -182,6 +190,22 @@ export default function AccountPage() {
   ? checkout
   : checkout?.data || [];
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  // Handle Form Submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+      dispatch(updatePassword({email:formData.email, password: formData.currentPassword, newPassword: formData.newPassword, confirmPassword: formData.confirmPassword })).then((res) => {
+        if (res?.payload?.success) {
+          toast.success(res.payload.message);
+        } else {
+          toast.error(res.payload.message);
+        }
+      });
+  };
+
   return (
     <div className="max-w-6xl mx-auto py-10">
       <div className="grid grid-cols-1 p-2 md:grid-cols-4 gap-10">
@@ -236,17 +260,17 @@ export default function AccountPage() {
                 </p>
                 <p className="text-gray-500 mt-2">
                   From your account dashboard you can view your{" "}
-                  <a href="#" className="text-blue-400 hover:underline">
+                  <span className="text-blue-400 ">
                     recent orders
-                  </a>
+                  </span>
                   , manage your{" "}
-                  <a href="#" className="text-blue-400 hover:underline">
+                  <span className="text-blue-400 ">
                     shipping and billing addresses
-                  </a>
+                  </span>
                   , and{" "}
-                  <a href="#" className="text-blue-400 hover:underline">
+                  <span className="text-blue-400 ">
                     edit your password and account details
-                  </a>
+                  </span>
                   .
                 </p>
               </div>
@@ -325,134 +349,117 @@ export default function AccountPage() {
 
           {currentSection === "#account-details" && (
             <div>
-              <form className="space-y-6 max-w-2xl">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="lastName"
-                      className="block text-sm font-medium text-gray-500"
-                    >
-                      User Name *
-                    </label>
-                    <input
-                      id="lastName"
-                      defaultValue={singleuser.user.name}
-                      required
-                      className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-500"
-                  >
-                    Email address *
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    defaultValue={singleuser.user.email}
-                    required
-                    className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+        <div className="grid gap-4">
+          <div className="space-y-2">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-500">
+              User Name *
+            </label>
+            <input
+              id="name"
+              value={formData.name || singleuser.user.name}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-500">
+            Email address *
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={formData.email }
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
 
-                <div className="space-y-6">
-                  <h2 className="text-xl font-semibold">Password change</h2>
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="currentPassword"
-                      className="block text-sm font-medium text-gray-500"
-                    >
-                      Current password (leave blank to leave unchanged)
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="currentPassword"
-                        type={showCurrentPassword ? "text" : "password"}
-                        className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                        onClick={() =>
-                          setShowCurrentPassword(!showCurrentPassword)
-                        }
-                      >
-                        {showCurrentPassword ? (
-                          <FiEyeOff className="h-5 w-5 text-gray-500" />
-                        ) : (
-                          <FiEye className="h-5 w-5 text-gray-500" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="newPassword"
-                      className="block text-sm font-medium text-gray-500"
-                    >
-                      New password (leave blank to leave unchanged)
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="newPassword"
-                        required
-                        type={showNewPassword ? "text" : "password"}
-                        className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                        onClick={() => setShowNewPassword(!showNewPassword)}
-                      >
-                        {showNewPassword ? (
-                          <FiEyeOff className="h-5 w-5 text-gray-500" />
-                        ) : (
-                          <FiEye className="h-5 w-5 text-gray-500" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="confirmPassword"
-                      className="block text-sm font-medium text-gray-500"
-                    >
-                      Confirm new password
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="confirmPassword"
-                        required
-                        type={showConfirmPassword ? "text" : "password"}
-                        className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      />
-                      <button
-                        type="button"
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                      >
-                        {showConfirmPassword ? (
-                          <FiEyeOff className="h-5 w-5 text-gray-500" />
-                        ) : (
-                          <FiEye className="h-5 w-5 text-gray-500" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">Password change</h2>
 
-                <button
-                  type="submit"
-                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Save changes
-                </button>
-              </form>
+          {/* Current Password */}
+          <div className="space-y-2">
+            <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-500">
+              Current password (leave blank to leave unchanged)
+            </label>
+            <div className="relative">
+              <input
+                id="currentPassword"
+                type={showCurrentPassword ? "text" : "password"}
+                value={formData.currentPassword}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              >
+                {showCurrentPassword ? <FiEyeOff className="h-5 w-5 text-gray-500" /> : <FiEye className="h-5 w-5 text-gray-500" />}
+              </button>
+            </div>
+          </div>
+
+          {/* New Password */}
+          <div className="space-y-2">
+            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-500">
+              New password (leave blank to leave unchanged)
+            </label>
+            <div className="relative">
+              <input
+                id="newPassword"
+                type={showNewPassword ? "text" : "password"}
+                value={formData.newPassword}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+              >
+                {showNewPassword ? <FiEyeOff className="h-5 w-5 text-gray-500" /> : <FiEye className="h-5 w-5 text-gray-500" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Confirm Password */}
+          <div className="space-y-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-500">
+              Confirm new password
+            </label>
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <FiEyeOff className="h-5 w-5 text-gray-500" /> : <FiEye className="h-5 w-5 text-gray-500" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Save changes
+        </button>
+      </form>
             </div>
           )}
 
@@ -714,6 +721,7 @@ export default function AccountPage() {
               <h1 className="text-2xl font-semibold mb-8">Log out</h1>
               <p>Are you sure you want to log out?</p>
               <button
+              onClick={handleLogout}
                 className="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Log out

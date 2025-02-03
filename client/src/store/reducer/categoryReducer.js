@@ -17,9 +17,22 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+export const fetchBanners = createAsyncThunk(
+  "banner/fetchBanners",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/getbanner");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+    }
+  }
+);
+
 // Initial State
 const initialState = {
   categories: [],
+  banners: [],
   loading: false,
   error: null,
 };
@@ -42,6 +55,20 @@ const categorySlice = createSlice({
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload; // Store error message
+      })
+
+      // banners
+      .addCase(fetchBanners.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBanners.fulfilled, (state, action) => {
+        state.loading = false;
+        state.banners = action.payload;
+      })
+      .addCase(fetchBanners.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

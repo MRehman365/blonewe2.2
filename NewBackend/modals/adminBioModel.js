@@ -11,7 +11,7 @@ const adminSchema = new mongoose.Schema({
    
     },
     phone: {
-        type: String,
+        type: Number,
        
     },
     email: {
@@ -21,14 +21,13 @@ const adminSchema = new mongoose.Schema({
     },
     username: {
         type: String,
-        // required: true,
-        unique: true
+        required: true,
     },
     bio: {
         type: String
     },
     image: {
-        type: String // URL for the uploaded profile picture
+        type: String 
     }
 }, { timestamps: true });
 

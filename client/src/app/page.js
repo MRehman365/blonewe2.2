@@ -38,7 +38,7 @@ import SubNewsLatter from "./components/SubNewsLatter";
 import Features from "./components/Features";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "@/store/reducer/categoryReducer";
+import { fetchBanners, fetchCategories } from "@/store/reducer/categoryReducer";
 
 const services = [
   {
@@ -63,10 +63,10 @@ const services = [
   },
 ];
 
-const sliderImages = [img1, img2, img3];
+// const sliderImages = [img1, img2, img3];
 
 export default function Home() {
-  const { categories} = useSelector((state) => state.category)
+  const { categories, banners } = useSelector((state) => state.category);
 
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
@@ -76,12 +76,32 @@ export default function Home() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchCategories()) 
-  },[dispatch])
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  const category = Array.isArray(categories) ? categories : categories.category || [];
+  const category = Array.isArray(categories)
+    ? categories
+    : categories.category || [];
 
-  console.log(category)
+  useEffect(() => {
+    dispatch(fetchBanners());
+  }, [dispatch]);
+
+  const bannerdata = Array.isArray(banners)
+    ? banners
+    : banners.banners[0] || [];
+  const sliderImages = Array.isArray(bannerdata)
+    ? bannerdata
+    : bannerdata?.mainbanner || [];
+  const secondImages = Array.isArray(bannerdata)
+    ? bannerdata
+    : bannerdata?.secondbanner || [];
+  const forthImages = Array.isArray(bannerdata)
+    ? bannerdata
+    : bannerdata?.fourthbanner || [];
+  // const secondImages = bannerdata.secondbanner;
+
+  console.log(bannerdata, "banners");
 
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
@@ -102,21 +122,21 @@ export default function Home() {
 
   const CustomPrevArrow = ({ onClick }) => (
     <button
-    className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md z-10"
-    onClick={onClick}
-  >
-  <FaChevronLeft />
-  </button>
+      className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md z-10"
+      onClick={onClick}
+    >
+      <FaChevronLeft />
+    </button>
   );
-  
+
   // Custom Right Arrow
   const CustomNextArrow = ({ onClick }) => (
     <button
-    className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md"
-    onClick={onClick}
-  >
-  <FaChevronRight />
-  </button>
+      className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md"
+      onClick={onClick}
+    >
+      <FaChevronRight />
+    </button>
   );
 
   const settings = {
@@ -145,7 +165,6 @@ export default function Home() {
     nextArrow: <CustomNextArrow />,
   };
 
-
   return (
     <div className="">
       {/* Services Section */}
@@ -173,78 +192,88 @@ export default function Home() {
           className="keen-slider max-w-7xl mx-auto rounded-lg overflow-hidden relative"
           ref={sliderRef}
         >
-          {sliderImages.map((image, index) => (
-            <div key={index} className="keen-slider__slide">
-              <Image
-                src={image}
-                alt={`Slide ${index + 1}`}
-                className="w-full h-[400px] md:h-[500px] object-cover rounded-lg"
-              />
-            </div>
-          ))}
-          
-        <button
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md"
-        onClick={handlePrev}
-      >
-      <FaChevronLeft />
-      </button>
-      <button
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all  text-white px-2 py-4 rounded-md"
-        onClick={handleNext}
-      >
-       <FaChevronRight />
-      </button>
+          {sliderImages.map((image, index) =>
+            image ? (
+              <div key={index} className="keen-slider__slide">
+                <Image
+                  src={image}
+                  alt={`Slide ${index + 1}`}
+                  height={1000}
+                  width={1000}
+                  className="w-full h-[400px] md:h-[500px] object-cover rounded-lg"
+                />
+              </div>
+            ) : null
+          )}
+
+          <button
+            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md"
+            onClick={handlePrev}
+          >
+            <FaChevronLeft />
+          </button>
+          <button
+            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all  text-white px-2 py-4 rounded-md"
+            onClick={handleNext}
+          >
+            <FaChevronRight />
+          </button>
         </div>
       </div>
       <div className="p-2 max-w-7xl mx-auto rounded-lg overflow-hidden">
-      <Slider {...settings} className="grid grid-cols-6">
-        {category?.map((item, index) => (
-          <Link 
-          href={`/shop/${item?.name}`}
-            key={index}
-            className="flex justify-center overflow-hidden group"
-          >
-            <Image
-              src={item?.image}
-              alt={`Slide ${index + 1}`}
-              width={100}
-              height={100}
-              loading="lazy"
-              className="object-contain rounded-md h-[100px] w-[100px] transition-all md:h-[150px] md:w-[150px] bg-[#eceef0] mx-auto"
-            />
-            <p className="text-center p-2 font-[500] text-gray-500 transition-all group-hover:text-primary">
-              {item?.name}
-            </p>
-          </Link>
-        ))}
-      </Slider>
-    </div>
+        <Slider {...settings} className="grid grid-cols-6">
+          {category?.map((item, index) => (
+            <Link
+              href={`/shop/${item?.name}`}
+              key={index}
+              className="flex justify-center overflow-hidden group"
+            >
+              <Image
+                src={item?.image}
+                alt={`Slide ${index + 1}`}
+                width={100}
+                height={100}
+                loading="lazy"
+                className="object-contain rounded-md h-[100px] w-[100px] transition-all md:h-[150px] md:w-[150px] bg-[#eceef0] mx-auto"
+              />
+              <p className="text-center p-2 font-[500] text-gray-500 transition-all group-hover:text-primary">
+                {item?.name}
+              </p>
+            </Link>
+          ))}
+        </Slider>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4 max-w-7xl mx-auto p-2">
         <div className="rounded-md overflow-hidden">
           <Image
-            src={dis1}
+            src={secondImages[0] || "https://ibb.co/svKnz66M"}
+            height={1000}
+            width={1000}
             alt="banner"
             className="h-full w-full object-cover"
           />
         </div>
         <div className="rounded-md overflow-hidden">
           <Image
-            src={dis2}
+            src={secondImages[1] || "https://ibb.co/svKnz66M"}
+            height={1000}
+            width={1000}
             alt="banner"
             className="h-full w-full object-cover"
           />
         </div>
         <div className="rounded-md overflow-hidden">
           <Image
-            src={dis3}
+            src={secondImages[2] || "https://ibb.co/svKnz66M"}
+            height={1000}
+            width={1000}
             alt="banner"
             className="h-full w-full object-cover"
           />
         </div>
       </div>
-      <LatestProduct  handleview={handleOpenPopup} />
+      <LatestProduct handleview={handleOpenPopup} />
 
       <div className="w-full p-2 mt-3 max-w-7xl mx-auto rounded-md font-mono">
         <div className="p-4 rounded-md mx-auto flex flex-wrap items-center justify-center gap-2 text-lg font-semibold text-center w-full bg-red-50 text-red-500 sm:gap-4">
@@ -263,7 +292,9 @@ export default function Home() {
       <Electronics handleview={handleOpenPopup} />
       <div className="max-w-7xl mx-auto overflow-hidden rounded-md">
         <Image
-          src={banner1}
+          src={bannerdata?.thirdbanner || "https://i.ibb.co/zHbbBGJX/banner-16.jpg"}
+          height={1000}
+          width={1000}
           alt="banner"
           className="w-full h-auto object-cover rounded-md"
         />
@@ -274,14 +305,18 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-1 gap-4 max-w-7xl mx-auto p-2">
         <div className="rounded-md overflow-hidden">
           <Image
-            src={dis1}
+            src={forthImages[0] || "https://i.ibb.co/vCX3Xt9m/banner-15.jpg"}
+            height={1000}
+            width={1000}
             alt="banner"
             className="h-full w-full object-cover"
           />
         </div>
         <div className="rounded-md overflow-hidden">
           <Image
-            src={dis2}
+            src={forthImages[1] || "https://i.ibb.co/vCX3Xt9m/banner-15.jpg"}
+            height={1000}
+            width={1000}
             alt="banner"
             className="h-full w-full object-cover"
           />
@@ -290,7 +325,9 @@ export default function Home() {
       <ModernFerniture handleview={handleOpenPopup} />
       <div className="max-w-7xl mx-auto overflow-hidden rounded-md">
         <Image
-          src={banner2}
+          src={bannerdata?.fifthbanner || "https://i.ibb.co/zHbbBGJX/banner-16.jpg"}
+          height={1000}
+          width={1000}
           alt="banner"
           className="w-full h-[400px] md:h-auto object-cover rounded-md"
         />
@@ -311,7 +348,7 @@ export default function Home() {
             </button>
 
             {/* Product Detail Component */}
-            <ProductDetail  handleview={handleOpenPopup} />
+            <ProductDetail handleview={handleOpenPopup} />
           </div>
         </div>
       )}

@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import img1 from "../assets/image-1-1-1-450x450.png";
 import { MdMenu } from "react-icons/md";
 import Link from "next/link";
-import { decreaseQuantity, deleteCart, getCart, increaseQuantity } from "@/store/reducer/cartReducer";
+import { decreaseQuantity, deleteCart, fetchCouponByCode, getCart, increaseQuantity } from "@/store/reducer/cartReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { getAddressById } from "@/store/reducer/authReducer";
 import { createCheckout, getCheckoutById } from "@/store/reducer/checkoutReducer";
@@ -15,15 +15,18 @@ import { toast } from "react-toast";
 
 export default function ShoppingCart() {
   
-  const { cartlist, loading, error } = useSelector((state) => state.cart);
+  const { cartlist, loading, error, coupon } = useSelector((state) => state.cart);
   const { useraddress } = useSelector((state) => state.auth);
   const { checkout } = useSelector((state) => state.checkout);
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userid");
 
+  const [code, setCode] = useState("")
+
   useEffect(() => {
     dispatch(getCart(userId));
   }, [dispatch]);
+
   useEffect(() => {
     dispatch(getAddressById(userId));
   }, [dispatch]);
@@ -49,12 +52,18 @@ export default function ShoppingCart() {
     dispatch(getCart(userId));
   };
 
-  // Calculate the total price
   const calculateTotalPrice = () => {
-    return cartno.reduce((total, product) => {
+    const totalPrice = cartno.reduce((total, product) => {
       const priceAfterDiscount = product.productId?.price * (1 - product.productId?.discount / 100);
       return total + priceAfterDiscount * product.quantity;
-    }, 0).toFixed(2);
+    }, 0);
+
+    if (coupon && coupon.discount) {
+      const discountAmount = (totalPrice * (coupon.discount / 100)).toFixed(2);
+      return (totalPrice - discountAmount).toFixed(2);
+    }
+
+    return totalPrice.toFixed(2);
   };
 
   const totalPrice = calculateTotalPrice();
@@ -62,9 +71,10 @@ export default function ShoppingCart() {
   const handleCheckout = async () => {
     const checkoutData = {
       userid: userId,
-      payment_status: "pending", // You can set this based on your payment flow
-      shippingInfo: getaddress[0], // Assuming the first address is the selected one
-      price: totalPrice,
+      payment_status: "pending",
+      shippingInfo: getaddress[0],
+      price: calculateTotalPrice(),
+      coupon: coupon ? coupon.code : null,
       products: cartno.map((product) => ({
         productId: product.productId._id,
         quantity: product.quantity,
@@ -72,15 +82,21 @@ export default function ShoppingCart() {
       })),
     };
 
-      await dispatch(createCheckout(checkoutData)).then((res) => {
-        if (res?.payload?.success) {
-          toast.success(res.payload.message);
-        } else {
-          toast.error(res.payload.message);
-        }
-      });
+    await dispatch(createCheckout(checkoutData)).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
 
-      dispatch(getCheckoutById({id: userId}));
+    dispatch(getCheckoutById({ id: userId }));
+  };
+
+  const handleApplyCoupon = async (e) => {
+    e.preventDefault();
+    await dispatch(fetchCouponByCode(code));
+    console.log(coupon, 'couponsdata');
   };
 
   return (
@@ -167,16 +183,18 @@ export default function ShoppingCart() {
 </div>
 
             <div className="mt-6 flex flex-col md:flex-row justify-between gap-4">
-              <div className="flex items-center gap-2">
+              <form onSubmit={handleApplyCoupon} className="flex items-center gap-2">
                 <input
                   type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
                   placeholder="Coupon code"
                   className="px-4 py-2 border rounded  bg-bgInput outline-none"
                 />
-                <button className="px-4 py-2 bg-[#00b4d8] text-white rounded hover:bg-[#0096c7] transition-colors">
+                <button type="submit" className="px-4 py-2 bg-[#00b4d8] text-white rounded hover:bg-[#0096c7] transition-colors">
                   Apply coupon
                 </button>
-              </div>
+              </form>
               <button className="px-4 py-2 border rounded hover:bg-gray-50 transition-colors">
                 Clear All
               </button>
@@ -243,56 +261,17 @@ export default function ShoppingCart() {
                 </div>
               </div>
 
-              {/* Shipping Section 2 */}
-              {/* <div className="border-b pb-4 flex">
-                <div className="mb-2 flex items-center">
-                  <span className="font-medium">Shipping: </span>
+              {coupon && coupon.discount && (
+                <div className="flex justify-between py-3 border-b">
+                  <span>Discount ({coupon.discount}%)</span>
+                  <span>-₹{(totalPrice * (coupon.discount / 100)).toFixed(2)}</span>
                 </div>
-                <div className="flex justify-end flex-col items-end text-right">
-                  <p>
-                    <span>machic</span>
-                  </p>
-                  <p className="text-[12px] text-gray-500 ">
-                    BY WIRTH - SCALA SKAMMEL - FLERE VARIANTER x1, ELECTROLUX
-                    EW6S226SUI x1, GEORG JENSEN - ALFREDO - SALATSKÅL - RUSTFRI
-                    x1
-                  </p>
-                  <div className="mt-2 space-y-2 text-sm text-gray-500">
-                    <div className="flex items-center justify-end gap-2">
-                      <label htmlFor="machic-free-shipping">
-                        Free shipping
-                      </label>
-                      <input
-                        type="radio"
-                        id="machic-free-shipping"
-                        name="machic-shipping"
-                        defaultChecked
-                      />
-                    </div>
-                    <div className="flex items-center justify-end gap-2">
-                      <label htmlFor="machic-local-pickup">Local pickup</label>
-                      <input
-                        type="radio"
-                        id="machic-local-pickup"
-                        name="machic-shipping"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-2 text-sm text-gray-500">
-                    <p>
-                      <span>Shipping to CA.</span>
-                    </p>
-                  </div>
-                </div>
-              </div> */}
+              )}
 
-              {/* Total */}
               <div className="py-3">
                 <div className="flex justify-between">
                   <span className="text-xl font-medium">Total</span>
-                  <span className="text-xl font-medium text-red-500">
-                  ₹{totalPrice}
-                  </span>
+                  <span className="text-xl font-medium text-red-500">₹{calculateTotalPrice()}</span>
                 </div>
               </div>
 

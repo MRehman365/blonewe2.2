@@ -129,7 +129,7 @@ const FeauredProduct = ({ handleview }) => {
           </div>
         </div>
 
-        <p className="text-sm md:text-base hover:text-[#1d1d72]">View all</p>
+        <Link href="/shop" className="text-sm md:text-base hover:text-[#004798]">View all</Link>
       </div>
       {activeTab === category[0]?.name && (
         filteredByCategory.length === 0 ? (
@@ -159,12 +159,12 @@ const FeauredProduct = ({ handleview }) => {
                 <div
                   className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
                 >
-                  <button
+                  {/* <button
                     className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
                     onClick={() => handleview(item._id)}
                   >
                     <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                  </button>
+                  </button> */}
                   <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
                     <FaRegHeart
                       className="h-4 w-4 text-gray-600"
@@ -243,12 +243,12 @@ const FeauredProduct = ({ handleview }) => {
                 <div
                   className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
                 >
-                  <button
+                  {/* <button
                     className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
                     onClick={() => handleview(item._id)}
                   >
                     <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                  </button>
+                  </button> */}
                   <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
                     <FaRegHeart
                       className="h-4 w-4 text-gray-600"
@@ -327,12 +327,12 @@ const FeauredProduct = ({ handleview }) => {
                 <div
                   className={`absolute right-2 top-2 flex-col gap-2 transition-opacity duration-300 hidden group-hover:flex`}
                 >
-                  <button
+                  {/* <button
                     className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
                     onClick={() => handleview(item._id)}
                   >
                     <MdOutlineZoomOutMap className="h-4 w-4 text-gray-600" />
-                  </button>
+                  </button> */}
                   <button onClick={() => handlewish(item._id)} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
                     <FaRegHeart
                       className="h-4 w-4 text-gray-600"

@@ -7,14 +7,23 @@ import { toast } from "react-toast";
 import api from "@/store/api";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { get_admin } from "@/store/reducers/adminReducer";
+import { get_admin, get_admin_Bio } from "@/store/reducers/adminReducer";
 
 const DropdownUser = () => {
 
   const { adminDetail } = useSelector((state: RootState) => state.admin)
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { adminbio } = useSelector((state: RootState) => state.admin)
+
+
 
   const dispatch = useDispatch<AppDispatch>()
+  useEffect(() => {
+    dispatch(get_admin_Bio())
+  
+  }, [dispatch])
+  
+  const data = Array.isArray(adminbio) ? adminbio : adminbio?.adminDetails[0] || [];
 
   useEffect(() => {
 dispatch(get_admin())
@@ -25,6 +34,7 @@ dispatch(get_admin())
     try {
       const { data } = await api.get("/adminlogout");
       localStorage.removeItem("accessToken");
+      localStorage.removeItem("adminid");
       toast.success(data.message);
       window.location.href = "/auth/signin";
 
@@ -43,21 +53,18 @@ dispatch(get_admin())
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {data?.username}
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">Admin</span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
+        <span className="h-12 w-12 rounded-full overflow-hidden">
           <Image
             width={112}
             height={112}
-            src={"/images/user/user-01.png"}
-            style={{
-              width: "auto",
-              height: "auto",
-            }}
+            src={ data?.image ||"/images/user/user-01.png"}
             alt="User"
+            className="object-cover h-full w-full"
           />
         </span>
 

@@ -139,10 +139,10 @@ class ProductController {
     }
   };
 
-  filterproducts = async(req, res) => {
+  filterproducts = async (req, res) => {
     try {
-      let { categories, sortBy } = req.query;
-  
+      let { categories, sortBy, page = 1, limit = 8 } = req.query;
+      
       let categoryFilter = {};
       if (categories) {
         categoryFilter.category = { $in: categories.split(",") };
@@ -155,13 +155,18 @@ class ProductController {
         sortOption.price = -1;
       }
   
-      const products = await productModal.find(categoryFilter).sort(sortOption);
-      res.json(products);
+      const products = await productModal
+        .find(categoryFilter)
+        .sort(sortOption)
+        .skip((page - 1) * limit) // Skip products based on page number
+        .limit(parseInt(limit)); // Limit the number of products per page
   
+      res.json(products);
     } catch (error) {
       res.status(500).json({ message: "Server Error", error });
     }
-  }
+  };
+  
 
 
 }

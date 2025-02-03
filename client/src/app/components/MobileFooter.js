@@ -44,11 +44,11 @@ const MobileFooter = () => {
         <span className="text-xs">Account</span>
       </Link>
       <Link 
-        href="/categories" 
+        href="/shop" 
         className="flex flex-col items-center gap-1"
       >
         <IoIosMenu className="h-5 w-5" />
-        <span className="text-xs">Categories</span>
+        <span className="text-xs">Shop</span>
       </Link>
     </nav>
   </div>

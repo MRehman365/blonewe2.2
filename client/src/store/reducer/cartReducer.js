@@ -62,12 +62,25 @@ export const decreaseQuantity = createAsyncThunk(
   }
 );
 
+export const fetchCouponByCode = createAsyncThunk(
+  "coupon/fetchByCode",
+  async (code, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/getcoupen/${code}`);
+      return response.data.coupon;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Something went wrong");
+    }
+  }
+);
+
 // Initial State
 const initialState = {
   cart: [],
   cartlist: [],
   loading: false,
   error: null,
+  coupon: null,
 };
 
 // Slice
@@ -168,6 +181,21 @@ const cartSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // coupen
+
+      .addCase(fetchCouponByCode.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCouponByCode.fulfilled, (state, action) => {
+        state.loading = false;
+        state.coupon = action.payload;
+      })
+      .addCase(fetchCouponByCode.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
