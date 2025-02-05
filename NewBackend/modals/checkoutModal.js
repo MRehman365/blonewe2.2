@@ -25,6 +25,10 @@ const checkoutModel = new Schema({
         type: Array,
         required: true,
     },
+    paymentMethod: {
+        type: String,
+        required: true,
+    },
 },
 { timestamps: true },
 )

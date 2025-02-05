@@ -22,13 +22,13 @@ import RelatedProduct from "@/app/components/RelatedProduct";
 import SubNewsLatter from "@/app/components/SubNewsLatter";
 import ProductDetail from "@/app/components/ProductDetail";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductById } from "@/store/reducer/productReducer";
+import { get_reviews, getProductById } from "@/store/reducer/productReducer";
 import { addToCart, getCart } from "@/store/reducer/cartReducer";
 import { addToWishlist, getWishlist } from "@/store/reducer/wishlistReducer";
 import { toast } from "react-toast";
 
 export default function ProductInfo({ params }) {
-  const { singleproduct } = useSelector((state) => state.products);
+  const { singleproduct, reviews, } = useSelector((state) => state.products);
   const dispatch = useDispatch();
   const data = use(params);
   const myid = data;
@@ -47,7 +47,7 @@ export default function ProductInfo({ params }) {
 
   // Set the default image (index 0) as the selected image
   const [selectedImage, setSelectedImage] = useState(
-    pImages.length > 0 ? pImages[0] : "/placeholder.png"
+    pImages.length > 0 ? pImages[0] : "https://i.ibb.co/qCqX44B/image-1-16-450x450.png"
   );
 
   // Reset selectedImage when product changes
@@ -55,7 +55,7 @@ export default function ProductInfo({ params }) {
     if (pImages.length > 0) {
       setSelectedImage(pImages[0]); // Set the first image as the selected image
     } else {
-      setSelectedImage("/placeholder.png"); // Fallback to a placeholder image
+      setSelectedImage("https://i.ibb.co/qCqX44B/image-1-16-450x450.png"); // Fallback to a placeholder image
     }
   }, [product]); // Watch for changes in the product data
 
@@ -89,7 +89,15 @@ export default function ProductInfo({ params }) {
 
   useEffect(() => {
     dispatch(getProductById(id));
-  }, [dispatch, id]); // Fetch product data when the ID changes
+  }, [dispatch, id]); 
+
+  useEffect(() => {
+    if (id) {
+      dispatch(get_reviews({ productId: id }));
+    }
+  }, [dispatch, id]);
+
+  const myreview = Array.isArray(reviews) ? reviews : reviews.getAll || [];
 
   return (
     <div className="max-w-7xl mx-auto px-2 py-8">
@@ -143,7 +151,7 @@ export default function ProductInfo({ params }) {
                 ))}
                 <AiOutlineStar className="text-gray-300 w-5 h-5" />
               </div>
-              <span className="text-gray-400">14 reviews</span>
+              <span className="text-gray-400">{myreview.length} reviews</span>
               <span className="">
                 <span className="text-gray-400">Store:</span> groci
               </span>

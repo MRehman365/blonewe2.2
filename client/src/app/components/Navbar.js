@@ -124,7 +124,6 @@ dispatch(getUserById(id))
 
   const categorydata = Array.isArray(categories) ? categories : categories?.category || [];
 
-  console.log(categorydata, 'categorydata')
 
 
   return (

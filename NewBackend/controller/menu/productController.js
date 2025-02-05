@@ -1,4 +1,5 @@
 const productModal = require("../../modals/productModal");
+const reviewModal = require("../../modals/reviewModal");
 
 class ProductController {
     addProduct = async (req, res) => {
@@ -164,6 +165,128 @@ class ProductController {
       res.json(products);
     } catch (error) {
       res.status(500).json({ message: "Server Error", error });
+    }
+  };
+
+  submit_review = async (req, res) => {
+    const { name, rating, review, productId } = req.body;
+    console.log(req.body);
+    try {
+      await reviewModal.create({
+        productId,
+        name,
+        rating,
+        review,
+      });
+
+      let rat = 0;
+      const reviews = await reviewModal.find({
+        productId,
+      });
+      for (let i = 0; i < reviews.length; i++) {
+        rat = rat + reviews[i].rating;
+      }
+      let productRating = 0;
+
+      if (reviews.length !== 0) {
+        productRating = (rat / reviews.length).toFixed(1);
+      }
+
+      await productModal.findByIdAndUpdate(productId, {
+        rating: productRating,
+      });
+
+      return res.status(201).json({
+        message: "Review Success",
+        success: true,
+    });
+    
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  get_reviews = async (req, res) => {
+    const { productId } = req.params;
+    let { pageNo } = req.query;
+    pageNo = parseInt(pageNo);
+    const limit = 5;
+    const skipPage = limit * (pageNo - 1);
+    try {
+      let getRating = await reviewModal.aggregate([
+        {
+          $match: {
+            productId: {
+              $eq: productId,
+            },
+            rating: {
+              $not: {
+                $size: 0,
+              },
+            },
+          },
+        },
+        {
+          $unwind: "$rating",
+        },
+        {
+          $group: {
+            _id: "$rating",
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+      ]);
+      let rating_review = [
+        {
+          rating: 5,
+          sum: 0,
+        },
+        {
+          rating: 4,
+          sum: 0,
+        },
+        {
+          rating: 3,
+          sum: 0,
+        },
+        {
+          rating: 2,
+          sum: 0,
+        },
+        {
+          rating: 1,
+          sum: 0,
+        },
+      ];
+      for (let i = 0; i < rating_review.length; i++) {
+        for (let j = 0; j < getRating.length; j++) {
+          if (rating_review[i].rating === getRating[j]._id) {
+            rating_review[i].sum = getRating[j].count;
+            break;
+          }
+        }
+      }
+      const getAll = await reviewModal.find({
+        productId,
+      });
+      const reviews = await reviewModal
+        .find({
+          productId,
+        })
+        .skip(skipPage)
+        .limit(limit)
+        .sort({
+          createdAt: -1,
+        });
+        return res.status(200).json({
+          message: "Review fetch Success",
+          success: true,
+          getAll
+      });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   };
   

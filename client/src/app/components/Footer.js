@@ -22,13 +22,13 @@ export default function Footer() {
                 href="tel:0800300353" 
                 className="text-2xl font-bold text-blue-500 hover:text-green-500"
               >
-                0 800 300-353
+           +91 7428 309 119
               </Link>
-              <p className="text-sm text-muted-foreground">Free from fixed and mobile phones in USA.</p>
+              <p className="text-sm text-muted-foreground">Free from fixed and mobile phones in India.</p>
             </div>
             <div className="mb-4">
               <p className="text-sm">
-                Email: <Link href="mailto:info@example.com" className="text-primary hover:underline">info@example.com</Link>
+                Email: <Link href="mailto:support@maxifysolution.com" className="text-primary hover:underline">support@maxifysolution.com</Link>
               </p>
             </div>
             <div>
@@ -70,7 +70,7 @@ export default function Footer() {
   { label: "Sell Your Services on Blonwe", path: "/contact" },
   { label: "Sell on Blonwe Business", path: "/contact" },
   { label: "Sell Your Apps on Blonwe", path: "/shop" },
-  { label: "Become an Affiliate", path: "/contact/contact-3" },
+  { label: "Become an Affiliate", path: "/contact" },
   { label: "Advertise Your Products", path: "/privacy/advertise" },
   { label: "Self-Publish with Us", path: "/privacy/selfpublish" },
   { label: "Become a Blonwe Vendor", path: "/privacy/vendor" },
@@ -103,8 +103,8 @@ export default function Footer() {
                 // "Customer reviews",
                 // "Social Responsibility",
                 // "Store Locations"
-              ].map((item) => (
-                <li key={item}>
+              ].map((item, index) => (
+                <li key={index}>
                   <Link href={item.path} className="text-sm text-muted-foreground hover:text-primary hover:underline">
                     {item.label}
                   </Link>

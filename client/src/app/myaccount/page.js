@@ -39,7 +39,7 @@ const navigation = [
   { name: "Addresses", href: "#addresses", icon: FiMapPin },
   { name: "Account details", href: "#account-details", icon: FiUser },
   { name: "Wishlist", href: "#wishlist", icon: FiHeart },
-  { name: "Log out", href: "#logout", icon: FiLogOut },
+  // { name: "Log out", href: "#logout", icon: FiLogOut },
 ];
 
 export default function AccountPage() {
@@ -47,7 +47,7 @@ export default function AccountPage() {
   const { singleuser, useraddress } = useSelector((state) => state.auth);
   const { checkout } = useSelector((state) => state.checkout);
   const id = localStorage.getItem("userid");
-  const fakeid = localStorage.getItem("userid");
+  const userId = localStorage.getItem("userid");
   const [currentSection, setCurrentSection] = useState("#dashboard");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -84,11 +84,11 @@ export default function AccountPage() {
     await dispatch(deleteWishlist(id)).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
+        dispatch(getWishlist(userId));
       } else {
         toast.error(res.payload.message);
       }
     });
-    dispatch(getWishlist({ userid: fakeid }));
   };
 
   const handlecart = (productId) => {
@@ -238,7 +238,12 @@ export default function AccountPage() {
                 <item.icon className="h-4 w-4" />
                 {item.name}
               </a>
+              
             ))}
+            
+            <p onClick={handleLogout} className={`flex items-center gap-3 p-3 text-[15px] cursor-pointer transition-colors border-b border-gray-300 text-gray-500`}>
+                <FiLogOut className="h-4 w-4" />
+                Logout</p>
           </nav>
         </aside>
         <main className="col-span-3">

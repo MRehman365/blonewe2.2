@@ -3,7 +3,7 @@ const checkoutModal = require("../../modals/checkoutModal");
 // Create a new checkout
 exports.createCheckout = async (req, res) => {
   try {
-    const { userid, payment_status, shippingInfo, price, products } = req.body;
+    const { userid, payment_status, shippingInfo, price, products, paymentMethod } = req.body;
 
     // Validate required fields
     if (!userid || !payment_status || !shippingInfo || !price || !products) {
@@ -20,6 +20,7 @@ exports.createCheckout = async (req, res) => {
       shippingInfo,
       price,
       products,
+      paymentMethod,
     });
 
     res.status(201).json({
@@ -63,7 +64,11 @@ exports.getAllCheckouts = async (req, res) => {
 exports.getCheckoutById = async (req, res) => {
   try {
     const { id } = req.params;
-    const checkout = await checkoutModal.find({userid: id});
+    const checkout = await checkoutModal.find({userid: id}) .populate({
+      path: 'products.productId', // Populate the productId field inside products array
+      model: 'Products' // Ensure this matches your actual Product model name
+    });
+;
 
     if (!checkout) {
       return res.status(404).json({

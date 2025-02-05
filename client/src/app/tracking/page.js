@@ -10,6 +10,7 @@ const Page = () => {
   const [orderId, setOrderId] = useState('');
   const [shippingStatus, setShippingStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [orderDetails, setOrderDetails] = useState(null);
 
   const id = localStorage.getItem('userid');
 
@@ -31,10 +32,12 @@ const Page = () => {
 
     if (order) {
       setShippingStatus(order.delivery_status);
+      setOrderDetails(order); // Set the order details
       setError(null);
     } else {
       setError('Order not found. Please check your Order ID.');
       setShippingStatus(null);
+      setOrderDetails(null); // Clear order details if not found
     }
   };
 
@@ -83,6 +86,30 @@ const Page = () => {
           {error && (
             <div className="mt-4 text-center">
               <p className="text-red-600 font-semibold">{error}</p>
+            </div>
+          )}
+
+          {orderDetails && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-semibold mb-4">Order Details</h2>
+              <div className="space-y-4">
+                {orderDetails.products.map((product, index) => (
+                  <div key={index} className="border p-4 rounded-lg">
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={product.productId.image[0]}
+                        alt={product.productId.name}
+                        className="w-20 h-20 object-cover rounded"
+                      />
+                      <div>
+                        <p className="font-semibold">{product.productId.name}</p>
+                        <p className="text-gray-500">Quantity: {product.quantity}</p>
+                        <p className="text-gray-500">Price: ₹{product.price}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

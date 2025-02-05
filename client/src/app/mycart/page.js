@@ -276,9 +276,11 @@ export default function ShoppingCart() {
               </div>
 
               {/* Checkout Button */}
-              <button onClick={handleCheckout} className="w-full px-2 py-3 bg-[#004b93] text-white rounded hover:bg-[#003d7a] transition-colors">
+              <Link href='/checkout'>
+              <button  className="w-full px-2 py-3 bg-[#004b93] text-white rounded hover:bg-[#003d7a] transition-colors">
                 Proceed to checkout
               </button>
+              </Link>
             </div>
           </div>
         </div>

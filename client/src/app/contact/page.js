@@ -6,6 +6,7 @@ import SubNewsLatter from "../components/SubNewsLatter"
 import { useDispatch } from "react-redux"
 import { sendContactForm } from "@/store/reducer/authReducer"
 import { useState } from "react"
+import { toast } from "react-toast"
 
 export default function ContactPage() {
   const dispatch = useDispatch()
@@ -25,7 +26,19 @@ export default function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(sendContactForm(formData))
+   await dispatch(sendContactForm(formData)).then((res) => {
+      if (res?.payload?.success) {
+        toast.success(res.payload.message);
+      } else {
+        toast.error(res.payload.message);
+      }
+    });
+    setFormData({
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    })
   }
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -43,12 +56,12 @@ export default function ContactPage() {
         <div className="space-y-4">
           <div className="text-2xl font-light text-gray-400">01</div>
           <div>
-            <div className="font-medium text-sm text-gray-500">United States</div>
-            <h3 className="text-lg mb-2">United States Office</h3>
-            <p className="text-sm text-gray-500 mb-4">205 Middle Road, 2nd Floor, New York</p>
-            <p className="text-sm mb-2">+02 1234 567 88</p>
+            <div className="font-medium text-sm text-gray-500">India</div>
+            <h3 className="text-lg mb-2">Noida Office</h3>
+            <p className="text-sm text-gray-500 mb-4">F02, D34 Red Fm Road Sector 2 Block D Noida, Uttar Pradesh 201301</p>
+            <p className="text-sm mb-2">+91 7428 309 119</p>
             <a href="mailto:info@example.com" className="text-sm text-[#004798] hover:underline">
-              info@example.com
+             support@maxifysolution.com
             </a>
           </div>
         </div>
@@ -57,26 +70,26 @@ export default function ContactPage() {
         <div className="space-y-4">
           <div className="text-2xl font-light text-gray-400">02</div>
           <div>
-            <div className="font-medium text-sm text-gray-500">United Kingdom</div>
-            <h3 className="text-lg mb-2">United Kingdom Office</h3>
-            <p className="text-sm text-gray-500 mb-4">79 Manor Way, 2nd Floor, Great Fransham</p>
-            <p className="text-sm mb-2">+49 1234 567 88</p>
+            <div className="font-medium text-sm text-gray-500">India</div>
+            <h3 className="text-lg mb-2">Noida Office</h3>
+            <p className="text-sm text-gray-500 mb-4">F02, D34 Red Fm Road Sector 2 Block D Noida, Uttar Pradesh 201301</p>
+            <p className="text-sm mb-2">+91 7428 309 119</p>
             <a href="mailto:contact@example.com" className="text-sm text-[#004798] hover:underline">
-              contact@example.com
+            support@maxifysolution.com
             </a>
           </div>
         </div>
 
         {/* German Office */}
         <div className="space-y-4">
-          <div className="text-2xl font-light text-gray-400">03</div>
+          <div className="text-2xl font-light text-gray-400">02</div>
           <div>
-            <div className="font-medium text-sm text-gray-500">Germany</div>
-            <h3 className="text-lg mb-2">Germany Office</h3>
-            <p className="text-sm text-gray-500 mb-4">Holstenwall 86, Sachsen-Anhalt, Zschornewitz</p>
-            <p className="text-sm mb-2">+44 1234 567 88</p>
-            <a href="mailto:info@example.com" className="text-sm text-[#004798] hover:underline">
-              info@example.com
+            <div className="font-medium text-sm text-gray-500">India</div>
+            <h3 className="text-lg mb-2">Noida Office</h3>
+            <p className="text-sm text-gray-500 mb-4">F02, D34 Red Fm Road Sector 2 Block D Noida, Uttar Pradesh 201301</p>
+            <p className="text-sm mb-2">+91 7428 309 119</p>
+            <a href="mailto:contact@example.com" className="text-sm text-[#004798] hover:underline">
+            support@maxifysolution.com
             </a>
           </div>
         </div>

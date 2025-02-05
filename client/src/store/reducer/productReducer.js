@@ -61,6 +61,32 @@ export const fetchFilteredProducts = createAsyncThunk(
   }
 );
 
+export const customer_review = createAsyncThunk(
+  "review/customer_review",
+  async (info, { fulfillWithValue }) => {
+    try {
+      const { data } = await api.post("/submit-review", info);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const get_reviews = createAsyncThunk(
+  "review/get_reviews",
+  async ({ productId }, { fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(
+        `/get-reviews/${productId}`
+      );
+      console.log(data);
+      return fulfillWithValue(data);
+    } catch (error) {}
+    return rejectWithValue(error.response?.data || "Something went wrong");
+  }
+);
+
 
 
 // Initial State
@@ -72,6 +98,10 @@ const initialState = {
   product: null,
   loading: false,
   error: null,
+  successMessage: "",
+  totalReview: 0,
+  rating_review: [],
+  reviews: [],
 };
 
 // Products Slice
@@ -141,7 +171,26 @@ const productsSlice = createSlice({
     .addCase(fetchFilteredProducts.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
-    });
+    })
+
+    // review
+    .addCase(customer_review.fulfilled, (state, { payload }) => {
+      state.successMessage = payload.message;
+    })
+
+    .addCase(get_reviews.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(get_reviews.fulfilled, (state, action) => {
+      state.loading = false;
+      state.reviews = action.payload;
+      state.rating_review = action.payload;
+    })
+    .addCase(get_reviews.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
   },
 });
 

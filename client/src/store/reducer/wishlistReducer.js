@@ -30,6 +30,7 @@ export const getWishlist = createAsyncThunk(
   'wishlist/getWishlist',
   async (userId, { rejectWithValue }) => {
     try {
+      console.log(userId, 'userid is here')
       const response = await api.get(`/getwishlist/${userId}`);
       return response.data;
     } catch (error) {

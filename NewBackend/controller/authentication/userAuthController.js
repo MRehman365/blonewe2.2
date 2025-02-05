@@ -222,7 +222,7 @@ contactForm = async(req, res) => {
     // Send the email
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ message: "Email sent successfully" });
+    res.status(200).json({ message: "Email sent successfully", success: true });
   } catch (error) {
     console.error("Error in sending email:", error);
     res.status(500).json({ message: "Error in sending email" });
