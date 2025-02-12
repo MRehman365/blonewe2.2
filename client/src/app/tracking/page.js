@@ -49,7 +49,7 @@ const Page = () => {
             <h1 className="text-3xl font-semibold mb-4">Track your order.</h1>
             <p className="text-gray-500">
               To track your order please enter your Order ID in the box below and press the
-              "Track" button. This was given to you on your receipt and in the confirmation
+              Track button. This was given to you on your receipt and in the confirmation
               email you should have received.
             </p>
           </div>
@@ -93,7 +93,7 @@ const Page = () => {
             <div className="mt-8">
               <h2 className="text-2xl font-semibold mb-4">Order Details</h2>
               <div className="space-y-4">
-                {orderDetails.products.map((product, index) => (
+                {orderDetails?.products.map((product, index) => (
                   <div key={index} className="border p-4 rounded-lg">
                     <div className="flex items-center space-x-4">
                       <img
