@@ -23,7 +23,7 @@ const FeauredProduct = ({ handleview }) => {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-  const product = Array.isArray(products) ? products : products.menu || [];
+  const product = Array.isArray(products) ? products : products?.menu || [];
 
 
   useEffect(() => {
@@ -32,6 +32,7 @@ const FeauredProduct = ({ handleview }) => {
   const category = Array.isArray(categories) ? categories : categories.category || [];
 
   useEffect(() => {
+    
     dispatch(getCart(userId))
   },[dispatch])
   

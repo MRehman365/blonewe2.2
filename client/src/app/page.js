@@ -101,7 +101,6 @@ export default function Home() {
     : bannerdata?.fourthbanner || [];
   // const secondImages = bannerdata.secondbanner;
 
-  console.log(bannerdata, "banners");
 
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
@@ -247,7 +246,7 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-1 gap-4 max-w-7xl mx-auto p-2">
         <div className="rounded-md overflow-hidden">
           <Image
-            src={secondImages[0] || "https://ibb.co/svKnz66M"}
+            src={secondImages[0] || "https://i.ibb.co/WvmRYQZz/slider-06.jpg"}
             height={1000}
             width={1000}
             alt="banner"
@@ -256,7 +255,7 @@ export default function Home() {
         </div>
         <div className="rounded-md overflow-hidden">
           <Image
-            src={secondImages[1] || "https://ibb.co/svKnz66M"}
+            src={secondImages[1] || "https://i.ibb.co/WvmRYQZz/slider-06.jpg"}
             height={1000}
             width={1000}
             alt="banner"
@@ -265,7 +264,7 @@ export default function Home() {
         </div>
         <div className="rounded-md overflow-hidden">
           <Image
-            src={secondImages[2] || "https://ibb.co/svKnz66M"}
+            src={secondImages[2] || "https://i.ibb.co/WvmRYQZz/slider-06.jpg"}
             height={1000}
             width={1000}
             alt="banner"

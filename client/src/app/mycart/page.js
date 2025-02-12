@@ -24,10 +24,12 @@ export default function ShoppingCart() {
   const [code, setCode] = useState("")
 
   useEffect(() => {
+    
     dispatch(getCart(userId));
   }, [dispatch]);
 
   useEffect(() => {
+    
     dispatch(getAddressById(userId));
   }, [dispatch]);
   console.log(useraddress, 'address')

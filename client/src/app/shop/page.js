@@ -67,7 +67,7 @@ export default function ProductListing() {
     setPage(1); // Reset to first page when sorting changes
   };
 
-  const productdata = Array.isArray(products) ? products : products.menu || [];
+  const productdata = Array.isArray(products) ? products : products?.menu || [];
 
   console.log(products, 'shopproducts');
 

@@ -16,6 +16,9 @@ const dispatch = useDispatch();
 const userId = localStorage.getItem('userid');
 
 useEffect(() => {
+  if (!userId) {
+    return;
+  }
   dispatch(getWishlist(userId));
 },[dispatch])
 

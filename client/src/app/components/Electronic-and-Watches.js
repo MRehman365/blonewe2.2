@@ -21,7 +21,7 @@ export default function Electronics({handleview}) {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-  const product = Array.isArray(products) ? products : products.menu || [];
+  const product = Array.isArray(products) ? products : products?.menu || [];
 
 
   useEffect(() => {

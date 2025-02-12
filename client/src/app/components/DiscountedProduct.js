@@ -24,7 +24,7 @@ const DiscountedProduct = ({ handleview }) => {
     dispatch(getProducts());
   }, [dispatch]);
 
-  const product = Array.isArray(products) ? products : products.menu || [];
+  const product = Array.isArray(products) ? products : products?.menu || [];
 
   const handlecart = async (productId) => {
 

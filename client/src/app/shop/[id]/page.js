@@ -70,7 +70,7 @@ export default function ProductListing({ params }) {
     setSortValue(sortBy);
   };
 
-  const productdata = Array.isArray(products) ? products : products.menu || [];
+  const productdata = Array.isArray(products) ? products : products?.menu || [];
 
   console.log(products, 'shopproducts');
 

@@ -24,6 +24,7 @@ const LatestProduct = ({ handleview }) => {
   }, [dispatch]);
 
   useEffect(() => {
+    
     dispatch(getCart(userId))
   },[dispatch])
 
@@ -46,7 +47,7 @@ const LatestProduct = ({ handleview }) => {
     dispatch(getCart(userId))
   };
 
-  const product = Array.isArray(products) ? products : products.menu || [];
+  const product = Array.isArray(products) ? products : products?.menu || [];
 
   const initialTime = 1 * 24 * 60 * 60 + 14 * 60 * 60 + 20 * 60 + 10;
 

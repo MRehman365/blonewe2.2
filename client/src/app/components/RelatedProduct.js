@@ -25,7 +25,7 @@ const RelatedProduct = ({handleview}) => {
     }, [dispatch]);
 
     
-  const product = Array.isArray(products) ? products : products.menu || [];
+  const product = Array.isArray(products) ? products : products?.menu || [];
 
   const handlewish = async (productId) => {
     await dispatch(addToWishlist({ userId, productId })).then((res) => {
