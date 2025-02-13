@@ -104,7 +104,7 @@ export default function Home() {
 
   const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
-    slidesPerView: 1,
+    slides: { perView: 1, spacing: 10 },
     autoplay: true,
   });
   const handlePrev = () => {
@@ -191,19 +191,23 @@ export default function Home() {
           className="keen-slider max-w-7xl mx-auto rounded-lg overflow-hidden relative"
           ref={sliderRef}
         >
-          {sliderImages.map((image, index) =>
-            image ? (
-              <div key={index} className="keen-slider__slide">
-                <Image
-                  src={image}
-                  alt={`Slide ${index + 1}`}
-                  height={1000}
-                  width={1000}
-                  className="w-full h-[400px] md:h-[500px] object-cover rounded-lg"
-                />
-              </div>
-            ) : null
-          )}
+   {sliderImages.map((image, index) =>
+  image ? (
+    <div key={index} className="keen-slider__slide">
+      <Image
+        src={image}
+        alt={`Slide ${index + 1}`}
+        height={1000}
+        width={1000}
+        priority={false} // Ensures images load lazily
+        className="w-full h-[400px] md:h-[500px] object-cover rounded-lg"
+      />
+    </div>
+  ) : (
+    <div key={index}></div>
+  )
+)}
+
 
           <button
             className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md"

@@ -91,13 +91,17 @@ dispatch(getUserById(id))
   // console.log('user', singleuser)
 
   useEffect(() => {
-    
+    if(!userId) {
+      return;
+    }
     dispatch(getWishlist(userId));
   },[dispatch, wishlistproduct?.length])
   const wish = Array.isArray(wishlistproduct) ? wishlistproduct : wishlistproduct?.wishlist || [];
 
   useEffect(() => {
-    
+    if(!userId) {
+      return;
+    }
     dispatch(getCart(userId))
   },[dispatch, cartlist?.length])
   

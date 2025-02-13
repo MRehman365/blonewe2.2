@@ -38,12 +38,16 @@ export default function CheckoutPage() {
   const [code, setCode] = useState("");
 
   useEffect(() => {
-    
+    if(!userId) {
+      return;
+    }
     dispatch(getCart(userId));
   }, [dispatch]);
 
   useEffect(() => {
-    
+    if(!userId) {
+      return;
+    }
     dispatch(getAddressById(userId));
   }, [dispatch]);
 

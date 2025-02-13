@@ -32,7 +32,9 @@ const FeauredProduct = ({ handleview }) => {
   const category = Array.isArray(categories) ? categories : categories.category || [];
 
   useEffect(() => {
-    
+    if(!userId) {
+      return;
+    }
     dispatch(getCart(userId))
   },[dispatch])
   

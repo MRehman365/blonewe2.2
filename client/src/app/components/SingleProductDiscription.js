@@ -29,12 +29,15 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
+  if(!userId) {
+    return;
+  }
   dispatch(getUserById(userId));
 }, [dispatch]);
 
 const me = Array.isArray(singleuser) ? singleuser : singleuser?.user || [];
 
-console.log(me)
+// console.log(me)
 
 
   const [activeTab, setActiveTab] = useState("reviews");

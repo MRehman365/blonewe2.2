@@ -24,7 +24,9 @@ const LatestProduct = ({ handleview }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    
+    if(!userId) {
+      return;
+    }
     dispatch(getCart(userId))
   },[dispatch])
 
