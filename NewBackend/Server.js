@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: "https://blonewe2-2-i7rw.vercel.app",
       credentials: true,
     })
   );
