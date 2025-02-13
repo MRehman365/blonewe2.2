@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { FaFacebookF, FaTwitter, FaPinterestP } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
@@ -13,7 +13,14 @@ const Wishlist = () => {
 const { wishlistproduct } = useSelector((state) => state.wishlist);
 const dispatch = useDispatch();
 
-const userId = localStorage.getItem('userid');
+   const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
 useEffect(() => {
   if (!userId) {

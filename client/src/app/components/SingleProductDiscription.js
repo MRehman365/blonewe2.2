@@ -21,11 +21,14 @@ export default function SingleProductDiscription({ handleview, id }) {
   const { singleuser } = useSelector((state) => state.auth);
   const { singleproduct, products, successMessage, reviews, totalReview, rating_review  } = useSelector((state) => state.products);
   const dispatch = useDispatch();
-  const userInfo = localStorage.getItem("userid");
   const [userId, setUserId] = useState(null);
+  const [userInfo, setUserinfo] = useState(null);
 
 useEffect(() => {
   setUserId(localStorage.getItem("userid"));
+}, []);
+useEffect(() => {
+  setUserinfo(localStorage.getItem("userid"));
 }, []);
 
 useEffect(() => {

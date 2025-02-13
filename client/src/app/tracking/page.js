@@ -13,7 +13,14 @@ const Page = () => {
   const [error, setError] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
 
-  const id = localStorage.getItem('userid');
+     const [id, setId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setId(storedUserId);
+    }
+  }, []);
 
   
 

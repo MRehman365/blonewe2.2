@@ -17,7 +17,14 @@ const LatestProduct = ({ handleview }) => {
   const { cartlist } = useSelector((state) => state.cart)
   const dispatch = useDispatch();
 
-  const userId = localStorage.getItem('userid');
+     const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   useEffect(() => {
     dispatch(getProducts());

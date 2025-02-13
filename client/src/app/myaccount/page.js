@@ -47,6 +47,7 @@ export default function AccountPage() {
   const { singleuser, useraddress } = useSelector((state) => state.auth);
   const { checkout } = useSelector((state) => state.checkout);
    const [id, setId] = useState(null);
+   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -54,7 +55,6 @@ export default function AccountPage() {
       setId(storedUserId);
     }
   }, []);
-   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -125,7 +125,9 @@ export default function AccountPage() {
 
   useEffect(() => {
     dispatch(getUserById(id));
-  }, [dispatch]);
+    
+  }, [dispatch, id]);
+  
 
   const handleaddress = async (e) => {
     e.preventDefault();
@@ -161,7 +163,6 @@ export default function AccountPage() {
           country: "",
           postal: "",
         });
-        // Fetch the updated address list
         await dispatch(getAddressById({ userid: id }));
         setIsEditing(null); // Close the form
       } else {
@@ -181,7 +182,7 @@ export default function AccountPage() {
     ? useraddress
     : useraddress?.data || [];
 
-  console.log("address", getaddress);
+  // console.log("address", getaddress);
 
   const handleLogout = async () => {
     try {
@@ -195,10 +196,14 @@ export default function AccountPage() {
       console.log("failed to log out", error);
     }
   };
-
-  useEffect(() => {
+  console.log(id, 'id is console here')
+useEffect(() => {
+  const timer = setTimeout(() => {
     dispatch(getCheckoutById(id));
-  }, [dispatch]);
+  }, 5000);
+
+  return () => clearTimeout(timer);
+}, [dispatch, id]);
 
   const history = Array.isArray(checkout)
   ? checkout
@@ -376,7 +381,7 @@ export default function AccountPage() {
             </label>
             <input
               id="name"
-              value={formData.name || singleuser.user.name}
+              value={formData.name}
               onChange={handleChange}
               required
               className="mt-1 block w-full rounded-md border-gray-300 border shadow-sm p-2 bg-[#ffffff03] focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"

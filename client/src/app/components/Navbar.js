@@ -80,8 +80,22 @@ const handleSearch = (e) => {
   const [shopOpen, setShopOpen] = useState(false);
   const toggleShop = () => setShopOpen(!shopOpen);
 
-  const id = localStorage.getItem('userid');
-  const userId = localStorage.getItem('userid');
+     const [id, setId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setId(storedUserId);
+    }
+  }, []);
+     const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
   
 
   useEffect(() => {

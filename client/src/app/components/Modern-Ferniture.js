@@ -26,7 +26,14 @@ export default function ModernFerniture({handleview}) {
   const { products } = useSelector((state) => state.products);
   const { categories} = useSelector((state) => state.category)
   const dispatch = useDispatch();
-  const userId = localStorage.getItem('userid');
+     const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   useEffect(() => {
     dispatch(getProducts());

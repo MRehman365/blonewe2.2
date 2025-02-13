@@ -23,7 +23,14 @@ export default function ProductListing() {
   const { categories } = useSelector((state) => state.category);
   const { products, totalPages } = useSelector((state) => state.products); // Add totalPages to Redux state
 
-  const userId = localStorage.getItem('userid');
+     const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [wishlist, setWishlist] = useState([]);

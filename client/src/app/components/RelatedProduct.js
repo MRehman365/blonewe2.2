@@ -16,7 +16,14 @@ const RelatedProduct = ({handleview}) => {
   const { products } = useSelector((state) => state.products);
   const dispatch = useDispatch();
 
-  const userId = localStorage.getItem('userid');
+     const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
     const [isHovered, setIsHovered] = useState(false)
 
   

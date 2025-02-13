@@ -26,7 +26,14 @@ export default function ProductListing({ params }) {
   console.log(data, 'params')
   const set = data.id;
 
-  const userId = localStorage.getItem('userid');
+     const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const [selectedCategories, setSelectedCategories] = useState([set]);
   const [wishlist, setWishlist] = useState([]);
