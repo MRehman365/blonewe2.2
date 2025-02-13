@@ -33,7 +33,14 @@ export default function ProductInfo({ params }) {
   const data = use(params);
   const myid = data;
   const id = myid.id;
-  const userId = localStorage.getItem("userid");
+   const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const product = Array.isArray(singleproduct)
     ? singleproduct

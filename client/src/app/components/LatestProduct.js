@@ -28,7 +28,7 @@ const LatestProduct = ({ handleview }) => {
       return;
     }
     dispatch(getCart(userId))
-  },[dispatch])
+  },[dispatch, userId])
 
   const [cartLoadingStates, setCartLoadingStates] = useState({});
   const [inCartStates, setInCartStates] = useState({});

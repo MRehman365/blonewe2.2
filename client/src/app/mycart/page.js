@@ -19,7 +19,14 @@ export default function ShoppingCart() {
   const { useraddress } = useSelector((state) => state.auth);
   const { checkout } = useSelector((state) => state.checkout);
   const dispatch = useDispatch();
-  const userId = localStorage.getItem("userid");
+   const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const [code, setCode] = useState("")
 

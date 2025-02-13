@@ -36,7 +36,7 @@ const FeauredProduct = ({ handleview }) => {
       return;
     }
     dispatch(getCart(userId))
-  },[dispatch])
+  },[dispatch, userId])
   
   const [activeTab, setActiveTab] = useState(category[0]?.name);
 

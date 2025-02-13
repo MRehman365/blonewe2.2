@@ -46,8 +46,22 @@ export default function AccountPage() {
   const { wishlistproduct } = useSelector((state) => state.wishlist);
   const { singleuser, useraddress } = useSelector((state) => state.auth);
   const { checkout } = useSelector((state) => state.checkout);
-  const id = localStorage.getItem("userid");
-  const userId = localStorage.getItem("userid");
+   const [id, setId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setId(storedUserId);
+    }
+  }, []);
+   const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
   const [currentSection, setCurrentSection] = useState("#dashboard");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);

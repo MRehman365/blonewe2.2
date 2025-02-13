@@ -95,7 +95,7 @@ dispatch(getUserById(id))
       return;
     }
     dispatch(getWishlist(userId));
-  },[dispatch, wishlistproduct?.length])
+  },[dispatch, wishlistproduct?.length, userId])
   const wish = Array.isArray(wishlistproduct) ? wishlistproduct : wishlistproduct?.wishlist || [];
 
   useEffect(() => {
@@ -103,7 +103,7 @@ dispatch(getUserById(id))
       return;
     }
     dispatch(getCart(userId))
-  },[dispatch, cartlist?.length])
+  },[dispatch, cartlist?.length, userId])
   
   const cartno = Array.isArray(cartlist) ? cartlist : cartlist?.cart || [];
 

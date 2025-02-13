@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import SubNewsLatter from '../components/SubNewsLatter';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCheckoutById } from '@/store/reducer/checkoutReducer';
+import Image from 'next/image';
 
 const Page = () => {
   const { checkout } = useSelector((state) => state.checkout);
@@ -14,9 +15,14 @@ const Page = () => {
 
   const id = localStorage.getItem('userid');
 
+  
+
   useEffect(() => {
+    if(!id) {
+      return;
+    }
     dispatch(getCheckoutById(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   const history = Array.isArray(checkout) ? checkout : checkout?.data || [];
 
@@ -96,7 +102,7 @@ const Page = () => {
                 {orderDetails?.products.map((product, index) => (
                   <div key={index} className="border p-4 rounded-lg">
                     <div className="flex items-center space-x-4">
-                      <img
+                      <Image
                         src={product.productId.image[0]}
                         alt={product.productId.name}
                         className="w-20 h-20 object-cover rounded"

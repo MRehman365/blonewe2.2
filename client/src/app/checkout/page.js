@@ -33,7 +33,14 @@ export default function CheckoutPage() {
   const { useraddress } = useSelector((state) => state.auth);
   const { checkout } = useSelector((state) => state.checkout);
   const dispatch = useDispatch();
-  const userId = localStorage.getItem("userid");
+   const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUserId = localStorage.getItem("userid");
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const [code, setCode] = useState("");
 
@@ -42,14 +49,14 @@ export default function CheckoutPage() {
       return;
     }
     dispatch(getCart(userId));
-  }, [dispatch]);
+  }, [dispatch, userId]);
 
   useEffect(() => {
     if(!userId) {
       return;
     }
     dispatch(getAddressById(userId));
-  }, [dispatch]);
+  }, [dispatch, userId]);
 
   const cartno = Array.isArray(cartlist) ? cartlist : cartlist?.cart || [];
   const getaddress = Array.isArray(useraddress)
