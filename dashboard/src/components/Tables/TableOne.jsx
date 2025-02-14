@@ -10,9 +10,9 @@ import { toast } from "react-toast";
 
 
 const TableOne = () => {
-  const { blogs } = useSelector((state: RootState) => state.blogs);
+  const { blogs } = useSelector((state) => state.blogs);
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getBlogs());

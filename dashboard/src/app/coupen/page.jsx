@@ -7,11 +7,11 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const AdminDiscountsPage = () => {
-    const dispatch = useDispatch<AppDispatch>();
-  const { coupons, loading, error } = useSelector((state : RootState) => state.coupen);
-  const [code, setCode] = useState<string>('');
-  const [discount, setDiscountPercent] = useState<number>(0);
-  const [limit, setUserLimit] = useState<number>(1);
+    const dispatch = useDispatch();
+  const { coupons, loading, error } = useSelector((state) => state.coupen);
+  const [code, setCode] = useState('');
+  const [discount, setDiscountPercent] = useState(0);
+  const [limit, setUserLimit] = useState(1);
 
   useEffect(() => {
     dispatch(getAllCoupons());
@@ -29,7 +29,7 @@ const AdminDiscountsPage = () => {
     dispatch(getAllCoupons());
   };
 
-  const handleDeleteCoupon = async(id: string) => {
+  const handleDeleteCoupon = async(id) => {
    await dispatch(deleteCoupon(id));
     dispatch(getAllCoupons());
   };

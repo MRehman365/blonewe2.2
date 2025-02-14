@@ -19,9 +19,9 @@ import { toast } from "react-toast";
 
 const FormLayout = () => {
 
-  const { products } = useSelector((state: RootState) => state.products)
+  const { products } = useSelector((state) => state.products)
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getProducts())

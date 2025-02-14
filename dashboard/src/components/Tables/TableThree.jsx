@@ -5,37 +5,11 @@ import { Package } from "@/types/package";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const packageData: Package[] = [
-  {
-    name: "Suraj sir",
-    price: 0.0,
-    invoiceDate: `Jan 13,2023`,
-    status: "Suj@gmail.com",
-  },
-  {
-    name: "Jitendar Sir",
-    price: 59.0,
-    invoiceDate: `Jan 13,2023`,
-    status: "Jit@gmail.ocm",
-  },
-  {
-    name: "Rehman",
-    price: 99.0,
-    invoiceDate: `Jan 13,2023`,
-    status: "man@gmail.com",
-  },
-  {
-    name: "Nushad Sir",
-    price: 59.0,
-    invoiceDate: `Jan 13,2023`,
-    status: "nushd@gmail.com",
-  },
-];
 
 const TableThree = () => {
-  const { users } = useSelector((state: RootState) => state.admin) 
+  const { users } = useSelector((state) => state.admin) 
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(all_users());

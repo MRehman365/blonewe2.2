@@ -8,7 +8,7 @@ export const addProduct = createAsyncThunk(
     try {
       const response = await api.post(`/addproduct`, formData);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       console.log(error.response);
     }
   },
@@ -20,7 +20,7 @@ export const getProducts = createAsyncThunk(
     try {
       const response = await api.get(`/allproduct`);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       // Custom error handling
       console.log(error.response);
     }
@@ -33,7 +33,7 @@ export const getProductById = createAsyncThunk(
     try {
       const response = await api.get(`/getproduct/${id}`);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       // Custom error handling
       console.log(error.response);
     }
@@ -46,7 +46,7 @@ export const updateProduct = createAsyncThunk(
     try {
       const response = await api.put(`/updateproduct/${id}`, formData);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       // Custom error handling
       console.log(error.response);
     }
@@ -59,7 +59,7 @@ export const deleteProduct = createAsyncThunk(
     try {
       const response = await api.delete(`/deleteproduct/${id}`);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       // Custom error handling
       console.log(error.response);
     }

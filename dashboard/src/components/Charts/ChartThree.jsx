@@ -8,11 +8,8 @@ import React, { useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { useDispatch, useSelector } from "react-redux";
 
-interface ChartThreeState {
-  series: number[];
-}
 
-const options: ApexOptions = {
+const options= {
   chart: {
     fontFamily: "Satoshi, sans-serif",
     type: "donut",
@@ -55,14 +52,14 @@ const options: ApexOptions = {
   ],
 };
 
-const ChartThree: React.FC = () => {
+const ChartThree = () => {
   const series = [65, 34, 12, 56];
 
-  const { products } = useSelector((state: RootState) => state.products);
-  const { checkouts } = useSelector((state: RootState) => state.checkout);
-  const { users } = useSelector((state: RootState) => state.admin);
+  const { products } = useSelector((state) => state.products);
+  const { checkouts } = useSelector((state) => state.checkout);
+  const { users } = useSelector((state) => state.admin);
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getProducts());

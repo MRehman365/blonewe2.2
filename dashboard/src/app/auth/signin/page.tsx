@@ -6,8 +6,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "@/store/store";
-import { RootState } from "@reduxjs/toolkit/query";
+import { AppDispatch, RootState } from "@/store/store";
 import { admin_login } from "@/store/reducers/adminReducer";
 import { toast } from "react-toast";
 import { useRouter } from "next/router";
@@ -15,7 +14,7 @@ import { useRouter } from "next/router";
 
 const SignIn: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { admin, loading, error } = useSelector((state: RootState) => state.admin);
+  // const { admin, loading, error } = useSelector((state: RootState) => state.admin);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -195,7 +194,8 @@ const SignIn: React.FC = () => {
                 Sign In to Dashboard
               </h2>
 
-              <form>
+              <form 
+                  onClick={handleLogin}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
@@ -268,7 +268,6 @@ const SignIn: React.FC = () => {
 
                 <div className="mb-5">
                   <input
-                  onClick={handleLogin}
                     type="submit"
                     value="Sign In"
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"

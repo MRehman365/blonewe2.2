@@ -10,16 +10,16 @@ import { update_admin_details } from "@/store/reducers/adminReducer";
 import { toast } from "react-toast";
 
 const Settings = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const adminId = localStorage.getItem('adminid');
-  const [image, setMainImage] = useState<string | null>(null);
-  const [email, setEmail] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
-  const [bio, setBio] = useState<string>('');
-  const [fullname, setFullname] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
+  const [image, setMainImage] = useState(null);
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [bio, setBio] = useState('');
+  const [fullname, setFullname] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImage = async (e) => {
     const file = e.target.files?.[0];
 
     if (!file) {
@@ -53,7 +53,7 @@ const Settings = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(update_admin_details({ adminId, email, image, bio, phone, username, fullname }));
   };

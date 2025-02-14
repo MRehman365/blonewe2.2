@@ -224,7 +224,7 @@ export default function Home() {
         </div>
       </div>
       <div className="p-2 max-w-7xl mx-auto rounded-lg overflow-hidden">
-        <Slider {...settings} className="grid grid-cols-6">
+        <Slider {...settings} className="">
           {category?.map((item, index) => (
             <Link
               href={`/shop/${item?.name}`}

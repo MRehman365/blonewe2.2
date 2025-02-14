@@ -20,12 +20,12 @@ const ChartThree = dynamic(() => import("@/components/Charts/ChartThree"), {
   ssr: false,
 });
 
-const ECommerce: React.FC = () => {
-  const { products } = useSelector((state: RootState) => state.products);
-  const { checkouts } = useSelector((state: RootState) => state.checkout);
-  const { users } = useSelector((state: RootState) => state.admin);
+const ECommerce = () => {
+  const { products } = useSelector((state) => state.products);
+  const { checkouts } = useSelector((state) => state.checkout);
+  const { users } = useSelector((state) => state.admin);
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getProducts());

@@ -28,14 +28,14 @@ const [formData, setFormData] = useState({
   store: "",
   category: "",
   content: [" "],
-  images: [],
+  images: [""],
 })
 
 const dispatch = useDispatch<AppDispatch>();
 
 
-const handleDetailImagesChange = async (e) => {
-  const files = Array.from(e.target.files);
+const handleDetailImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = Array.from(e.target.files || []);
 
   // Upload each file to ImgBB and get the URLs
   const imageUrls = await Promise.all(
@@ -62,15 +62,15 @@ const handleDetailImagesChange = async (e) => {
   );
 
   // Filter out any failed uploads
-  const validImageUrls = imageUrls.filter((url) => url !== null);
+const validImageUrls = imageUrls.filter((url) => url !== null);
 
-  setFormData((prevData) => ({
-    ...prevData,
-    images: [...prevData.images, ...validImageUrls], // Append new image URLs
-  }));
-};
+setFormData((prevData) => ({
+  ...prevData,
+  images: [...prevData.images, ...validImageUrls], // Append new image URLs
+}));
+}
 
-const handleContentChange = (index, value) => {
+const handleContentChange = (index: number, value: string) => {
   const newContent = [...formData.content];
   newContent[index] = value; // Update specific point
   setFormData({ ...formData, content: newContent });
@@ -83,9 +83,9 @@ const handleContentChange = (index, value) => {
     }));
   }
 
-  const hanldesubmit = (e) => {
+  const hanldesubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(addBlog(formData)).then((res) => {
+    dispatch(addBlog({blogData : formData})).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {

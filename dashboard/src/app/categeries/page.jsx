@@ -10,19 +10,25 @@ import { toast } from "react-toast";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
 const Categories = () => {
-  const { categories } = useSelector((state: RootState) => state.category);
+  
+  const { categories } = useSelector((state) => state.category);
+  const data = Array.isArray(categories) ? categories : [];
+  console.log(data, 'categories')
 
+
+// console.log(categories, 'categories',)
   const [name, setName] = useState("");
   const [image, setMainImage] = useState(null);
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
+  
 
   const handleMainImageChange = async (e) => {
-    const file = e.target.files[0];
+    const file = Array.from(e.target.files || []);
 
     if (!file) {
       toast.error("Please select an image.");
@@ -31,7 +37,7 @@ const Categories = () => {
 
     // Create a FormData object
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("image", file[0]);
 
     try {
       // Upload the image to ImgBB
@@ -99,7 +105,8 @@ const Categories = () => {
     <DefaultLayout>
       <Breadcrumb pageName="Categories" />
 
-      <form className="grid min-h-[80vh] grid-cols-1 gap-9 sm:grid-cols-2">
+      <form className="grid min-h-[80vh] grid-cols-1 gap-9 sm:grid-cols-2" 
+              onSubmit={handleSubmit}>
         <div className="flex flex-col gap-9">
           {/* <!-- Input Fields --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -158,20 +165,20 @@ const Categories = () => {
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
-              {categories.category &&
-                categories.category.map((tag, index) => (
+              {data.length &&
+                data.map((tag, index) => (
                   <div key={index} className="flex w-full justify-between">
                     <div>{index + 1}</div>
                     <div>
                       <Image
-                        src={tag.image}
+                        src={tag?.image}
                         alt="image"
                         height={50}
                         width={50}
                         className="object-cover"
                       />
                     </div>
-                    <p>{tag.name}</p>
+                    <p>{tag?.name}</p>
                     <div>
                       <RiDeleteBin6Line
                         className="size-5 cursor-pointer text-red-500"
@@ -191,7 +198,6 @@ const Categories = () => {
             />
             <input
               type="submit"
-              onClick={handleSubmit}
               placeholder="Upload"
               className="rounded-md bg-primary px-4 py-2 text-white"
             />

@@ -7,12 +7,12 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 const Page = () => {
-  const { checkouts } = useSelector((state: RootState) => state.checkout);
-  const dispatch = useDispatch<AppDispatch>();
+  const { checkouts } = useSelector((state) => state.checkout);
+  const dispatch = useDispatch();
 
-  const [editableOrderId, setEditableOrderId] = useState<string | null>(null);
-  const [payment_status, setPaymentStatus] = useState<string>('');
-  const [delivery_status, setDeliveryStatus] = useState<string>('');
+  const [editableOrderId, setEditableOrderId] = useState(null);
+  const [payment_status, setPaymentStatus] = useState('');
+  const [delivery_status, setDeliveryStatus] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   // Fetch checkouts on component mount
@@ -23,7 +23,7 @@ const Page = () => {
   const datacheck = Array.isArray(checkouts) ? checkouts : checkouts?.data || [];
 
 
-  const handleUpdate = (orderId: string) => {
+  const handleUpdate = (orderId) => {
     setEditableOrderId(orderId);
     const order = datacheck.find((checkout) => checkout._id === orderId);
     if (order) {
@@ -32,7 +32,7 @@ const Page = () => {
     }
   };
 
-  const handleSave = async(id: string) => {
+  const handleSave = async(id) => {
     if (!payment_status && !delivery_status) {
       alert('Please update at least one field (Payment Status or Delivery Status).');
       return;
@@ -44,7 +44,7 @@ const Page = () => {
     window.location.reload();
   };
 
-  const handleDelete = async(orderId: string) => {
+  const handleDelete = async(orderId) => {
    await dispatch(deleteCheckout(orderId));
    dispatch(fetchCheckouts());
 

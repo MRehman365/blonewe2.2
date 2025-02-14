@@ -11,19 +11,19 @@ import { get_admin, get_admin_Bio } from "@/store/reducers/adminReducer";
 
 const DropdownUser = () => {
 
-  const { adminDetail } = useSelector((state: RootState) => state.admin)
+  const { adminDetail } = useSelector((state) => state.admin)
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { adminbio } = useSelector((state: RootState) => state.admin)
+  const { adminbio } = useSelector((state) => state.admin)
 
 
 
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch()
   useEffect(() => {
     dispatch(get_admin_Bio())
   
   }, [dispatch])
   
-  const data = Array.isArray(adminbio) ? adminbio : adminbio?.adminDetails[0] || [];
+  const data = Array.isArray(adminbio) ? adminbio : adminbio?.adminDetails || [];
 
   useEffect(() => {
 dispatch(get_admin())
@@ -53,7 +53,7 @@ dispatch(get_admin())
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {data?.username}
+            {data[0]?.username}
           </span>
           <span className="block text-xs">Admin</span>
         </span>
@@ -62,7 +62,7 @@ dispatch(get_admin())
           <Image
             width={112}
             height={112}
-            src={ data?.image ||"/images/user/user-01.png"}
+            src={ data[0]?.image ||"/images/user/user-01.png"}
             alt="User"
             className="object-cover h-full w-full"
           />

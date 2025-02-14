@@ -16,22 +16,15 @@ import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";
 import Buttons from "@/app/ui/buttons/page";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { useParams, useSearchParams } from "next/navigation";
-import { getProducts, updateProduct } from "@/store/reducers/productReducer";
-import { fetchCategories } from "@/store/reducers/categoriesReducer";
+import { addProduct } from "@/store/reducers/productReducer";
 import { toast } from "react-toast";
+import { fetchCategories } from "@/store/reducers/categoriesReducer";
 
 const FormElements = () => {
+  const { categories } = useSelector((state) => state.category);
 
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-
-  console.log('ID:', id);
-const { products } = useSelector((state: RootState) => state.products)
-const { categories } = useSelector((state: RootState) => state.category);
   const [formData, setFormData] = useState({
     name: "",
     store: "",
@@ -42,14 +35,10 @@ const { categories } = useSelector((state: RootState) => state.category);
     sku: "",
     description: "",
     points: [""],
-    image: [],
+    image: [], // Array to store image URLs
   });
 
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(getProducts())
-  }, [dispatch]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -59,66 +48,42 @@ const { categories } = useSelector((state: RootState) => state.category);
     ? categories
     : categories?.category || [];
 
-  // Ensure products is an array
-const menu = Array.isArray(products) ? products : (products?.menu || []); 
-useEffect(() => {
-    const product = menu.find((item) => item._id === id);
-    if (product) {
-      setFormData({
-        name: product.name || "",
-        store: product.store || "",
-        category: product.category || "",
-        price: product.price || "",
-        discount: product.discount || "",
-        tags: product.tags || "",
-        sku: product.sku || "",
-        description: product.description || "",
-        points: product.points || [""],
-        image:  [],
-      });
-    }
-  
-}, [products, id]);
+  const handleDetailImagesChange = async (e) => {
+    const files = Array.from(e.target.files);
 
+    // Upload each file to ImgBB and get the URLs
+    const imageUrls = await Promise.all(
+      files.map(async (file) => {
+        const formData = new FormData();
+        formData.append("image", file);
 
-const handleDetailImagesChange = async (e) => {
-  const files = Array.from(e.target.files);
+        try {
+          const response = await fetch(
+            `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`, // Replace with your ImgBB API key
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
 
-  // Upload each file to ImgBB and get the URLs
-  const imageUrls = await Promise.all(
-    files.map(async (file) => {
-      const formData = new FormData();
-      formData.append("image", file);
+          const data = await response.json();
+          return data.data.url; // Return the image URL from ImgBB
+        } catch (error) {
+          console.error("Error uploading image to ImgBB:", error);
+          return null;
+        }
+      })
+    );
 
-      try {
-        const response = await fetch(
-          `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`, // Replace with your actual ImgBB API key
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+    // Filter out any failed uploads
+    const validImageUrls = imageUrls.filter((url) => url !== null);
 
-        const result = await response.json();
-        return result.data.url; // Return the uploaded image URL
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        return null;
-      }
-    })
-  );
-
-  // Filter out any failed uploads
-  const validImageUrls = imageUrls.filter((url) => url !== null);
-
-  setFormData((prevData) => ({
-    ...prevData,
-    image: [...prevData.image, ...validImageUrls], // Append new image URLs
-  }));
-};
-
-
-
+    // Update the form data with the image URLs
+    setFormData((prevData) => ({
+      ...prevData,
+      image: validImageUrls,
+    }));
+  };
 
   const handleAddMore = () => {
     setFormData((prevData) => ({
@@ -126,38 +91,51 @@ const handleDetailImagesChange = async (e) => {
       points: [...prevData.points, ""], // Add new empty string to points array
     }));
   };
+
   const handlePointChange = (index, value) => {
     const newPoints = [...formData.points];
-    newPoints[index] = value; 
+    newPoints[index] = value; // Update specific point
     setFormData({ ...formData, points: newPoints });
   };
 
-  const handleSubmit = (e) => {
+  const handlesubmit = async (e) => {
     e.preventDefault();
-    if (!id || !formData) {
-      console.error('ID or formData is missing');
+
+    // Ensure at least one image is uploaded
+    if (!formData.image || formData.image.length === 0) {
+      toast.error("Please upload at least one image.");
       return;
     }
 
-    dispatch(updateProduct({ id, formData })).then((res) => {
+    // Prepare the data to send to the backend
+    const productData = {
+      ...formData,
+      points: formData.points.filter((point) => point.trim() !== ""), // Remove empty points
+    };
+
+    // Dispatch the addProduct action
+    dispatch(addProduct(productData)).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
-        toast(res.payload.message);
+        toast.error(res.payload.message);
       }
     });
   };
   return (
-    <DefaultLayout>
-      <Breadcrumb pageName="Update Product" />
+    <>
+      <Breadcrumb pageName="Products" />
 
-      <form className="grid grid-cols-1 gap-9 sm:grid-cols-2">
+      <form
+        className="grid grid-cols-1 gap-9 sm:grid-cols-2"
+        onSubmit={handlesubmit}
+      >
         <div className="flex flex-col gap-9">
           {/* <!-- Input Fields --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Update Product
+                Add Product
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
@@ -192,7 +170,6 @@ const handleDetailImagesChange = async (e) => {
                 />
               </div>
 
-         
               <div>
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Categories
@@ -353,14 +330,22 @@ const handleDetailImagesChange = async (e) => {
               </div>
             </div>
           </div>
-          
-          <div className="flex justify-between mt-4">
-          <button type="reset" className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
-                <button type="submit" className="rounded-md bg-primary px-4 py-2 text-white" onClick={handleSubmit}>Upload</button>
-              </div>
+
+          <div className="mt-4 flex justify-between">
+            <input
+              type="reset"
+              placeholder="Reset form"
+              className="rounded-md bg-primary px-4 py-2 text-white"
+            />
+            <input
+              type="submit"
+              placeholder="Upload"
+              className="rounded-md bg-primary px-4 py-2 text-white"
+            />
+          </div>
         </div>
       </form>
-      </DefaultLayout>
+    </>
   );
 };
 

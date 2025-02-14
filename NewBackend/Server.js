@@ -11,12 +11,16 @@ const cors = require("cors");
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
-    cors({
-      // origin: "http://localhost:3000",
-      origin: "https://blonewe2-2-i7rw.vercel.app",
-      credentials: true,
-    })
-  );
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://blonewe2-2-i7rw.vercel.app",
+      "https://anotherdomain.com"
+    ],
+    credentials: true,
+  })
+);
+
 
 app.use("/api", require("./routes/authRoute"));
 app.use("/api", require("./routes/productRoute"));

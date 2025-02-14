@@ -331,7 +331,7 @@ const menuGroups = [
         route: "#",
         children: [
           { label: "Sign In", route: "/auth/signin" },
-          { label: "Sign Up", route: "/auth/signup" },
+          // { label: "Sign Up", route: "/auth/signup" },
         ],
       },
     ],

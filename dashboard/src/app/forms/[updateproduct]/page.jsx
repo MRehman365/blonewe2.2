@@ -16,15 +16,22 @@ import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo";
 import Buttons from "@/app/ui/buttons/page";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { addProduct } from "@/store/reducers/productReducer";
-import { toast } from "react-toast";
+import { useParams, useSearchParams } from "next/navigation";
+import { getProducts, updateProduct } from "@/store/reducers/productReducer";
 import { fetchCategories } from "@/store/reducers/categoriesReducer";
+import { toast } from "react-toast";
 
 const FormElements = () => {
-  const { categories } = useSelector((state: RootState) => state.category);
 
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+  console.log('ID:', id);
+const { products } = useSelector((state) => state.products)
+const { categories } = useSelector((state) => state.category);
   const [formData, setFormData] = useState({
     name: "",
     store: "",
@@ -35,10 +42,14 @@ const FormElements = () => {
     sku: "",
     description: "",
     points: [""],
-    image: [], // Array to store image URLs
+    image: [],
   });
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getProducts())
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -48,42 +59,66 @@ const FormElements = () => {
     ? categories
     : categories?.category || [];
 
-  const handleDetailImagesChange = async (e) => {
-    const files = Array.from(e.target.files);
+  // Ensure products is an array
+const menu = Array.isArray(products) ? products : (products?.menu || []); 
+useEffect(() => {
+    const product = menu.find((item) => item._id === id);
+    if (product) {
+      setFormData({
+        name: product.name || "",
+        store: product.store || "",
+        category: product.category || "",
+        price: product.price || "",
+        discount: product.discount || "",
+        tags: product.tags || "",
+        sku: product.sku || "",
+        description: product.description || "",
+        points: product.points || [""],
+        image:  [],
+      });
+    }
+  
+}, [products, id]);
 
-    // Upload each file to ImgBB and get the URLs
-    const imageUrls = await Promise.all(
-      files.map(async (file) => {
-        const formData = new FormData();
-        formData.append("image", file);
 
-        try {
-          const response = await fetch(
-            `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`, // Replace with your ImgBB API key
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
+const handleDetailImagesChange = async (e) => {
+  const files = Array.from(e.target.files);
 
-          const data = await response.json();
-          return data.data.url; // Return the image URL from ImgBB
-        } catch (error) {
-          console.error("Error uploading image to ImgBB:", error);
-          return null;
-        }
-      })
-    );
+  // Upload each file to ImgBB and get the URLs
+  const imageUrls = await Promise.all(
+    files.map(async (file) => {
+      const formData = new FormData();
+      formData.append("image", file);
 
-    // Filter out any failed uploads
-    const validImageUrls = imageUrls.filter((url) => url !== null);
+      try {
+        const response = await fetch(
+          `https://api.imgbb.com/1/upload?key=18e63ff899cb908d823daa101c023095`, // Replace with your actual ImgBB API key
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
-    // Update the form data with the image URLs
-    setFormData((prevData) => ({
-      ...prevData,
-      image: validImageUrls,
-    }));
-  };
+        const result = await response.json();
+        return result.data.url; // Return the uploaded image URL
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return null;
+      }
+    })
+  );
+
+  // Filter out any failed uploads
+  const validImageUrls = imageUrls.filter((url) => url !== null);
+
+  setFormData((prevData) => ({
+    ...prevData,
+    image: [...prevData.image, ...validImageUrls], // Append new image URLs
+  }));
+};
+
+
+
 
   const handleAddMore = () => {
     setFormData((prevData) => ({
@@ -91,51 +126,38 @@ const FormElements = () => {
       points: [...prevData.points, ""], // Add new empty string to points array
     }));
   };
-
   const handlePointChange = (index, value) => {
     const newPoints = [...formData.points];
-    newPoints[index] = value; // Update specific point
+    newPoints[index] = value; 
     setFormData({ ...formData, points: newPoints });
   };
 
-  const handlesubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Ensure at least one image is uploaded
-    if (!formData.image || formData.image.length === 0) {
-      toast.error("Please upload at least one image.");
+    if (!id || !formData) {
+      console.error('ID or formData is missing');
       return;
     }
 
-    // Prepare the data to send to the backend
-    const productData = {
-      ...formData,
-      points: formData.points.filter((point) => point.trim() !== ""), // Remove empty points
-    };
-
-    // Dispatch the addProduct action
-    dispatch(addProduct(productData)).then((res) => {
+    dispatch(updateProduct({ id, formData })).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {
-        toast.error(res.payload.message);
+        toast(res.payload.message);
       }
     });
   };
   return (
-    <>
-      <Breadcrumb pageName="Products" />
+    <DefaultLayout>
+      <Breadcrumb pageName="Update Product" />
 
-      <form
-        className="grid grid-cols-1 gap-9 sm:grid-cols-2"
-        onSubmit={handlesubmit}
-      >
+      <form className="grid grid-cols-1 gap-9 sm:grid-cols-2">
         <div className="flex flex-col gap-9">
           {/* <!-- Input Fields --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                Add Product
+                Update Product
               </h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
@@ -170,6 +192,7 @@ const FormElements = () => {
                 />
               </div>
 
+         
               <div>
                 <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                   Categories
@@ -330,22 +353,14 @@ const FormElements = () => {
               </div>
             </div>
           </div>
-
-          <div className="mt-4 flex justify-between">
-            <input
-              type="reset"
-              placeholder="Reset form"
-              className="rounded-md bg-primary px-4 py-2 text-white"
-            />
-            <input
-              type="submit"
-              placeholder="Upload"
-              className="rounded-md bg-primary px-4 py-2 text-white"
-            />
-          </div>
+          
+          <div className="flex justify-between mt-4">
+          <button type="reset" className="rounded-md bg-primary px-4 py-2 text-white">Reset form</button>
+                <button type="submit" className="rounded-md bg-primary px-4 py-2 text-white" onClick={handleSubmit}>Upload</button>
+              </div>
         </div>
       </form>
-    </>
+      </DefaultLayout>
   );
 };
 

@@ -4,7 +4,7 @@ import api from "../api";
 
 export const addBlog = createAsyncThunk(
   "blogs/addBlog",
-  async (blogData, { rejectWithValue }) => {
+  async (blogData: any, { rejectWithValue }) => {
     try {
       const response = await api.post("/addblog", blogData);
       return response.data;

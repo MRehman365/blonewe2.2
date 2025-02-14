@@ -11,15 +11,15 @@ import { get_admin_Bio } from "@/store/reducers/adminReducer";
 
 
 const Profile = () => {
-  const { adminbio } = useSelector((state: RootState) => state.admin)
-  const dispatch = useDispatch<AppDispatch>();
+  const { adminbio } = useSelector((state) => state.admin)
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(get_admin_Bio())
   
   }, [dispatch])
 
-  const data = Array.isArray(adminbio) ? adminbio : adminbio?.adminDetails[0] || [];
+  const data = Array.isArray(adminbio) ? adminbio : adminbio?.adminDetails || [];
 
   
   return (
@@ -48,7 +48,7 @@ const Profile = () => {
             <div className="relative z-30 mx-auto -mt-22 h-30 w-full overflow-hidden max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
               <div className="relative drop-shadow-2">
                 <Image
-                  src={data?.image || "https://i.ibb.co/bh01sHL/IMG-20241023-WA0016111.jpg"}
+                  src={data[0]?.image || "https://i.ibb.co/bh01sHL/IMG-20241023-WA0016111.jpg"}
                   width={160}
                   height={160}
                   style={{
@@ -62,7 +62,7 @@ const Profile = () => {
             </div>
             <div className="mt-4">
               <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-                {data?.username || "Admin"}
+                {data[0]?.username || "Admin"}
               </h3>
               <p className="font-medium">Admin</p>
               {/* <div className="mx-auto mb-5.5 mt-4.5 grid max-w-94 grid-cols-3 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
@@ -91,7 +91,7 @@ const Profile = () => {
                   About Me
                 </h4>
                 <p className="mt-4.5">
-         {data?.bio || "No Bio Added"}
+         {data[0]?.bio || "No Bio Added"}
                 </p>
               </div>
 
