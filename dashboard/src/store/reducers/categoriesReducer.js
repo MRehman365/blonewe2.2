@@ -9,71 +9,65 @@ export const fetchCategories = createAsyncThunk(
       const response = await api.get("/getcategory");
       console.log("Fetched Categories:", response.data);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch categories",
+        error.response?.data?.message || "Failed to fetch categories"
       );
     }
-  },
+  }
 );
 
 export const addCategory = createAsyncThunk(
   "category/addCategory",
-  async (data: { name: string; image: string }, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
       const response = await api.post("/addcategory", data);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to add category",
+        error.response?.data?.message || "Failed to add category"
       );
     }
-  },
+  }
 );
 
 export const deleteCategory = createAsyncThunk(
   "category/deleteCategory",
-  async (id: string, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      const response = await api.delete(`/deletecategory/${id}`);  // Corrected URL
-      return response.data;  // Returning the response as action payload
-    } catch (error: any) {
+      const response = await api.delete(`/deletecategory/${id}`); // Corrected URL
+      return response.data; // Returning the response as action payload
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to delete category",
+        error.response?.data?.message || "Failed to delete category"
       );
     }
-  },
+  }
 );
-
 
 export const updateCategory = createAsyncThunk(
   "category/updateCategory",
-  async ({ id, name }: { id: string; name: string }, { rejectWithValue }) => {
+  async ({ id, name }, { rejectWithValue }) => {
     try {
       const response = await api.put("/api/updatecategory", { id, name });
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update category",
+        error.response?.data?.message || "Failed to update category"
       );
     }
-  },
+  }
 );
-interface CategoryState {
-  categories: string[];
-  loading: boolean;
-  error: string | null;
-}
 
 // Slice
 const categorySlice = createSlice({
   name: "category",
   initialState: {
-    categories: [] as Category[],
-    loading: false,
-    error: null,
-  } as CategoryState,
-  reducers: {},
+    categories: [], // Array to store categories
+    loading: false, // Loading state
+    error: null, // Error state
+  },
+  reducers: {}, // No additional reducers for now
   extraReducers: (builder) => {
     builder
       // Fetch Categories
@@ -85,10 +79,9 @@ const categorySlice = createSlice({
         state.loading = false;
         state.categories = action.payload.category; // Store only the category array
       })
-      
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload; // Set error message
       })
 
       // Add Category
@@ -97,30 +90,32 @@ const categorySlice = createSlice({
       })
       .addCase(addCategory.fulfilled, (state, action) => {
         state.loading = false;
-        console.log('Action Payload:', action.payload);
+        console.log("Action Payload:", action.payload);
         if (Array.isArray(state.categories)) {
-          state.categories.push(action.payload); 
+          state.categories.push(action.payload); // Add new category to the array
         }
       })
       .addCase(addCategory.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload; // Set error message
       })
-   // Delete Category
-.addCase(deleteCategory.pending, (state) => {
-  state.loading = true;
-})
-.addCase(deleteCategory.fulfilled, (state, action) => {
-  state.loading = false;
-  if (Array.isArray(state.categories)) {
-    state.categories.push(action.payload); 
-  }
-})
-.addCase(deleteCategory.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.payload as string;
-})
 
+      // Delete Category
+      .addCase(deleteCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        if (Array.isArray(state.categories)) {
+          state.categories = state.categories.filter(
+            (category) => category.id !== action.payload.id
+          ); // Remove deleted category
+        }
+      })
+      .addCase(deleteCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload; // Set error message
+      })
 
       // Update Category
       .addCase(updateCategory.pending, (state) => {
@@ -129,15 +124,15 @@ const categorySlice = createSlice({
       .addCase(updateCategory.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.categories.findIndex(
-          (category) => category === action.payload.id,
+          (category) => category.id === action.payload.id
         );
         if (index !== -1) {
-          state.categories[index] = action.payload.name;
+          state.categories[index] = action.payload; // Update the category
         }
       })
       .addCase(updateCategory.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload; // Set error message
       });
   },
 });

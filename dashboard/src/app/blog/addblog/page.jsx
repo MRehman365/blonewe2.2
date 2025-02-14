@@ -31,10 +31,10 @@ const [formData, setFormData] = useState({
   images: [""],
 })
 
-const dispatch = useDispatch<AppDispatch>();
+const dispatch = useDispatch();
 
 
-const handleDetailImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+const handleDetailImagesChange = async (e) => {
   const files = Array.from(e.target.files || []);
 
   // Upload each file to ImgBB and get the URLs
@@ -70,7 +70,7 @@ setFormData((prevData) => ({
 }));
 }
 
-const handleContentChange = (index: number, value: string) => {
+const handleContentChange = (index, value) => {
   const newContent = [...formData.content];
   newContent[index] = value; // Update specific point
   setFormData({ ...formData, content: newContent });
@@ -83,9 +83,9 @@ const handleContentChange = (index: number, value: string) => {
     }));
   }
 
-  const hanldesubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const hanldesubmit = (e) => {
     e.preventDefault();
-    dispatch(addBlog({blogData : formData})).then((res) => {
+    dispatch(addBlog(formData)).then((res) => {
       if (res?.payload?.success) {
         toast.success(res.payload.message);
       } else {

@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
-
+// Add Blog
 export const addBlog = createAsyncThunk(
   "blogs/addBlog",
-  async (blogData: any, { rejectWithValue }) => {
+  async (blogData, { rejectWithValue }) => {
     try {
       const response = await api.post("/addblog", blogData);
       return response.data;
@@ -14,6 +14,7 @@ export const addBlog = createAsyncThunk(
   }
 );
 
+// Get Blogs
 export const getBlogs = createAsyncThunk(
   "blogs/getBlogs",
   async (_, { rejectWithValue }) => {
@@ -26,11 +27,12 @@ export const getBlogs = createAsyncThunk(
   }
 );
 
+// Delete Blog
 export const deleteBlog = createAsyncThunk(
   "blogs/deleteBlog",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.delete(`/deleteblog/${id}`,);
+      const response = await api.delete(`/deleteblog/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Something went wrong");
@@ -54,7 +56,7 @@ const blogSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(addBlog.fulfilled, (state, action) => {
+      .addCase(addBlog.fulfilled, (state) => {
         state.status = "succeeded";
       })
       .addCase(addBlog.rejected, (state, action) => {
@@ -81,7 +83,7 @@ const blogSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(deleteBlog.fulfilled, (state, action) => {
+      .addCase(deleteBlog.fulfilled, (state) => {
         state.status = "succeeded";
       })
       .addCase(deleteBlog.rejected, (state, action) => {

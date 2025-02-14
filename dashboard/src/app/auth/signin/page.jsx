@@ -12,15 +12,15 @@ import { toast } from "react-toast";
 import { useRouter } from "next/router";
 
 
-const SignIn: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+const SignIn = () => {
+  const dispatch = useDispatch();
   // const { admin, loading, error } = useSelector((state: RootState) => state.admin);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     dispatch(admin_login({ email, password })).then((res) => {
       if (res?.payload?.success) {

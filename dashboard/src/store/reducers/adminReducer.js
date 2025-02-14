@@ -3,7 +3,7 @@ import api from "../api";
 
 export const admin_login = createAsyncThunk(
   "auth/admin_login",
-  async (info: { email: string; password: string }, { rejectWithValue }) => {
+  async (info, { rejectWithValue }) => {
     try {
       const { data } = await api.post("/adminlogin", info, {
         withCredentials: true,
@@ -11,12 +11,13 @@ export const admin_login = createAsyncThunk(
       localStorage.setItem("accessToken", data.token);
       localStorage.setItem("adminid", data.user.id);
       return data;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error response:", error.response?.data || error.message);
       return rejectWithValue(error.response?.data || "Something went wrong");
     }
-  },
+  }
 );
+
 export const all_users = createAsyncThunk(
   "auth/all_users",
   async (_, { rejectWithValue }) => {
@@ -24,13 +25,14 @@ export const all_users = createAsyncThunk(
       const response = await api.get("/getallusers");
       console.log("Fetched users:", response.data);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch users",
+        error.response?.data?.message || "Failed to fetch users"
       );
     }
-  },
+  }
 );
+
 export const get_admin = createAsyncThunk(
   "auth/single_admin",
   async (_, { rejectWithValue }) => {
@@ -38,13 +40,14 @@ export const get_admin = createAsyncThunk(
       const response = await api.get("/getadminbyid");
       console.log("Fetched admin:", response.data);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch user",
+        error.response?.data?.message || "Failed to fetch user"
       );
     }
-  },
+  }
 );
+
 export const get_admin_Bio = createAsyncThunk(
   "auth/admin_bio",
   async (_, { rejectWithValue }) => {
@@ -52,20 +55,17 @@ export const get_admin_Bio = createAsyncThunk(
       const response = await api.get("/getadminDetails");
       console.log("Fetched admin:", response.data);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch user",
+        error.response?.data?.message || "Failed to fetch user"
       );
     }
-  },
+  }
 );
 
 export const update_admin_details = createAsyncThunk(
   "auth/update_admin_details",
-  async (
-    { adminId, email, username, bio, image, fullName, phone },
-    { rejectWithValue }
-  ) => {
+  async ({ adminId, email, username, bio, image, fullName, phone }, { rejectWithValue }) => {
     try {
       const response = await api.post("/updatedetails", {
         adminId,
@@ -86,23 +86,14 @@ export const update_admin_details = createAsyncThunk(
   }
 );
 
-interface AuthState {
-  loader: boolean;
-  errorMessage: string;
-  successMessage: string;
-  adminDetail: string | null; // Admin details
-  adminInfo: string | null; // Admin info
-  adminbio: string | null; // Admin info
-  users: Array<any>; // All users data
-}
-
 // Initial State
-const initialState: AuthState = {
+const initialState = {
   loader: false,
   errorMessage: "",
   successMessage: "",
   adminDetail: null,
   adminInfo: null,
+  adminbio: null,
   users: [],
 };
 
@@ -133,7 +124,7 @@ const authSlice = createSlice({
         state.loader = false;
       })
       .addCase(admin_login.rejected, (state, { payload }) => {
-        state.errorMessage = (payload as any)?.error || "An error occurred";
+        state.errorMessage = payload?.error || "An error occurred";
         state.loader = false;
       })
       .addCase(all_users.pending, (state) => {
@@ -145,7 +136,7 @@ const authSlice = createSlice({
         state.loader = false;
       })
       .addCase(all_users.rejected, (state, { payload }) => {
-        state.errorMessage = (payload as string) || "Failed to fetch users";
+        state.errorMessage = payload || "Failed to fetch users";
         state.loader = false;
       })
       .addCase(get_admin.pending, (state) => {
@@ -157,7 +148,7 @@ const authSlice = createSlice({
         state.loader = false;
       })
       .addCase(get_admin.rejected, (state, { payload }) => {
-        state.errorMessage = (payload as string) || "Failed to fetch users";
+        state.errorMessage = payload || "Failed to fetch users";
         state.loader = false;
       })
       .addCase(get_admin_Bio.pending, (state) => {
@@ -169,7 +160,7 @@ const authSlice = createSlice({
         state.loader = false;
       })
       .addCase(get_admin_Bio.rejected, (state, { payload }) => {
-        state.errorMessage = (payload as string) || "Failed to fetch users";
+        state.errorMessage = payload || "Failed to fetch users";
         state.loader = false;
       });
   },

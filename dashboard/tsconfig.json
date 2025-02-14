@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/store/reducers/checkoutReducer.js", "src/app/auth/signin/page.jsx", "src/app/blog/addblog/page.jsx"],
   "exclude": ["node_modules"]
 }
