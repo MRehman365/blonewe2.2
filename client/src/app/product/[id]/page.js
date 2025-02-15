@@ -140,7 +140,7 @@ export default function ProductInfo({ params }) {
                 alt={`Thumbnail ${idx + 1}`}
                 width={100}
                 height={100}
-                className="cursor-pointer rounded-md border hover:border-gray-400"
+                className="cursor-pointer rounded-md border hover:border-gray-400 aspect-square object-contain"
                 onClick={() => setSelectedImage(thumb)}
               />
             ))}

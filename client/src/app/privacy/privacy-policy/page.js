@@ -7,7 +7,7 @@ const page = () => {
       <div className="max-w-7xl mx-auto space-y-4 px-2 py-6">
         <h2 className="text-[28px] font-semibold">Who we are​</h2>
         <p className="text-gray-500">
-          Our website address is: https://klbtheme.com/blonwe.
+          Our website address is: https://maxifysolutions.com.
         </p>
         <h2 className="text-[28px] font-semibold">Comments​</h2>
         <p className="text-gray-500">

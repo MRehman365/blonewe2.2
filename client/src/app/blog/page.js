@@ -55,7 +55,7 @@ export default function BlogPost() {
           <article key={index} className="mt-4">
         
             <Image
-              src={item?.images[0]}
+              src={item?.images[0] || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
               height={400}
               width={400}
               alt="Featured"
@@ -86,7 +86,7 @@ export default function BlogPost() {
               {data.map((post, index) => (
                 <div key={index} className="flex gap-4">
                   <Image
-                    src={post?.images[0]}
+                    src={post?.images[0] || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
                     height={200}
                     width={200}
                     alt="blog"

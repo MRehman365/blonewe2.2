@@ -82,7 +82,7 @@ console.log(data, 'published')
           {data.images[index] && (
             <div className="mb-8 w-full overflow-hidden rounded-lg">
               <Image
-                src={data?.images[index]}
+                src={data?.images[index] || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
                 alt={`Image ${index + 1}`}
                 width={400}
                 height={400}
@@ -101,7 +101,7 @@ console.log(data, 'published')
         data?.images.slice(data?.content.length).map((image, index) => (
           <div key={data?.content.length + index} className="mb-8">
             <Image
-              src={image}
+              src={image || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
               alt={`Image ${data?.content.length + index + 1}`}
               width={100}
               height={100}

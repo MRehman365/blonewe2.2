@@ -78,7 +78,7 @@ const handlecart = (productId) => {
                   sizes='60'
                   className="rounded"
                 />
-                <span>{product.productId?.name}</span>
+                <span>{product.productId?.name.slice(0,30)}..</span>
               </td>
 
               {/* Price */}
@@ -90,7 +90,7 @@ const handlecart = (productId) => {
               </td>
 
               {/* Date Added */}
-              <td className="py-4 hidden md:table-cell">{product.productId?.createdAt}</td>
+              <td className="py-4 hidden md:table-cell">{product.productId?.createdAt.slice(0,10)}</td>
 
               {/* Stock */}
               <td className="py-4 hidden md:table-cell">
@@ -101,13 +101,13 @@ const handlecart = (productId) => {
 
               {/* Add to Cart */}
               <td className="py-4">
-                <button onClick={() => handlecart(product.productId?._id)} className="px-2 py-2 bg-green-500 text-sm text-white rounded-md">
+                <button onClick={() => handlecart(product.productId?._id)} className=" md:px-2 md:py-2 p-2 bg-green-500 text-[10px] md:text-sm text-white rounded-md">
                   Add to Cart
                 </button>
               </td>
 
               {/* Remove button */}
-              <td className="py-4 hidden md:table-cell">
+              <td className="py-4 table-cell">
                 <button onClick={() => deleteWish(product._id)} className="text-white bg-red-500 rounded-full">
                   <IoCloseOutline size={20} />
                 </button>

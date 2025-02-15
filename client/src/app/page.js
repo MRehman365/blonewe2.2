@@ -163,6 +163,31 @@ export default function Home() {
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
   };
+  const settings2 = {
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    navigator: true,
+    autoplay: true,
+    arrows: true,
+    autoplaySpeed: 2000,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 4,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+    ],
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+  };
 
   return (
     <div className="">
@@ -186,11 +211,8 @@ export default function Home() {
       </div>
 
       {/* Slider Section */}
-      <div className="p-2 relative overflow-hidden">
-        <div
-          className="keen-slider max-w-7xl mx-auto rounded-lg overflow-hidden relative"
-          ref={sliderRef}
-        >
+      <div className="p-2 relative overflow-hidden max-w-7xl mx-auto">
+      <Slider {...settings2} className="">
    {sliderImages.map((image, index) =>
   image ? (
     <div key={index} className="keen-slider__slide">
@@ -209,19 +231,8 @@ export default function Home() {
 )}
 
 
-          <button
-            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all text-white px-2 py-4 rounded-md"
-            onClick={handlePrev}
-          >
-            <FaChevronLeft />
-          </button>
-          <button
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/10 hover:bg-black/50 transition-all  text-white px-2 py-4 rounded-md"
-            onClick={handleNext}
-          >
-            <FaChevronRight />
-          </button>
-        </div>
+        
+        </Slider>
       </div>
       <div className="p-2 max-w-7xl mx-auto rounded-lg overflow-hidden">
         <Slider {...settings} className="">

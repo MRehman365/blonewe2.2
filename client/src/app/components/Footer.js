@@ -159,7 +159,7 @@ export default function Footer() {
         {/* Copyright and Payment Methods */}
         <div className="flex flex-col md:flex-row justify-between items-center border-t border-border mt-8 pt-8 text-sm text-muted-foreground">
           <p>
-            Copyright 2024 © Blonwe WordPress Theme. All right reserved. Powered by KLBTheme.
+            Copyright 2024 © Blonwe WordPress Theme. All right reserved. Powered by Maxify.
           </p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
             <span>We accept:</span>
