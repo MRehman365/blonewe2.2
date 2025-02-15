@@ -232,7 +232,7 @@ export default function Home() {
               className="flex justify-center overflow-hidden group"
             >
               <Image
-                src={item?.image}
+                src={item?.image || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
                 alt={`Slide ${index + 1}`}
                 width={100}
                 height={100}

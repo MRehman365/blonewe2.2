@@ -233,7 +233,7 @@ const me = Array.isArray(singleuser) ? singleuser : singleuser?.user || [];
                         alt={item?.name}
                         loading="lazy"
                         fill
-                        className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                        className="object-contain  h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                       />
                     </Link>
                     {item?.discount > 0 && (

@@ -154,11 +154,11 @@ const FeauredProduct = ({ handleview }) => {
               <div className="relative aspect-square">
                 <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
-                    src={item?.image[0]}
+                    src={item?.image[0] || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
                     alt={item?.name}
                     loading="lazy"
                     fill
-                    className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                    className="object-contain h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   />
                 </Link>
                 {item?.discount > 0 && (
@@ -238,11 +238,11 @@ const FeauredProduct = ({ handleview }) => {
               <div className="relative aspect-square">
                 <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
-                    src={item?.image[0]}
+                    src={item?.image[0] || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
                     alt={item?.name}
                     loading="lazy"
                     fill
-                    className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                    className="object-contain h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   />
                 </Link>
                 {item?.discount > 0 && (
@@ -322,11 +322,11 @@ const FeauredProduct = ({ handleview }) => {
               <div className="relative aspect-square">
                 <Link href={`/product/${item._id}`} className="overflow-hidden">
                   <Image
-                    src={item?.image[0]}
+                    src={item?.image[0] || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
                     alt={item?.name}
                     loading="lazy"
                     fill
-                    className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                    className="object-contain h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                   />
                 </Link>
                 {item?.discount > 0 && (

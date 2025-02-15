@@ -312,7 +312,7 @@ export default function ProductListing() {
                         alt={item?.name}
                         loading="lazy"
                         fill
-                        className={`${viewMode === "grid" ? "object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105" : "object-cover h-[200px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"}`}
+                        className={`${viewMode === "grid" ? "object-contain  h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105" : "object-cover h-[200px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"}`}
                       />
                     </Link>
                     {item?.discount > 0 && (

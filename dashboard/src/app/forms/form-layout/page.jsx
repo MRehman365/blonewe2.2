@@ -100,7 +100,7 @@ console.log('Products:', menu);
                 />
               </div>
               <p className="text-sm text-black dark:text-white">
-                {product.name}
+                {product.name.slice(0, 25)}...
               </p>
             </div>
           </div>

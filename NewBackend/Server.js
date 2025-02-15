@@ -15,7 +15,6 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://blonewe2-2-i7rw.vercel.app",
-      "https://anotherdomain.com"
     ],
     credentials: true,
   })

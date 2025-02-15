@@ -38,7 +38,7 @@ const NewLatter = () => {
             className=" rounded-lg overflow-hidden"
           >
             <Image
-              src={article?.images[0]}
+              src={article?.images[0] || "https://i.ibb.co/PZbkQjRb/image-not-found.jpg"}
               alt={article.title}
               height={400}
               width={400}

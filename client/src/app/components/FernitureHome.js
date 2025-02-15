@@ -146,7 +146,7 @@ const FernitureHome = ({ handleview }) => {
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                  className="object-contain  h-[400px] w-auto overflow-hidden transition-transform duration-300 group-hover:scale-105"
                 />
                 {product.discount > 0 && (
                   <div className="absolute left-2 bottom-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
