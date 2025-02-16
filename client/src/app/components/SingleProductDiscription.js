@@ -24,23 +24,25 @@ export default function SingleProductDiscription({ handleview, id }) {
   const [userId, setUserId] = useState(null);
   const [userInfo, setUserinfo] = useState(null);
 
-useEffect(() => {
-  setUserId(localStorage.getItem("userid"));
-}, []);
-useEffect(() => {
-  setUserinfo(localStorage.getItem("userid"));
-}, []);
+  useEffect(() => {
+    const id = localStorage.getItem("userid");
+    setUserId(id);
+    setUserinfo(id); // If you need userInfo to be the same as userId
+  }, []);
 
-useEffect(() => {
-  if(!userId) {
-    return;
-  }
-  dispatch(getUserById(userId));
-}, [dispatch]);
+  useEffect(() => {
+    if (userId) {
+      const timer = setTimeout(() => {
+        console.log("Dispatching getUserById after 5 seconds with userId:", userId);
+        dispatch(getUserById({ userId }));
+      }, 5000); 
+      return () => clearTimeout(timer);
+    }
+  }, [dispatch, userId]); 
 
 const me = Array.isArray(singleuser) ? singleuser : singleuser?.user || [];
 
-// console.log(me)
+// console.log(userId, 'me')
 
 
   const [activeTab, setActiveTab] = useState("reviews");
@@ -190,7 +192,7 @@ const me = Array.isArray(singleuser) ? singleuser : singleuser?.user || [];
                 <div>
                   <Link
                     className="py-1 px-5 bg-indigo-500 text-white rounded-sm"
-                    href="/login"
+                    href="/authentication"
                   >
                     Login
                   </Link>
@@ -260,10 +262,10 @@ const me = Array.isArray(singleuser) ? singleuser : singleuser?.user || [];
                   </div>
                   <div className="p-4 flex-grow flex flex-col">
                     <div className="flex gap-2 items-center">
-                      <div className="text-sm text-gray-500 line-through">
+                      <div className="text-[12px]  md:text-sm text-gray-500 line-through">
                         ₹{item?.price.toFixed(2)}
                       </div>
-                      <div className="text-lg font-bold bg-green-600 px-1 text-white rounded-md">
+                      <div className="text-base  md:text-lg font-bold bg-green-600 px-1 text-white rounded-md">
                         ₹{(item?.price * (1 - item.discount / 100)).toFixed(2)}
                       </div>
                     </div>

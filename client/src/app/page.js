@@ -171,20 +171,6 @@ export default function Home() {
     autoplay: true,
     arrows: true,
     autoplaySpeed: 2000,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4,
-        },
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-    ],
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
   };

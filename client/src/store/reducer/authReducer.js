@@ -31,12 +31,13 @@ export const loginUser = createAsyncThunk(
 // New thunk for getUserById
 export const getUserById = createAsyncThunk(
   "user/getUserById",
-  async (id, { rejectWithValue }) => {
-    
-  console.log(id, 'id is console here')
+  async (userIdObj, { rejectWithValue }) => {
+    // Extract userId from the object
+    const userId = userIdObj.userId;
+    console.log(userId, 'id is console here'); // Should log: 6791e79c99b9cbd25148039d
+
     try {
-      const response = await api.get(`/getuserbyid/${id}`);
-      
+      const response = await api.get(`/getuserbyid/${userId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

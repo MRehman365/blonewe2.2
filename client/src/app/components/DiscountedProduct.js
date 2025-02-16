@@ -157,10 +157,10 @@ const DiscountedProduct = ({ handleview }) => {
               </div>
               <div className="p-4 flex-grow flex flex-col">
                 <div className="flex gap-2 items-center">
-                  <div className="text-sm text-gray-500 line-through">
+                  <div className="text-[10px] md:text-sm text-gray-500 line-through">
                     ₹{item?.price.toFixed(2)}
                   </div>
-                  <div className="text-lg font-bold bg-green-600 px-1 text-white rounded-md">
+                  <div className="text-base md:text-lg font-bold bg-green-600 px-1 text-white rounded-md">
                     ₹{(item?.price * (1 - item.discount / 100)).toFixed(2)}
                   </div>
                 </div>

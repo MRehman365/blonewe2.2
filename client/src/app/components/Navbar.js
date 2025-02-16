@@ -512,32 +512,7 @@ dispatch(getUserById(id))
                   <Link href="/shop" className="text-[15px]">
                     Shop
                   </Link>
-                  {[
-                    {
-                      id: "electronics",
-                      name: "Electronics",
-                      icon: <ImMobile2 className="h-5 w-5" />,
-                    },
-                    {
-                      id: "fashion",
-                      name: "Fashion",
-                      icon: <PiDress className="h-5 w-5" />,
-                    },
-                    {
-                      id: "furniture",
-                      name: "Furniture",
-                      icon: <TbArmchair className="h-5 w-5" />,
-                    },
-                  ].map((menu, index) => (
-                    <Link
-                      key={index}
-                      href="/shop"
-                      className="flex items-center gap-3 py-2 hover:bg-[#004798] hover:text-white transition-colors text-[14px]"
-                    >
-                      <span className="text-gray-500">{menu.icon}</span>
-                      <span>{menu.name}</span>
-                    </Link>
-                  ))}
+                  
                   <Link href="/blog" className="text-[15px]">
                     Blog
                   </Link>

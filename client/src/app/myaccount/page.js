@@ -320,16 +320,16 @@ useEffect(() => {
           )}
 
           {currentSection === "#orders" && (
-  <div>
+  <div className="w-full overflow-scroll">
     <h1 className="text-2xl font-semibold mb-8">Orders</h1>
-    <table className="w-full shadow rounded-lg">
+    <table className="w-full shadow rounded-lg overflow-scroll">
       <thead className="bg-primary text-white">
         <tr className="text-left bg-[#ffffff0d]">
           <th className="p-3">Order Id</th>
           <th className="p-3">Date</th>
           <th className="p-3">Status</th>
           <th className="p-3">Total</th>
-          <th className="p-3">Actions</th>
+          <th className="p-3">Payment</th>
         </tr>
       </thead>
       <tbody>

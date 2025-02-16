@@ -121,17 +121,16 @@ export default function ProductInfo({ params }) {
             <MdOutlineZoomOutMap className="h-4 w-4" />
           </button>
           <div className="relative w-full h-[400px] md:w-[600px] md:h-[600px] overflow-hidden mx-auto">
-            {/* Main Image with Magnifier */}
-            <Magnifier
-              src={selectedImage}
-              width={600}
-              height={600}
-              mgWidth={200}
-              mgHeight={200}
-              zoomFactor={1.5}
-              className="rounded-lg"
-            />
-          </div>
+  {/* Main Image with Magnifier */}
+  <Magnifier
+    src={selectedImage}
+    height={500}
+    mgWidth={200}
+    mgHeight={200}
+    zoomFactor={1.5}
+    className="rounded-lg w-[300px] md:w-[600px] m-auto object-contain"
+  />
+</div>
           <div className="mt-4 flex gap-4">
             {thumbnails.map((thumb, idx) => (
               <Image
@@ -150,7 +149,7 @@ export default function ProductInfo({ params }) {
         {/* Product Info */}
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-semibold">{product?.name}</h1>
+            <h1 className="text-xl md:text-3xl font-semibold">{product?.name}</h1>
             <div className="mt-2 flex items-center gap-4">
               <div className="flex">
                 {[1, 2, 3, 4].map((star) => (
@@ -212,7 +211,7 @@ export default function ProductInfo({ params }) {
 
           <button
             onClick={() => handlewish(product._id)}
-            className="w-full py-2 px-4  transition duration-200 flex items-center justify-start"
+            className="w-full py-2 px-4  transition duration-200 flex items-center justify-start text-sm md:text-base"
           >
             <FaHeart className="mr-2 h-4 w-4" />
             Add to wishlist
@@ -221,7 +220,7 @@ export default function ProductInfo({ params }) {
             </span>
           </button>
 
-          <div className=" border-t border-gray-200 rounded-lg p-4 shadow-sm">
+          <div className=" border-t border-gray-200 rounded-lg p-4 shadow-sm text-sm md:text-base">
             <ul className="space-y-3">
               {Array.isArray(product?.points) ? (
                 product.points.map((point, index) => (
